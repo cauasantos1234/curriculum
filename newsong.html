@@ -1,0 +1,484 @@
+<!--
+Modo PAP - Frontend Base (HTML / CSS / JS)
+Single-file prototype to serve as design + interactive baseline for the music learning app.
+Features included:
+- Responsive layout (header, sidebar, main content)
+- Instrument pages and learning paths
+- Search and filters
+- Lesson cards with progress and preview (video placeholder)
+- User progress stored in localStorage
+- Theme (light/dark) toggle
+- Accessible, semantic HTML + CSS variables for easy theming
+- Comments to guide development
+
+Use this file as starting point: split into components, move styles to SCSS/Tailwind, and JS into modules when you're ready.
+-->
+
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Modo PAP — Aprenda Música</title>
+  <meta name="description" content="Protótipo front-end do projeto Modo PAP — plataforma colaborativa para aprender instrumentos musicais." />
+  <style>
+    /* ====== Design tokens ====== */
+    :root{
+      --bg: #0f1724;
+      --card: #0b1220;
+      --muted: #94a3b8;
+      --accent: #7c3aed; /* purple */
+      --accent-2: #06b6d4; /* teal */
+      --glass: rgba(255,255,255,0.04);
+      --text: #e6eef8;
+      --radius: 12px;
+      --shadow: 0 6px 20px rgba(2,6,23,0.6);
+      --max-width: 1200px;
+    }
+    [data-theme="light"]{
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --muted: #475569;
+      --accent: #6d28d9;
+      --accent-2: #0891b2;
+      --glass: rgba(2,6,23,0.04);
+      --text: #071331;
+      --shadow: 0 6px 18px rgba(12,18,54,0.06);
+    }
+
+    /* ====== Base ====== */
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      background:linear-gradient(180deg,var(--bg), #071024 60%);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding:24px;
+      display:flex;
+      justify-content:center;
+    }
+    .app{
+      width:100%;
+      max-width:var(--max-width);
+      display:grid;
+      grid-template-columns:280px 1fr;
+      gap:20px;
+      align-items:start;
+    }
+
+    /* ====== Sidebar ====== */
+    .sidebar{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+      border-radius:var(--radius);
+      padding:18px;
+      box-shadow:var(--shadow);
+      position:sticky;
+      top:24px;
+      height:calc(100vh - 48px);
+      overflow:auto;
+    }
+    .brand{display:flex;gap:12px;align-items:center;margin-bottom:18px}
+    .logo{
+      width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:700;color:white
+    }
+    .brand h1{font-size:16px;margin:0}
+    nav ul{list-style:none;padding:0;margin:10px 0}
+    nav li{margin:8px 0}
+    nav a{display:flex;gap:10px;align-items:center;padding:8px;border-radius:8px;color:var(--text);text-decoration:none}
+    nav a:hover{background:var(--glass)}
+
+    .profile{display:flex;gap:10px;align-items:center;margin-top:12px}
+    .avatar{width:44px;height:44px;border-radius:10px;background:linear-gradient(180deg,#0ea5a9,#06b6d4);display:flex;align-items:center;justify-content:center;font-weight:700}
+    .small{font-size:13px;color:var(--muted)}
+
+    /* ====== Header + Main ====== */
+    header{
+      display:flex;align-items:center;justify-content:space-between;margin-bottom:18px
+    }
+    .search{display:flex;gap:10px;align-items:center}
+    .search input{background:var(--card);border:1px solid rgba(255,255,255,0.03);padding:10px 12px;border-radius:10px;color:var(--text);width:320px}
+    .actions{display:flex;gap:10px;align-items:center}
+    .btn{padding:10px 14px;border-radius:10px;border:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;cursor:pointer}
+    .ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 10px;border-radius:10px;color:var(--text)}
+
+    main{min-height:60vh}
+
+    /* ====== Cards / Grid ====== */
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+    .card{background:var(--card);padding:14px;border-radius:12px;box-shadow:var(--shadow);}
+    .card h3{margin:8px 0}
+    .muted{color:var(--muted);font-size:13px}
+
+    .lesson-card{display:flex;flex-direction:column;gap:10px}
+    .thumb{height:120px;border-radius:10px;background:linear-gradient(90deg, rgba(0,0,0,0.2), rgba(0,0,0,0.1));display:flex;align-items:center;justify-content:center}
+    .thumb .play{font-size:28px;background:rgba(0,0,0,0.35);padding:14px;border-radius:999px}
+
+    .progress{height:8px;background:rgba(255,255,255,0.04);border-radius:8px;overflow:hidden}
+    .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));width:0%}
+
+    /* ====== Lesson list ====== */
+    .lesson-list{display:flex;flex-direction:column;gap:12px}
+    .lesson-row{display:flex;gap:14px;align-items:center}
+
+    /* ====== Modal ====== */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.6);display:none;align-items:center;justify-content:center}
+    .modal{background:var(--card);padding:18px;border-radius:12px;max-width:880px;width:94%}
+
+    /* ====== Responsive ====== */
+    @media (max-width:980px){
+      .app{grid-template-columns:1fr;}
+      .sidebar{position:relative;height:auto}
+      .search input{width:160px}
+    }
+
+    /* small helpers */
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.03);font-size:13px}
+    .row{display:flex;gap:10px;align-items:center}
+    .center{display:flex;align-items:center;justify-content:center}
+
+    /* subtle animation */
+    .fade-up{transform:translateY(6px);opacity:0;animation:fadeUp .5s forwards}
+    @keyframes fadeUp{to{transform:none;opacity:1}}
+  </style>
+</head>
+<body>
+  <div class="app" id="app" data-theme="dark">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">PAP</div>
+        <div>
+          <h1>Modo PAP</h1>
+          <div class="small">Aprenda instrumentos com a comunidade</div>
+        </div>
+      </div>
+
+      <div class="profile">
+        <div class="avatar">CS</div>
+        <div>
+          <div style="font-weight:600">Caua Sousa</div>
+          <div class="small">Progresso: <strong id="totalProgress">0%</strong></div>
+        </div>
+      </div>
+
+      <nav>
+        <ul>
+          <li><a href="#" data-nav="home">🏠 Início</a></li>
+          <li><a href="#" data-nav="instruments">🎸 Instrumentos</a></li>
+          <li><a href="#" data-nav="paths">🛤️ Caminhos</a></li>
+          <li><a href="#" data-nav="upload">⬆️ Enviar vídeo</a></li>
+          <li><a href="#" data-nav="settings">⚙️ Configurações</a></li>
+        </ul>
+      </nav>
+
+      <hr style="border:0;height:1px;background:rgba(255,255,255,0.03);margin:12px 0">
+
+      <div>
+        <div style="font-weight:700;margin-bottom:8px">Favoritos</div>
+        <div class="pill">Introdução ao violão</div>
+      </div>
+
+      <div style="margin-top:16px;font-size:13px;color:var(--muted)">Versão protótipo — exporte o HTML e transforme em components.</div>
+    </aside>
+
+    <section>
+      <header>
+        <div>
+          <h2 style="margin:0">Bem-vindo ao Modo PAP</h2>
+          <div class="muted">Explore caminhos, assista vídeos produzidos pela comunidade e acompanhe seu progresso.</div>
+        </div>
+
+        <div class="search">
+          <input id="search" placeholder="Buscar aulas, instrumentos, tópicos..." />
+          <div class="actions">
+            <button class="ghost" id="themeToggle">🌗</button>
+            <button class="btn" id="openOnboard">Começar</button>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <section id="home" class="fade-up">
+          <div style="display:flex;gap:16px;align-items:center;margin-bottom:12px">
+            <h3 style="margin:0">Caminhos recomendados</h3>
+            <div class="muted">Baseado no seu progresso</div>
+          </div>
+
+          <div class="grid" id="pathsGrid"></div>
+
+          <div style="height:18px"></div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <h3 style="margin:0">Aulas recentes</h3>
+            <div class="muted">Mostrando 6</div>
+          </div>
+
+          <div class="grid" id="lessonsGrid"></div>
+        </section>
+
+        <section id="instruments" style="display:none">
+          <h3>Instrumentos</h3>
+          <div class="muted">Escolha o instrumento para ver seu caminho.</div>
+          <div style="height:12px"></div>
+          <div class="grid" id="instrumentsGrid"></div>
+        </section>
+
+        <section id="paths" style="display:none">
+          <h3>Caminhos de aprendizado</h3>
+          <div class="muted">Sequências de aulas organizadas do iniciante ao avançado.</div>
+          <div style="height:12px"></div>
+          <div id="pathDetail"></div>
+        </section>
+
+        <section id="upload" style="display:none">
+          <h3>Enviar vídeo</h3>
+          <div class="card">
+            <form id="uploadForm">
+              <label>Título</label><br>
+              <input required style="width:100%;padding:10px;border-radius:8px;margin-top:6px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--text)" />
+              <div style="height:10px"></div>
+              <label>Descrição</label><br>
+              <textarea required style="width:100%;padding:10px;border-radius:8px;margin-top:6px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--text)"></textarea>
+              <div style="height:10px"></div>
+              <button class="btn" style="margin-top:8px">Enviar (protótipo)</button>
+            </form>
+          </div>
+        </section>
+
+        <section id="settings" style="display:none">
+          <h3>Configurações</h3>
+          <div class="card">
+            <div class="row" style="justify-content:space-between">
+              <div>
+                <div style="font-weight:700">Tema</div>
+                <div class="small">Alternar entre claro/escuro</div>
+              </div>
+              <div>
+                <button class="ghost" id="themeToggle2">Alternar</button>
+              </div>
+            </div>
+            <div style="height:12px"></div>
+            <div>
+              <div style="font-weight:700">Preferências</div>
+              <div class="muted">Idioma, notificações e privacidade (protótipo)</div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </section>
+  </div>
+
+  <!-- Modal (video preview / onboarding) -->
+  <div id="modalBackdrop" class="modal-backdrop">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <h3 id="modalTitle">Aula</h3>
+          <div class="muted" id="modalSub">Preview</div>
+        </div>
+        <div><button class="ghost" id="closeModal">Fechar</button></div>
+      </div>
+      <div style="height:12px"></div>
+      <div id="modalContent">
+        <!-- Video placeholder -->
+        <div style="background:linear-gradient(90deg, rgba(0,0,0,0.3), rgba(0,0,0,0.15));height:320px;border-radius:10px;display:flex;align-items:center;justify-content:center"> 
+          <div style="text-align:center">
+            <div style="font-size:34px;font-weight:700">Thumbnail</div>
+            <div class="muted">Aqui aparecerá o player (embed) — no protótipo é estático</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ====== Sample data ======
+    const samplePaths = [
+      {id:1,title:'Violão: Iniciante ao Intermediário',lessons:5,desc:'Acordes básicos, ritmos e primeiras músicas',progress:20},
+      {id:2,title:'Guitarra elétrica: Bases do rock',lessons:8,desc:'Power chords, pentatônicas e solos simples',progress:10},
+      {id:3,title:'Piano para iniciantes',lessons:6,desc:'Posições, escalas e leitura simples',progress:40},
+    ];
+
+    const sampleInstruments = [
+      {id:'guitar',name:'Guitarra',desc:'Elétrica e acústica',icon:'🎸'},
+      {id:'viola',name:'Violão',desc:'Acústico, dedilhado',icon:'🪕'},
+      {id:'piano',name:'Piano',desc:'Teclado e teoria',icon:'🎹'},
+      {id:'drums',name:'Bateria',desc:'Ritmo e grooves',icon:'🥁'},
+    ];
+
+    const sampleLessons = [
+      {id:101,title:'Acordes maiores e menores',instrument:'viola',duration:'8:12',author:'Mariana',progress:30},
+      {id:102,title:'Ritmo básico (strumming)',instrument:'viola',duration:'6:03',author:'Lucas',progress:0},
+      {id:103,title:'Introdução à pentatônica',instrument:'guitar',duration:'10:24',author:'Rafael',progress:55},
+      {id:104,title:'Primeiras escalas no piano',instrument:'piano',duration:'9:11',author:'Ana',progress:70},
+      {id:105,title:'Parada e fills na bateria',instrument:'drums',duration:'7:20',author:'Pedro',progress:0},
+      {id:106,title:'Acompanhamento para cantores',instrument:'viola',duration:'5:42',author:'Sofia',progress:15},
+    ];
+
+    // ====== Helpers ======
+    function $(sel){return document.querySelector(sel)}
+    function $all(sel){return Array.from(document.querySelectorAll(sel))}
+
+    // ====== Render functions ======
+    function renderPaths(){
+      const grid = $('#pathsGrid'); grid.innerHTML='';
+      samplePaths.forEach(p=>{
+        const card = document.createElement('div'); card.className='card';
+        card.innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-weight:700">${p.title}</div>
+              <div class="muted">${p.desc}</div>
+            </div>
+            <div class="pill">${p.lessons} aulas</div>
+          </div>
+          <div style="height:10px"></div>
+          <div class="progress"><i style="width:${p.progress}%"></i></div>
+        `;
+        grid.appendChild(card);
+      })
+    }
+
+    function renderLessons(filter=''){
+      const grid = $('#lessonsGrid'); grid.innerHTML='';
+      const list = sampleLessons.filter(l=>{
+        if(!filter) return true;
+        const q = filter.toLowerCase();
+        return l.title.toLowerCase().includes(q) || l.author.toLowerCase().includes(q) || l.instrument.toLowerCase().includes(q);
+      });
+      list.forEach(l=>{
+        const card = document.createElement('div'); card.className='card lesson-card';
+        card.innerHTML = `
+          <div class="thumb">
+            <div class="play">▶</div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-weight:700">${l.title}</div>
+                <div class="muted">${l.author} • ${l.duration}</div>
+              </div>
+              <div>
+                <button class="ghost" data-open="${l.id}">Ver</button>
+              </div>
+            </div>
+            <div style="height:8px"></div>
+            <div class="progress"><i style="width:${l.progress}%"></i></div>
+          </div>
+        `;
+        grid.appendChild(card);
+      })
+    }
+
+    function renderInstruments(){
+      const grid = $('#instrumentsGrid'); grid.innerHTML='';
+      sampleInstruments.forEach(i=>{
+        const card = document.createElement('div'); card.className='card center';
+        card.style.flexDirection='column';
+        card.innerHTML = `
+          <div style="font-size:32px">${i.icon}</div>
+          <div style="font-weight:700;margin-top:6px">${i.name}</div>
+          <div class="muted">${i.desc}</div>
+          <div style="height:8px"></div>
+          <div><button class="btn" data-instrument="${i.id}">Abrir caminho</button></div>
+        `;
+        grid.appendChild(card);
+      })
+    }
+
+    // ====== Navigation ======
+    $all('[data-nav]').forEach(a=>{
+      a.addEventListener('click',e=>{
+        e.preventDefault();
+        showSection(a.dataset.nav);
+      })
+    })
+
+    function showSection(name){
+      const sections = ['home','instruments','paths','upload','settings'];
+      sections.forEach(s=>{
+        const el = document.getElementById(s);
+        if(!el) return;
+        el.style.display = (s===name || (s==='home' && name==='home')) ? '' : 'none';
+      })
+    }
+
+    // ====== Modal ======
+    const modalBackdrop = $('#modalBackdrop');
+    function openModal(title,sub){
+      $('#modalTitle').textContent = title;
+      $('#modalSub').textContent = sub||'';
+      modalBackdrop.style.display='flex';
+    }
+    function closeModal(){ modalBackdrop.style.display='none'; }
+    $('#closeModal').addEventListener('click',closeModal);
+    modalBackdrop.addEventListener('click',e=>{ if(e.target===modalBackdrop) closeModal(); })
+
+    // ====== Search ======
+    $('#search').addEventListener('input',e=>{
+      renderLessons(e.target.value);
+    })
+
+    // ====== Open lesson preview ======
+    document.addEventListener('click',e=>{
+      const id = e.target?.dataset?.open;
+      if(id){
+        const lesson = sampleLessons.find(x=>x.id==id);
+        openModal(lesson.title, `${lesson.author} • ${lesson.duration}`);
+      }
+      const inst = e.target?.dataset?.instrument;
+      if(inst){
+        // show a fake pathDetail for the instrument
+        const p = samplePaths.find(x=>x.title.toLowerCase().includes(inst)) || {title:'Caminho: '+inst,desc:'Sequência criada pela comunidade',lessons:6,progress:0};
+        const el = document.getElementById('pathDetail');
+        el.innerHTML = `
+          <div class="card">
+            <div style="display:flex;justify-content:space-between"><div><div style="font-weight:700">${p.title}</div><div class="muted">${p.desc}</div></div><div class="pill">${p.lessons} aulas</div></div>
+            <div style="height:12px"></div>
+            <div class="lesson-list">
+              ${Array.from({length:p.lessons}).map((_,i)=>`<div class="lesson-row"><div class="small">Aula ${i+1}</div><div style="flex:1;font-weight:600">Tópico ${i+1} — exemplo</div><div class="muted">10:${i+2}</div></div>`).join('')}
+            </div>
+          </div>
+        `;
+        showSection('paths');
+      }
+    })
+
+    // ====== Theme toggle + persist ======
+    const app = document.getElementById('app');
+    function setTheme(t){ app.setAttribute('data-theme', t); localStorage.setItem('pap-theme', t); }
+    $('#themeToggle').addEventListener('click',()=>{ setTheme(app.getAttribute('data-theme')==='dark'?'light':'dark') });
+    $('#themeToggle2').addEventListener('click',()=>{ setTheme(app.getAttribute('data-theme')==='dark'?'light':'dark') });
+
+    // ====== Onboarding modal opener ======
+    $('#openOnboard').addEventListener('click',()=>{
+      openModal('Bem-vindo!','Aqui estão algumas dicas para começar:\n- Escolha um instrumento\n- Siga um caminho\n- Assista aulas e marque progresso')
+    })
+
+    // ====== Init render ======
+    function computeOverallProgress(){
+      const avg = Math.round(sampleLessons.reduce((s,l)=>s+(l.progress||0),0)/sampleLessons.length || 0);
+      $('#totalProgress').textContent = avg+'%';
+    }
+
+    function init(){
+      const savedTheme = localStorage.getItem('pap-theme'); if(savedTheme) setTheme(savedTheme);
+      renderPaths(); renderLessons(); renderInstruments(); computeOverallProgress();
+    }
+
+    init();
+
+    // ====== Notes for next steps (in-code guidance) ======
+    /*
+      - When converting to production: separate styles, use CSS modules or Tailwind, and split JS into modules.
+      - Replace sample data with API calls; add authentication and real video embeds (YouTube/Vimeo or storage + HLS player).
+      - Use IndexedDB or server for progress sync, and add optimistic updates when marking lessons complete.
+      - Accessibility: add keyboard navigation, aria attributes on dynamic content and forms.
+      - Consider building this as React + Tailwind for faster componentization and reuse.
+    */
+  </script>
+</body>
+</html>
