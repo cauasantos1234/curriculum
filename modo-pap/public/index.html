@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NewSong — Aprenda Música</title>
+  <meta name="description" content="Protótipo front-end do projeto NewSong — plataforma colaborativa para aprender instrumentos musicais." />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="app" id="app" data-theme="dark">
+    <aside class="sidebar" aria-labelledby="brandTitle">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">PAP</div>
+        <div>
+          <h1 id="brandTitle">NewSong</h1>
+          <div class="small">Aprenda instrumentos com a comunidade</div>
+        </div>
+      </div>
+
+
+      <div class="profile" aria-live="polite">
+        <div class="avatar">
+          CS
+          <div class="status-dot"></div>
+        </div>
+        <div style="flex:1">
+          <div class="name">Caua Sousa</div>
+          <div class="small">Progresso: <strong id="totalProgress">0%</strong></div>
+          <div class="badges">
+            <span class="badge" title="Primeira aula completa">🎵</span>
+            <span class="badge" title="5 dias seguidos">🔥</span>
+            <span class="badge" title="Mestre do violão">🎸</span>
+          </div>
+        </div>
+      </div>
+
+      <nav aria-label="Navegação principal">
+        <ul>
+          <li><a href="#" data-nav="home">🏠 Início</a></li>
+          <li><a href="#" data-nav="instruments">🎸 Instrumentos</a></li>
+          <li><a href="#" data-nav="paths">🛤️ Caminhos</a></li>
+          <li><a href="#" data-nav="upload">⬆️ Enviar vídeo</a></li>
+          <li><a href="#" data-nav="settings">⚙️ Configurações</a></li>
+        </ul>
+      </nav>
+
+      <hr class="divider">
+
+      <div>
+        <div class="favoritesTitle">Favoritos</div>
+        <div class="pill">Introdução ao violão</div>
+      </div>
+
+      <div class="muted note">Versão protótipo — exporte o HTML e transforme em components.</div>
+    </aside>
+
+    <section class="content">
+      <header>
+        <div class="header-intro">
+          <h2 class="welcome">Bem-vindo ao NewSong 🎵</h2>
+          <div class="muted">Explore caminhos, assista vídeos produzidos pela comunidade e acompanhe seu progresso musical.</div>
+          <div class="stats-banner">
+            <div class="stat-item">
+              <div class="stat-number">240+</div>
+              <div class="stat-label">Aulas</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">12</div>
+              <div class="stat-label">Instrumentos</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">5.2k</div>
+              <div class="stat-label">Alunos</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="search">
+          <input id="search" aria-label="Buscar aulas, instrumentos e tópicos" placeholder="🔍 Buscar aulas, instrumentos, tópicos..." />
+          <div class="actions">
+            <button class="ghost" id="themeToggle" aria-pressed="false" title="Alternar tema">🌗</button>
+            <button class="btn" id="openOnboard">✨ Começar</button>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <section id="home" class="fade-up" tabindex="-1" aria-labelledby="homeTitle">
+          <!-- Hero Banner -->
+          <div class="hero-banner">
+            <div class="hero-content">
+              <div class="hero-badge">🎯 Recomendado para você</div>
+              <h3>Continue de onde parou</h3>
+              <p>Você está 20% mais perto de dominar o violão!</p>
+              <button class="btn-hero" onclick="document.querySelector('[data-nav=instruments]').click()">
+                Continuar aprendendo →
+              </button>
+            </div>
+            <div class="hero-illustration">
+              <div class="floating-note">🎵</div>
+              <div class="floating-note delay-1">🎸</div>
+              <div class="floating-note delay-2">🎹</div>
+            </div>
+          </div>
+
+          <div class="spacer"></div>
+
+          <div class="sectionHeader">
+            <h3 id="homeTitle">📚 Caminhos recomendados</h3>
+            <div class="muted">Baseado no seu progresso e interesses</div>
+          </div>
+
+          <div class="grid" id="pathsGrid" aria-live="polite"></div>
+
+          <div class="spacer"></div>
+
+          <div class="sectionHeader">
+            <div>
+              <h3>🔥 Aulas populares</h3>
+              <div class="muted">As mais assistidas da comunidade</div>
+            </div>
+            <button class="ghost" onclick="document.querySelector('#search').focus()">Ver todas</button>
+          </div>
+
+          <div class="grid" id="lessonsGrid" aria-live="polite"></div>
+
+          <div class="spacer"></div>
+
+          <!-- Community Section -->
+          <div class="community-section">
+            <h3>👥 Comunidade NewSong</h3>
+            <div class="community-grid">
+              <div class="community-card">
+                <div class="community-icon">💬</div>
+                <h4>Fórum de dúvidas</h4>
+                <p class="muted">Tire suas dúvidas com outros músicos</p>
+              </div>
+              <div class="community-card">
+                <div class="community-icon">📹</div>
+                <h4>Compartilhe seu progresso</h4>
+                <p class="muted">Mostre suas conquistas para a comunidade</p>
+              </div>
+              <div class="community-card">
+                <div class="community-icon">🏆</div>
+                <h4>Desafios semanais</h4>
+                <p class="muted">Participe e ganhe badges</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="instruments" style="display:none">
+          <h3>Instrumentos</h3>
+          <div class="muted">Escolha o instrumento para ver seu caminho.</div>
+          <div class="quick-instruments" aria-label="Instrumentos rápidos">
+            <button class="quick-inst" data-instrument="viola" title="Violão">🪕</button>
+            <button class="quick-inst" data-instrument="guitar" title="Guitarra">🎸</button>
+            <button class="quick-inst" data-instrument="piano" title="Piano">🎹</button>
+            <button class="quick-inst" data-instrument="drums" title="Bateria">🥁</button>
+          </div>
+          <div class="grid" id="instrumentsGrid"></div>
+        </section>
+
+        <section id="paths" style="display:none">
+          <h3>Caminhos de aprendizado</h3>
+          <div class="muted">Sequências de aulas organizadas do iniciante ao avançado.</div>
+          <div id="pathDetail"></div>
+        </section>
+
+        <section id="upload" style="display:none">
+          <h3>Enviar vídeo</h3>
+          <div class="card">
+            <form id="uploadForm">
+              <label>Título</label>
+              <input required class="formControl" />
+              <label>Descrição</label>
+              <textarea required class="formControl"></textarea>
+              <button class="btn" style="margin-top:8px">Enviar (protótipo)</button>
+            </form>
+          </div>
+        </section>
+
+        <section id="settings" style="display:none">
+          <h3>Configurações</h3>
+          <div class="card">
+            <div class="row" style="justify-content:space-between">
+              <div>
+                <div style="font-weight:700">Tema</div>
+                <div class="small">Alternar entre claro/escuro</div>
+              </div>
+              <div>
+                <button class="ghost" id="themeToggle2">Alternar</button>
+              </div>
+            </div>
+            <div style="height:12px"></div>
+            <div>
+              <div style="font-weight:700">Preferências</div>
+              <div class="muted">Idioma, notificações e privacidade (protótipo)</div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </section>
+  </div>
+
+  <!-- Modal (video preview / onboarding) -->
+  <div id="modalBackdrop" class="modal-backdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modalHeader">
+        <div>
+          <h3 id="modalTitle">Aula</h3>
+          <div class="muted" id="modalSub">Preview</div>
+        </div>
+        <div><button class="ghost" id="closeModal">Fechar</button></div>
+      </div>
+      <div class="spacer"></div>
+      <div id="modalContent">
+        <!-- Video placeholder -->
+        <div class="videoPlaceholder" aria-hidden="false">
+          <div class="videoInner">
+            <div class="videoTitle">Thumbnail</div>
+            <div class="muted">Aqui aparecerá o player (embed) — no protótipo é estático</div>
+          </div>
+        </div>
+      </div>
+      <div class="modalFooter">
+        <button class="ghost" id="markCompleteBtn">Marcar como concluída</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
