@@ -6,7 +6,7 @@
   <title>NewSong — Home</title>
   <link rel="stylesheet" href="css/theme.css">
 </head>
-<body>
+<body data-theme="dark">
   <div class="container">
     <div class="card header">
       <div class="brand">
@@ -16,7 +16,11 @@
           <small>Comunidade · Aprendizado · Música</small>
         </div>
       </div>
-      <div>
+      <div class="header-actions">
+        <button id="themeToggle" class="btn-theme" aria-label="Alternar modo claro/escuro">
+          <span class="theme-icon">🌙</span>
+          <span class="theme-text">Modo Escuro</span>
+        </button>
         <button id="logoutBtn" class="btn ghost">Sair</button>
       </div>
     </div>
@@ -32,60 +36,259 @@
 
       <main>
         <section id="homeSection">
-          <div class="hero fade-up">
-            <div class="visual">🎶</div>
-            <div>
-              <h2 class="gold-text">Aprenda. Toque. Inspire.</h2>
-              <p>Plataforma colaborativa para aprender instrumentos com habitantes da comunidade.</p>
+          <!-- Hero Banner Aprimorado -->
+          <div class="hero-banner-enhanced fade-up">
+            <div class="hero-content-main">
+              <div class="hero-badge">
+                <span class="badge-icon">✨</span>
+                <span>Bem-vindo ao NewSong</span>
+              </div>
+              <h2 class="hero-title">Aprenda. Toque. Inspire.</h2>
+              <p class="hero-subtitle">Transforme sua paixão pela música em realidade com nossa plataforma colaborativa de ensino musical.</p>
+              <div class="hero-actions">
+                <button class="btn-primary-large" data-nav="lessons">Começar Agora</button>
+                <button class="btn-secondary-large" id="exploreTourBtn">Tour Guiado</button>
+              </div>
+              <div class="hero-features">
+                <div class="feature-item">
+                  <span class="feature-icon">🎯</span>
+                  <span>Aulas Práticas</span>
+                </div>
+                <div class="feature-item">
+                  <span class="feature-icon">👥</span>
+                  <span>Comunidade Ativa</span>
+                </div>
+                <div class="feature-item">
+                  <span class="feature-icon">🏆</span>
+                  <span>Certificados</span>
+                </div>
+              </div>
+            </div>
+            <div class="hero-visual-container">
+              <div class="floating-music-note note-1">🎵</div>
+              <div class="floating-music-note note-2">🎶</div>
+              <div class="floating-music-note note-3">🎸</div>
+              <div class="hero-circle pulse"></div>
             </div>
           </div>
 
-          <div class="card" style="margin-top:18px">
-            <h3 class="gold-text">Destaques</h3>
-            <div id="featuredCarousel" class="carousel">
-              <div class="carousel-slide">Aulas populares e novos módulos.</div>
-              <div class="carousel-slide">Desafios semanais com prêmios.</div>
-              <div class="carousel-slide">Sessões ao vivo e feedback em tempo real.</div>
+          <!-- Destaques com Carrossel Melhorado -->
+          <div class="card featured-section" style="margin-top:24px">
+            <div class="section-header">
+              <h3 class="gold-text">✨ Destaques da Semana</h3>
+              <div class="carousel-controls">
+                <button class="carousel-btn" id="prevSlide" aria-label="Anterior">←</button>
+                <button class="carousel-btn" id="nextSlide" aria-label="Próximo">→</button>
+              </div>
+            </div>
+            <div id="featuredCarousel" class="carousel-enhanced">
+              <div class="carousel-slide-enhanced active">
+                <div class="slide-icon">🔥</div>
+                <h4>Aulas Mais Populares</h4>
+                <p>Descubra os cursos mais assistidos da semana e junte-se a milhares de alunos.</p>
+              </div>
+              <div class="carousel-slide-enhanced">
+                <div class="slide-icon">🏅</div>
+                <h4>Desafios Semanais</h4>
+                <p>Participe dos desafios e ganhe prêmios exclusivos e reconhecimento.</p>
+              </div>
+              <div class="carousel-slide-enhanced">
+                <div class="slide-icon">📺</div>
+                <h4>Sessões ao Vivo</h4>
+                <p>Interaja em tempo real com instrutores e receba feedback personalizado.</p>
+              </div>
+              <div class="carousel-slide-enhanced">
+                <div class="slide-icon">🎓</div>
+                <h4>Novos Módulos</h4>
+                <p>Confira os últimos conteúdos adicionados por nossa comunidade de instrutores.</p>
+              </div>
+            </div>
+            <div class="carousel-indicators">
+              <span class="indicator active" data-slide="0"></span>
+              <span class="indicator" data-slide="1"></span>
+              <span class="indicator" data-slide="2"></span>
+              <span class="indicator" data-slide="3"></span>
             </div>
           </div>
 
-          <div class="card" style="margin-top:18px">
-            <h3 class="gold-text">Números da comunidade</h3>
-            <div class="grid stats">
-              <div class="card center"><div class="stat" data-target="1200">0</div><div class="small-muted">Membros</div></div>
-              <div class="card center"><div class="stat" data-target="340">0</div><div class="small-muted">Aulas</div></div>
-              <div class="card center"><div class="stat" data-target="85">0</div><div class="small-muted">Instrutores</div></div>
+          <!-- Estatísticas com Animação -->
+          <div class="card stats-section" style="margin-top:24px">
+            <h3 class="gold-text">📊 Nossa Comunidade</h3>
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-number" data-target="1247">0</div>
+                <div class="stat-label">Membros Ativos</div>
+                <div class="stat-growth">+12% este mês</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon">📚</div>
+                <div class="stat-number" data-target="342">0</div>
+                <div class="stat-label">Aulas Disponíveis</div>
+                <div class="stat-growth">+8 novas</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon">🎓</div>
+                <div class="stat-number" data-target="87">0</div>
+                <div class="stat-label">Instrutores</div>
+                <div class="stat-growth">Especialistas</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-number" data-target="98">0</div>
+                <div class="stat-label">Satisfação</div>
+                <div class="stat-growth">Média 4.8/5</div>
+              </div>
             </div>
           </div>
 
-          <div class="card" style="margin-top:18px">
-            <h3 class="gold-text">Depoimentos</h3>
-            <div class="grid testimonials">
-              <div class="card">"Aprendi meu primeiro solo em semanas." — Ana</div>
-              <div class="card">"As aulas são muito práticas e diretas." — Lucas</div>
+          <!-- Depoimentos Melhorados -->
+          <div class="card testimonials-section" style="margin-top:24px">
+            <h3 class="gold-text">💬 O Que Dizem Nossos Alunos</h3>
+            <div class="testimonials-grid">
+              <div class="testimonial-card">
+                <div class="testimonial-header">
+                  <div class="testimonial-avatar">A</div>
+                  <div>
+                    <div class="testimonial-name">Ana Silva</div>
+                    <div class="testimonial-role">Guitarrista Iniciante</div>
+                  </div>
+                </div>
+                <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                <p class="testimonial-text">"Aprendi meu primeiro solo em apenas 3 semanas! As aulas são incríveis e os instrutores muito atenciosos."</p>
+              </div>
+              <div class="testimonial-card">
+                <div class="testimonial-header">
+                  <div class="testimonial-avatar">L</div>
+                  <div>
+                    <div class="testimonial-name">Lucas Santos</div>
+                    <div class="testimonial-role">Baterista Intermediário</div>
+                  </div>
+                </div>
+                <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                <p class="testimonial-text">"Plataforma muito prática e direta. Consegui evoluir muito rápido com os exercícios propostos."</p>
+              </div>
+              <div class="testimonial-card">
+                <div class="testimonial-header">
+                  <div class="testimonial-avatar">M</div>
+                  <div>
+                    <div class="testimonial-name">Marina Costa</div>
+                    <div class="testimonial-role">Pianista</div>
+                  </div>
+                </div>
+                <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                <p class="testimonial-text">"A comunidade é super acolhedora! Adoro compartilhar meu progresso e aprender com outros músicos."</p>
+              </div>
             </div>
           </div>
 
-          <div class="card" style="margin-top:18px">
-            <h3 class="gold-text">Newsletter</h3>
-            <p class="small-muted">Receba novidades e aulas exclusivas.</p>
-            <div style="display:flex;gap:8px;margin-top:8px">
-              <input class="input" id="newsletterEmail" placeholder="Seu email">
-              <button class="btn" id="subscribeBtn">Assinar</button>
+          <!-- Atividade Recente -->
+          <div class="card activity-section" style="margin-top:24px">
+            <h3 class="gold-text">⚡ Atividade Recente</h3>
+            <div class="activity-feed">
+              <div class="activity-item">
+                <div class="activity-icon">🎸</div>
+                <div class="activity-content">
+                  <strong>Pedro Alves</strong> completou <em>"Power Chords Avançados"</em>
+                  <span class="activity-time">há 2 horas</span>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon">🥁</div>
+                <div class="activity-content">
+                  <strong>Carla Dias</strong> iniciou o módulo <em>"Bateria para Rock"</em>
+                  <span class="activity-time">há 5 horas</span>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon">🎹</div>
+                <div class="activity-content">
+                  <strong>Rafael Lima</strong> publicou uma nova aula de <em>"Improvisação no Piano"</em>
+                  <span class="activity-time">há 1 dia</span>
+                </div>
+              </div>
             </div>
+          </div>
+
+          <!-- Newsletter Aprimorada -->
+          <div class="card newsletter-section" style="margin-top:24px">
+            <div class="newsletter-content">
+              <div class="newsletter-icon">📧</div>
+              <div class="newsletter-text">
+                <h3 class="gold-text">Fique por Dentro</h3>
+                <p class="small-muted">Receba novidades, dicas exclusivas e aulas especiais diretamente no seu email.</p>
+              </div>
+            </div>
+            <div class="newsletter-form">
+              <input class="input-newsletter" id="newsletterEmail" type="email" placeholder="seu.email@exemplo.com" aria-label="Email para newsletter">
+              <button class="btn-subscribe" id="subscribeBtn">
+                <span>Assinar Grátis</span>
+                <span class="btn-icon">→</span>
+              </button>
+            </div>
+            <div class="newsletter-note">✨ Junte-se a mais de 1.000 músicos que já assinam</div>
           </div>
         </section>
 
         <section id="lessonsSection" style="display:none">
-          <h2 class="gold-text">Aulas</h2>
-          <p class="small-muted">Escolha um instrumento para ver os módulos</p>
-
-          <div class="grid" id="instrumentsGrid">
-            <!-- instruments rendered by JS -->
+          <!-- Lessons Header -->
+          <div class="lessons-header">
+            <div class="lessons-header-content">
+              <h2 class="lessons-title">🎓 Catálogo de Aulas</h2>
+              <p class="lessons-subtitle">Explore nossa biblioteca completa de cursos e módulos de aprendizado musical</p>
+            </div>
+            <div class="lessons-filters">
+              <div class="filter-group">
+                <label class="filter-label">Nível:</label>
+                <select class="filter-select" id="levelFilter">
+                  <option value="all">Todos os níveis</option>
+                  <option value="beginner">Iniciante</option>
+                  <option value="intermediate">Intermediário</option>
+                  <option value="advanced">Avançado</option>
+                </select>
+              </div>
+              <div class="search-box">
+                <input type="text" class="search-input" id="lessonSearch" placeholder="Buscar aulas...">
+                <span class="search-icon">🔍</span>
+              </div>
+            </div>
           </div>
 
-          <div id="modulesArea"></div>
-          <div id="lessonsArea"></div>
+          <!-- Instruments Grid Enhanced -->
+          <div class="instruments-section">
+            <h3 class="section-title">
+              <span class="title-icon">🎸</span>
+              <span>Escolha seu Instrumento</span>
+            </h3>
+            <div class="instruments-grid-enhanced" id="instrumentsGrid">
+              <!-- instruments rendered by JS -->
+            </div>
+          </div>
+
+          <!-- Selected Instrument Info -->
+          <div id="selectedInstrumentInfo" class="selected-instrument-info" style="display:none">
+            <div class="instrument-info-header">
+              <div class="instrument-info-icon">🎸</div>
+              <div class="instrument-info-content">
+                <h3 class="instrument-info-title">Guitarra</h3>
+                <p class="instrument-info-desc">Explore os módulos disponíveis para este instrumento</p>
+              </div>
+              <button class="btn-clear-selection" id="clearInstrument">Voltar</button>
+            </div>
+          </div>
+
+          <!-- Modules Area Enhanced -->
+          <div id="modulesArea" class="modules-area-enhanced"></div>
+
+          <!-- Lessons Area Enhanced -->
+          <div id="lessonsArea" class="lessons-area-enhanced"></div>
+
+          <!-- Empty State -->
+          <div id="emptyState" class="empty-state">
+            <div class="empty-state-icon">🎵</div>
+            <h3>Selecione um Instrumento</h3>
+            <p>Escolha um instrumento acima para explorar as aulas disponíveis</p>
+          </div>
         </section>
 
       </main>

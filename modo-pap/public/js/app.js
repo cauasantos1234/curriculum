@@ -284,14 +284,29 @@
   }
 
   function setTheme(t){
-    if(!app) return; enableThemeTransition();
-    app.setAttribute('data-theme', t);
+    const target = app || document.body;
+    enableThemeTransition();
+    target.setAttribute('data-theme', t);
     try{ localStorage.setItem(STORE_THEME, t);}catch(e){}
     updateThemeButtons(t);
   }
 
-  const themeBtn = $('#themeToggle'); if(themeBtn) themeBtn.addEventListener('click', ()=> setTheme(app.getAttribute('data-theme')==='dark'?'light':'dark'));
-  const themeBtn2 = $('#themeToggle2'); if(themeBtn2) themeBtn2.addEventListener('click', ()=> setTheme(app.getAttribute('data-theme')==='dark'?'light':'dark'));
+  const themeBtn = $('#themeToggle'); 
+  if(themeBtn) {
+    themeBtn.addEventListener('click', ()=> {
+      const target = app || document.body;
+      const currentTheme = target.getAttribute('data-theme');
+      setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+    });
+  }
+  const themeBtn2 = $('#themeToggle2'); 
+  if(themeBtn2) {
+    themeBtn2.addEventListener('click', ()=> {
+      const target = app || document.body;
+      const currentTheme = target.getAttribute('data-theme');
+      setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+    });
+  }
 
   // Onboarding opener
   const openOnboard = $('#openOnboard'); if(openOnboard) openOnboard.addEventListener('click', ()=>{
@@ -313,9 +328,12 @@
   function init(){
     // apply theme if stored
     try{
+      const target = app || document.body;
       const saved = localStorage.getItem(STORE_THEME);
-      if(saved && app) { app.setAttribute('data-theme', saved); updateThemeButtons(saved); }
-      else {
+      if(saved) { 
+        target.setAttribute('data-theme', saved); 
+        updateThemeButtons(saved); 
+      } else {
         // fallback to system preference
         const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
         const sys = prefersLight ? 'light' : 'dark';
