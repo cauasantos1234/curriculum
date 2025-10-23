@@ -1167,12 +1167,95 @@ body[data-theme="light"] .hero-banner-enhanced{
              linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
   border:2px solid rgba(212,175,55,0.06);
   border-radius:14px;
-  padding:28px 24px;
+  padding:0;
   text-align:center;
   cursor:pointer;
-  transition:all .3s cubic-bezier(0.4,0,0.2,1);
+  transition:min-height .5s ease-in-out, 
+              transform .3s cubic-bezier(0.4,0,0.2,1),
+              box-shadow .3s cubic-bezier(0.4,0,0.2,1),
+              border-color .3s cubic-bezier(0.4,0,0.2,1);
   position:relative;
   overflow:hidden;
+  min-height:340px;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  will-change:min-height;
+}
+
+.instrument-card-enhanced.selected{
+  min-height:580px;
+}
+
+/* Guitar card with background image */
+.instrument-card-background{
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  height:100%;
+  z-index:0;
+  overflow:hidden;
+  border-radius:14px;
+  transition:height .5s ease-in-out;
+  will-change:height;
+}
+
+.instrument-card-enhanced.selected .instrument-card-background{
+  height:60%;
+  border-radius:14px 14px 0 0;
+}
+
+.instrument-card-background img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  transition:transform .5s ease;
+}
+
+.instrument-card-enhanced:hover .instrument-card-background img{
+  transform:scale(1.1);
+}
+
+.instrument-card-background::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    180deg,
+    rgba(8,8,8,0.2) 0%,
+    rgba(8,8,8,0.5) 60%,
+    rgba(8,8,8,0.85) 100%
+  );
+  z-index:1;
+  transition:background .5s ease-in-out;
+}
+
+.instrument-card-enhanced.selected .instrument-card-background::after{
+  background:linear-gradient(
+    180deg,
+    rgba(8,8,8,0.3) 0%,
+    rgba(8,8,8,0.6) 60%,
+    rgba(8,8,8,0.95) 100%
+  );
+}
+
+.instrument-card-overlay{
+  position:relative;
+  z-index:2;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  flex:1;
+  min-height:340px;
+  text-shadow:0 2px 8px rgba(0,0,0,0.8);
+  transition:min-height .5s ease-in-out;
+  will-change:min-height;
+}
+
+.instrument-card-enhanced.selected .instrument-card-overlay{
+  min-height:220px;
 }
 
 .instrument-card-enhanced::before{
@@ -1208,28 +1291,60 @@ body[data-theme="light"] .hero-banner-enhanced{
   transform:scaleX(1);
 }
 
+.instrument-card-image{
+  width:100%;
+  height:180px;
+  margin:-28px -24px 20px -24px;
+  overflow:hidden;
+  border-radius:14px 14px 0 0;
+}
+
+.instrument-card-image img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  transition:transform .3s ease;
+}
+
+.instrument-card-enhanced:hover .instrument-card-image img{
+  transform:scale(1.05);
+}
+
 .instrument-card-icon{
   font-size:72px;
   margin-bottom:16px;
   display:inline-block;
-  transition:transform .3s ease;
+  transition:font-size .5s ease-in-out, 
+              transform .3s cubic-bezier(0.4,0,0.2,1);
+  filter:drop-shadow(0 4px 12px rgba(0,0,0,0.8));
+  will-change:font-size, transform;
 }
 
 .instrument-card-enhanced:hover .instrument-card-icon{
   transform:scale(1.1) rotate(5deg);
 }
 
+.instrument-card-enhanced.selected .instrument-card-icon{
+  font-size:56px;
+  transform:scale(1);
+}
+
 .instrument-card-name{
-  font-size:20px;
-  font-weight:700;
-  color:var(--gold-2);
+  font-size:22px;
+  font-weight:800;
+  color:#ffffff;
   margin:0 0 8px 0;
+  text-shadow:0 3px 10px rgba(0,0,0,0.9), 0 1px 3px rgba(0,0,0,1);
+  padding:0 24px;
 }
 
 .instrument-card-desc{
-  font-size:14px;
-  color:var(--muted);
+  font-size:15px;
+  color:#f0f0f0;
   margin:0 0 16px 0;
+  text-shadow:0 2px 6px rgba(0,0,0,0.9);
+  font-weight:500;
+  padding:0 24px;
 }
 
 .instrument-card-stats{
@@ -1237,8 +1352,11 @@ body[data-theme="light"] .hero-banner-enhanced{
   justify-content:center;
   gap:16px;
   margin-bottom:16px;
-  padding-top:12px;
-  border-top:1px solid rgba(255,255,255,0.03);
+  padding:16px 24px 0;
+  border-top:1px solid rgba(255,255,255,0.15);
+  position:relative;
+  z-index:2;
+  background:transparent;
 }
 
 .instrument-stat{
@@ -1247,16 +1365,19 @@ body[data-theme="light"] .hero-banner-enhanced{
 
 .instrument-stat-value{
   display:block;
-  font-size:18px;
-  font-weight:700;
-  color:var(--gold-2);
+  font-size:20px;
+  font-weight:800;
+  color:#ffd76b;
+  text-shadow:0 2px 8px rgba(0,0,0,0.9);
 }
 
 .instrument-stat-label{
   display:block;
-  font-size:11px;
-  color:var(--muted);
+  font-size:12px;
+  color:#e0e0e0;
   margin-top:2px;
+  text-shadow:0 1px 4px rgba(0,0,0,0.8);
+  font-weight:500;
 }
 
 .instrument-card-modules{
@@ -1282,23 +1403,26 @@ body[data-theme="light"] .hero-banner-enhanced{
   transform:translateY(-2px);
 }
 
-/* Compact Modules inside Instrument Cards */
+/* Compact Modules inside Instrument Cards - Below Image */
 .instrument-card-modules-details{
-  margin-top:20px;
-  padding-top:20px;
-  border-top:1px solid rgba(212,175,55,0.1);
-  animation:expandDown .3s ease;
+  margin-top:0;
+  padding:24px;
+  border-top:2px solid rgba(212,175,55,0.2);
+  animation:expandDown .5s ease-in-out;
+  position:relative;
+  z-index:2;
+  background:linear-gradient(180deg, rgba(0,0,0,0.95), rgba(0,0,0,0.98));
 }
 
 @keyframes expandDown{
   from{
     opacity:0;
     max-height:0;
-    transform:translateY(-10px);
+    transform:translateY(-20px);
   }
   to{
     opacity:1;
-    max-height:500px;
+    max-height:600px;
     transform:translateY(0);
   }
 }
@@ -1312,23 +1436,24 @@ body[data-theme="light"] .hero-banner-enhanced{
 .compact-module-item{
   display:flex;
   align-items:center;
-  gap:12px;
-  padding:12px;
-  background:rgba(0,0,0,0.2);
-  border:1px solid rgba(212,175,55,0.1);
-  border-radius:10px;
-  transition:all .2s ease;
+  gap:14px;
+  padding:14px 16px;
+  background:rgba(0,0,0,0.4);
+  border:1px solid rgba(212,175,55,0.2);
+  border-radius:12px;
+  transition:all .3s cubic-bezier(0.4,0,0.2,1);
   text-align:left;
 }
 
 .compact-module-item:hover{
-  background:rgba(212,175,55,0.08);
-  border-color:rgba(212,175,55,0.25);
-  transform:translateX(4px);
+  background:rgba(212,175,55,0.15);
+  border-color:rgba(212,175,55,0.4);
+  transform:translateX(6px);
+  box-shadow:0 4px 16px rgba(212,175,55,0.2);
 }
 
 .compact-module-icon{
-  font-size:28px;
+  font-size:32px;
   flex-shrink:0;
 }
 
@@ -1337,34 +1462,35 @@ body[data-theme="light"] .hero-banner-enhanced{
 }
 
 .compact-module-name{
-  font-size:14px;
-  font-weight:600;
+  font-size:15px;
+  font-weight:700;
   color:var(--gold-2);
-  margin-bottom:2px;
+  margin-bottom:4px;
 }
 
 .compact-module-count{
-  font-size:12px;
+  font-size:13px;
   color:var(--muted);
 }
 
 .compact-module-btn{
-  padding:8px 14px;
-  border-radius:8px;
-  background:linear-gradient(135deg,rgba(212,175,55,0.2),rgba(255,215,107,0.15));
-  border:1px solid rgba(212,175,55,0.3);
-  color:var(--gold-2);
-  font-size:12px;
-  font-weight:600;
+  padding:10px 18px;
+  border-radius:10px;
+  background:linear-gradient(135deg,var(--gold-1),var(--gold-2));
+  border:none;
+  color:#0a0a0a;
+  font-size:13px;
+  font-weight:700;
   cursor:pointer;
-  transition:all .2s ease;
+  transition:all .3s cubic-bezier(0.4,0,0.2,1);
   flex-shrink:0;
+  box-shadow:0 4px 12px rgba(212,175,55,0.25);
 }
 
 .compact-module-btn:hover{
-  background:linear-gradient(135deg,rgba(212,175,55,0.3),rgba(255,215,107,0.25));
-  border-color:rgba(212,175,55,0.5);
-  transform:translateX(2px);
+  background:linear-gradient(135deg,var(--gold-2),#ffeb9c);
+  transform:translateX(4px) scale(1.05);
+  box-shadow:0 6px 20px rgba(212,175,55,0.45);
 }
 
 /* Selected Instrument Info */

@@ -85,9 +85,9 @@
   };
 
   const modulesInfo = {
-    beginner:{title:'Módulo Iniciante',desc:'Fundamentos e técnicas básicas',icon:'🌱',color:'#22c55e'},
-    intermediate:{title:'Módulo Intermediário',desc:'Desenvolvimento de habilidades',icon:'🎯',color:'#eab308'},
-    advanced:{title:'Módulo Avançado',desc:'Técnicas profissionais',icon:'🏆',color:'#ef4444'}
+    beginner:{title:'Módulo Bronze',desc:'Fundamentos e técnicas básicas',icon:'🥉',color:'#cd7f32'},
+    intermediate:{title:'Módulo Prata',desc:'Desenvolvimento de habilidades',icon:'🥈',color:'#c0c0c0'},
+    advanced:{title:'Módulo Ouro',desc:'Técnicas profissionais',icon:'🥇',color:'#ffd700'}
   };
 
   const instrumentsGrid = document.getElementById('instrumentsGrid');
@@ -108,28 +108,43 @@
     instrumentsGrid.innerHTML = '';
     instrumentsGrid.className = 'instruments-grid-enhanced';
     
+    // Define background images for each instrument
+    const instrumentImages = {
+      guitar: 'https://images.unsplash.com/photo-1516924962500-2b4b3b99ea02?w=400&h=300&fit=crop',
+      drums: 'https://images.unsplash.com/photo-1519892300165-cb5542fb47c7?w=400&h=300&fit=crop',
+      keyboard: 'https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=400&h=300&fit=crop',
+      viola: 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=400&h=300&fit=crop',
+      bass: 'images/contrabaixo.jpg'
+    };
+    
     instruments.forEach(inst=>{
       const el = document.createElement('div');
       el.className = 'instrument-card-enhanced';
       el.dataset.instrumentId = inst.id;
+      
+      // Get background image for current instrument
+      const bgImage = instrumentImages[inst.id];
+      
       el.innerHTML = `
-        <div class="instrument-card-icon">${inst.icon}</div>
-        <h3 class="instrument-card-name">${inst.name}</h3>
-        <p class="instrument-card-desc">${inst.desc}</p>
-        <div class="instrument-card-stats">
-          <div class="instrument-stat">
-            <span class="instrument-stat-value">${inst.lessons}</span>
-            <span class="instrument-stat-label">Aulas</span>
-          </div>
-          <div class="instrument-stat">
-            <span class="instrument-stat-value">${inst.modules}</span>
-            <span class="instrument-stat-label">Módulos</span>
-          </div>
+        <div class="instrument-card-background">
+          <img src="${bgImage}" 
+               alt="Pessoa tocando ${inst.name.toLowerCase()}"
+               onerror="this.src='https://via.placeholder.com/400x300/1a1a2e/ffd76b?text=${encodeURIComponent(inst.name)}'">
         </div>
-        <div class="instrument-card-modules">
-          <span class="module-badge">Iniciante</span>
-          <span class="module-badge">Intermediário</span>
-          <span class="module-badge">Avançado</span>
+        <div class="instrument-card-overlay">
+          <div class="instrument-card-icon">${inst.icon}</div>
+          <h3 class="instrument-card-name">${inst.name}</h3>
+          <p class="instrument-card-desc">${inst.desc}</p>
+          <div class="instrument-card-stats">
+            <div class="instrument-stat">
+              <span class="instrument-stat-value">${inst.lessons}</span>
+              <span class="instrument-stat-label">Aulas</span>
+            </div>
+            <div class="instrument-stat">
+              <span class="instrument-stat-value">${inst.modules}</span>
+              <span class="instrument-stat-label">Módulos</span>
+            </div>
+          </div>
         </div>
         <div class="instrument-card-modules-details" style="display:none">
           <div class="modules-list-compact">
@@ -151,7 +166,7 @@
     Object.keys(modulesInfo).forEach(level=>{
       const moduleData = modulesInfo[level];
       const lessonsList = lessons[inst.id][level] || [];
-      const levelLabel = level === 'beginner' ? 'Iniciante' : level === 'intermediate' ? 'Intermediário' : 'Avançado';
+      const levelLabel = level === 'beginner' ? 'Bronze' : level === 'intermediate' ? 'Prata' : 'Ouro';
       
       html += `
         <div class="compact-module-item" data-instrument="${inst.id}" data-level="${level}">
@@ -230,7 +245,7 @@
       card.className = 'module-card-enhanced';
       card.innerHTML = `
         <div class="module-card-header">
-          <div class="module-level-badge ${level}">${level === 'beginner' ? 'Iniciante' : level === 'intermediate' ? 'Intermediário' : 'Avançado'}</div>
+          <div class="module-level-badge ${level}">${level === 'beginner' ? 'Bronze' : level === 'intermediate' ? 'Prata' : 'Ouro'}</div>
         </div>
         <div style="font-size:40px;margin-bottom:12px">${moduleData.icon}</div>
         <h4 class="module-card-title">${moduleData.title}</h4>
@@ -462,7 +477,7 @@
               <div class="lesson-card-meta">
                 <div class="lesson-meta-item">⏱️ ${lesson.duration}</div>
                 <div class="lesson-meta-item">📊 ${lesson.difficulty}</div>
-                <div class="lesson-meta-item module-level-badge ${lesson.level}" style="padding:4px 8px">${lesson.level === 'beginner' ? 'Iniciante' : lesson.level === 'intermediate' ? 'Intermediário' : 'Avançado'}</div>
+                <div class="lesson-meta-item module-level-badge ${lesson.level}" style="padding:4px 8px">${lesson.level === 'beginner' ? 'Bronze' : lesson.level === 'intermediate' ? 'Prata' : 'Ouro'}</div>
               </div>
               <h4 class="lesson-card-title">${lesson.title}</h4>
               <div class="lesson-card-author">
