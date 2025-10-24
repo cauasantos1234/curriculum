@@ -3,7 +3,7 @@
   const instruments = [
     {id:'guitar',name:'Guitarra',symbol:'guitar',desc:'Elétrica e acústica',icon:'🎸',lessons:24,modules:3},
     {id:'drums',name:'Bateria',symbol:'drums',desc:'Ritmo e grooves',icon:'🥁',lessons:18,modules:3},
-    {id:'keyboard',name:'Teclado',symbol:'keyboard',desc:'Piano e sintetizadores',icon:'🎹',lessons:21,modules:3},
+    {id:'keyboard',name:'Piano',symbol:'keyboard',desc:'Clássico e contemporâneo',icon:'🎹',lessons:21,modules:3},
     {id:'viola',name:'Violão',symbol:'viola',desc:'Acústico e dedilhado',icon:'🪕',lessons:27,modules:3},
     {id:'bass',name:'Baixo',symbol:'bass',desc:'Groove e harmonia',icon:'🎸',lessons:15,modules:3},
   ];
@@ -110,11 +110,11 @@
     
     // Define background images for each instrument
     const instrumentImages = {
-      guitar: 'https://images.unsplash.com/photo-1516924962500-2b4b3b99ea02?w=400&h=300&fit=crop',
-      drums: 'https://images.unsplash.com/photo-1519892300165-cb5542fb47c7?w=400&h=300&fit=crop',
-      keyboard: 'https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=400&h=300&fit=crop',
-      viola: 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=400&h=300&fit=crop',
-      bass: 'images/contrabaixo.jpg'
+      guitar: 'https://images.unsplash.com/photo-1564186763535-ebb21ef5277f?w=800&h=600&fit=crop&q=85',
+      drums: 'https://images.unsplash.com/photo-1571327073757-71d13c24de30?w=800&h=600&fit=crop&q=85',
+      keyboard: 'https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=800&h=600&fit=crop&q=85',
+      viola: 'https://images.unsplash.com/photo-1525201548942-d8732f6617a0?w=800&h=600&fit=crop&q=90',
+      bass: 'https://images.unsplash.com/photo-1556449895-a33c9dba33dd?w=800&h=600&fit=crop&q=90'
     };
     
     instruments.forEach(inst=>{
@@ -219,12 +219,9 @@
         
         if(inst){
           currentLevel = level;
-          renderLessons(inst, level);
           
-          // Scroll to lessons
-          if(lessonsArea){
-            lessonsArea.scrollIntoView({behavior:'smooth', block:'start'});
-          }
+          // Redireciona para a página de aulas (listagem)
+          window.location.href = `lessons.html?instrument=${instrumentId}&level=${level}`;
         }
       });
     });
@@ -279,57 +276,71 @@
     const lessonsList = lessons[inst.id][level] || [];
     
     lessonsArea.innerHTML = `
-      <h3 class="lessons-area-title">
-        <span>${moduleData.icon}</span>
-        <span>${inst.name} - ${moduleData.title}</span>
-      </h3>
+      <div class="lessons-list-container">
+        <div class="lessons-list-header">
+          <button class="btn-back-modules" id="btnBackToModules">
+            <span>←</span>
+          </button>
+          <div class="lessons-list-header-content">
+            <h3 class="lessons-list-title">
+              <span>${moduleData.icon}</span>
+              <span>${inst.name} - ${moduleData.title}</span>
+            </h3>
+            <p class="lessons-list-count">${lessonsList.length} aulas</p>
+          </div>
+        </div>
+      </div>
     `;
     
+    // Add event listener to back button
+    const btnBack = document.getElementById('btnBackToModules');
+    if(btnBack){
+      btnBack.addEventListener('click', () => {
+        if(lessonsArea) lessonsArea.innerHTML = '';
+        if(currentInstrument){
+          selectInstrument(currentInstrument);
+          // Scroll back to instrument
+          const instrumentCard = document.querySelector(`.instrument-card-enhanced[data-instrument-id="${currentInstrument.id}"]`);
+          if(instrumentCard){
+            instrumentCard.scrollIntoView({behavior:'smooth', block:'center'});
+          }
+        }
+      });
+    }
+    
     if(lessonsList.length === 0){
-      lessonsArea.innerHTML += '<div class="empty-state"><div class="empty-state-icon">📭</div><h3>Nenhuma aula disponível</h3><p>Este módulo ainda não possui aulas cadastradas.</p></div>';
+      const container = lessonsArea.querySelector('.lessons-list-container');
+      container.innerHTML += '<div class="empty-state"><div class="empty-state-icon">📭</div><h3>Nenhuma aula disponível</h3><p>Este módulo ainda não possui aulas cadastradas.</p></div>';
       return;
     }
     
-    const grid = document.createElement('div');
-    grid.className = 'lessons-grid-enhanced';
+    const listContainer = lessonsArea.querySelector('.lessons-list-container');
+    const list = document.createElement('div');
+    list.className = 'lessons-list';
     
-    lessonsList.forEach(lesson=>{
-      const card = document.createElement('div');
-      card.className = 'lesson-card-enhanced';
-      card.innerHTML = `
-        <div class="lesson-card-thumbnail">
-          <div class="lesson-play-btn">▶</div>
-        </div>
-        <div class="lesson-card-body">
-          <div class="lesson-card-meta">
-            <div class="lesson-meta-item">⏱️ ${lesson.duration}</div>
-            <div class="lesson-meta-item">📊 ${lesson.difficulty}</div>
-          </div>
-          <h4 class="lesson-card-title">${lesson.title}</h4>
-          <div class="lesson-card-author">
-            <div class="lesson-author-avatar">${lesson.author.charAt(0)}</div>
-            <div class="lesson-author-name">Por ${lesson.author}</div>
-          </div>
-          <div class="lesson-card-progress">
-            <div class="lesson-progress-label">
-              <span>Progresso</span>
-              <span>${lesson.progress}%</span>
-            </div>
-            <div class="lesson-progress-bar">
-              <div class="lesson-progress-fill" style="width:${lesson.progress}%"></div>
-            </div>
+    lessonsList.forEach((lesson, index) => {
+      const item = document.createElement('div');
+      item.className = 'lesson-list-item';
+      
+      item.innerHTML = `
+        <div class="lesson-list-bullet"></div>
+        <div class="lesson-list-content">
+          <div class="lesson-list-number">${index + 1} - </div>
+          <div class="lesson-list-info">
+            <h4 class="lesson-list-title">${lesson.title}</h4>
           </div>
         </div>
       `;
       
-      card.addEventListener('click', ()=>{
-        openLessonModal(lesson, inst);
+      item.addEventListener('click', () => {
+        // Redireciona para a página de vídeos filtrada por esta aula específica
+        window.location.href = `videos.html?instrument=${inst.id}&level=${level}&lesson=${lesson.id}`;
       });
       
-      grid.appendChild(card);
+      list.appendChild(item);
     });
     
-    lessonsArea.appendChild(grid);
+    listContainer.appendChild(list);
   }
 
   function openLessonModal(lesson, inst){

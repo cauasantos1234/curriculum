@@ -1185,6 +1185,11 @@ body[data-theme="light"] .hero-banner-enhanced{
 
 .instrument-card-enhanced.selected{
   min-height:580px;
+  transform:scale(1.05);
+  z-index:10;
+  position:relative;
+  animation:guitarExpand 0.4s ease-out;
+  box-shadow:0 20px 60px rgba(212,175,55,0.3);
 }
 
 /* Guitar card with background image */
@@ -1202,8 +1207,9 @@ body[data-theme="light"] .hero-banner-enhanced{
 }
 
 .instrument-card-enhanced.selected .instrument-card-background{
-  height:60%;
+  height:65%;
   border-radius:14px 14px 0 0;
+  transform:scale(1.05);
 }
 
 .instrument-card-background img{
@@ -1234,9 +1240,10 @@ body[data-theme="light"] .hero-banner-enhanced{
 .instrument-card-enhanced.selected .instrument-card-background::after{
   background:linear-gradient(
     180deg,
-    rgba(8,8,8,0.3) 0%,
-    rgba(8,8,8,0.6) 60%,
-    rgba(8,8,8,0.95) 100%
+    transparent 0%,
+    rgba(8,8,8,0.3) 40%,
+    rgba(8,8,8,0.7) 80%,
+    rgba(8,8,8,0.9) 100%
   );
 }
 
@@ -1252,6 +1259,7 @@ body[data-theme="light"] .hero-banner-enhanced{
   text-shadow:0 2px 8px rgba(0,0,0,0.8);
   transition:min-height .5s ease-in-out;
   will-change:min-height;
+  padding:40px 24px;
 }
 
 .instrument-card-enhanced.selected .instrument-card-overlay{
@@ -1311,40 +1319,36 @@ body[data-theme="light"] .hero-banner-enhanced{
 }
 
 .instrument-card-icon{
-  font-size:72px;
-  margin-bottom:16px;
-  display:inline-block;
-  transition:font-size .5s ease-in-out, 
-              transform .3s cubic-bezier(0.4,0,0.2,1);
-  filter:drop-shadow(0 4px 12px rgba(0,0,0,0.8));
-  will-change:font-size, transform;
+  display:none;
 }
 
-.instrument-card-enhanced:hover .instrument-card-icon{
-  transform:scale(1.1) rotate(5deg);
-}
+/* Icon hover effects removed since icons are hidden */
 
-.instrument-card-enhanced.selected .instrument-card-icon{
-  font-size:56px;
-  transform:scale(1);
-}
+/* Icon selected effects removed since icons are hidden */
 
 .instrument-card-name{
-  font-size:22px;
-  font-weight:800;
+  font-size:32px;
+  font-weight:900;
+  font-family:'Impact', 'Arial Black', 'Franklin Gothic Bold', 'Helvetica Neue', sans-serif;
   color:#ffffff;
-  margin:0 0 8px 0;
-  text-shadow:0 3px 10px rgba(0,0,0,0.9), 0 1px 3px rgba(0,0,0,1);
+  margin:0 0 12px 0;
+  text-shadow:0 4px 16px rgba(0,0,0,0.9), 0 2px 6px rgba(0,0,0,1);
   padding:0 24px;
+  text-align:center;
+  letter-spacing:1px;
+  line-height:1.2;
+  text-transform:uppercase;
 }
 
 .instrument-card-desc{
-  font-size:15px;
+  font-size:16px;
   color:#f0f0f0;
-  margin:0 0 16px 0;
+  margin:0 0 20px 0;
   text-shadow:0 2px 6px rgba(0,0,0,0.9);
   font-weight:500;
   padding:0 24px;
+  text-align:center;
+  line-height:1.4;
 }
 
 .instrument-card-stats{
@@ -1411,7 +1415,9 @@ body[data-theme="light"] .hero-banner-enhanced{
   animation:expandDown .5s ease-in-out;
   position:relative;
   z-index:2;
-  background:linear-gradient(180deg, rgba(0,0,0,0.95), rgba(0,0,0,0.98));
+  background:transparent;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
 }
 
 @keyframes expandDown{
@@ -1427,6 +1433,15 @@ body[data-theme="light"] .hero-banner-enhanced{
   }
 }
 
+@keyframes guitarExpand{
+  from{
+    transform:scale(1);
+  }
+  to{
+    transform:scale(1.05);
+  }
+}
+
 .modules-list-compact{
   display:flex;
   flex-direction:column;
@@ -1438,23 +1453,26 @@ body[data-theme="light"] .hero-banner-enhanced{
   align-items:center;
   gap:14px;
   padding:14px 16px;
-  background:rgba(0,0,0,0.4);
-  border:1px solid rgba(212,175,55,0.2);
+  background:rgba(255,255,255,0.1);
+  border:1px solid rgba(212,175,55,0.3);
   border-radius:12px;
   transition:all .3s cubic-bezier(0.4,0,0.2,1);
   text-align:left;
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
 }
 
 .compact-module-item:hover{
-  background:rgba(212,175,55,0.15);
-  border-color:rgba(212,175,55,0.4);
+  background:rgba(212,175,55,0.25);
+  border-color:rgba(212,175,55,0.6);
   transform:translateX(6px);
-  box-shadow:0 4px 16px rgba(212,175,55,0.2);
+  box-shadow:0 4px 16px rgba(212,175,55,0.3);
 }
 
 .compact-module-icon{
   font-size:32px;
   flex-shrink:0;
+  filter:drop-shadow(0 4px 8px rgba(0,0,0,0.8));
 }
 
 .compact-module-info{
@@ -1464,33 +1482,37 @@ body[data-theme="light"] .hero-banner-enhanced{
 .compact-module-name{
   font-size:15px;
   font-weight:700;
-  color:var(--gold-2);
+  color:#ffffff;
   margin-bottom:4px;
+  text-shadow:0 2px 4px rgba(0,0,0,0.8);
 }
 
 .compact-module-count{
   font-size:13px;
-  color:var(--muted);
+  color:rgba(255,255,255,0.8);
+  text-shadow:0 1px 3px rgba(0,0,0,0.6);
 }
 
 .compact-module-btn{
   padding:10px 18px;
   border-radius:10px;
   background:linear-gradient(135deg,var(--gold-1),var(--gold-2));
-  border:none;
+  border:2px solid rgba(255,255,255,0.3);
   color:#0a0a0a;
   font-size:13px;
   font-weight:700;
   cursor:pointer;
   transition:all .3s cubic-bezier(0.4,0,0.2,1);
   flex-shrink:0;
-  box-shadow:0 4px 12px rgba(212,175,55,0.25);
+  box-shadow:0 4px 12px rgba(0,0,0,0.6);
+  text-shadow:none;
 }
 
 .compact-module-btn:hover{
   background:linear-gradient(135deg,var(--gold-2),#ffeb9c);
   transform:translateX(4px) scale(1.05);
-  box-shadow:0 6px 20px rgba(212,175,55,0.45);
+  box-shadow:0 6px 20px rgba(0,0,0,0.8);
+  border-color:rgba(255,255,255,0.5);
 }
 
 /* Selected Instrument Info */
@@ -1925,8 +1947,9 @@ body[data-theme="light"] .hero-banner-enhanced{
     padding:20px 16px;
   }
   
-  .instrument-card-icon{
-    font-size:56px;
+  .instrument-card-name{
+    font-size:26px;
+    letter-spacing:0.8px;
   }
 }
 
@@ -1958,23 +1981,27 @@ body[data-theme="light"] .module-badge{
 }
 
 body[data-theme="light"] .compact-module-item{
-  background:rgba(255,255,255,0.6);
-  border-color:rgba(180,148,31,0.15);
+  background:rgba(255,255,255,0.8);
+  border-color:rgba(180,148,31,0.4);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
 }
 
 body[data-theme="light"] .compact-module-item:hover{
-  background:rgba(212,175,55,0.12);
-  border-color:rgba(180,148,31,0.3);
+  background:rgba(212,175,55,0.2);
+  border-color:rgba(180,148,31,0.6);
 }
 
 body[data-theme="light"] .compact-module-btn{
-  background:linear-gradient(135deg,rgba(212,175,55,0.25),rgba(255,215,107,0.2));
-  border-color:rgba(180,148,31,0.35);
+  background:linear-gradient(135deg,var(--gold-1),var(--gold-2));
+  border:2px solid rgba(0,0,0,0.2);
+  box-shadow:0 4px 12px rgba(0,0,0,0.3);
 }
 
 body[data-theme="light"] .compact-module-btn:hover{
-  background:linear-gradient(135deg,rgba(212,175,55,0.35),rgba(255,215,107,0.3));
-  border-color:rgba(180,148,31,0.5);
+  background:linear-gradient(135deg,var(--gold-2),#ffeb9c);
+  border-color:rgba(0,0,0,0.3);
+  box-shadow:0 6px 20px rgba(0,0,0,0.4);
 }
 
 body[data-theme="light"] .instrument-card-enhanced{
@@ -2044,3 +2071,711 @@ body[data-theme="light"] .hero-title{
   background-clip:text;
   color:transparent;
 }
+
+/* ===== LESSONS LIST VIEW (estilo da imagem) ===== */
+
+.lessons-list-container{
+  background:var(--card-bg);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:0;
+  overflow:hidden;
+  animation:fadeIn .5s ease;
+}
+
+.lessons-list-header{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  padding:20px 24px;
+  background:rgba(0,0,0,0.3);
+  border-bottom:1px solid var(--border);
+}
+
+.btn-back-modules{
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,0.03);
+  color:var(--text);
+  font-size:24px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  transition:all .3s ease;
+  flex-shrink:0;
+}
+
+.btn-back-modules:hover{
+  background:var(--card-hover);
+  border-color:rgba(212,175,55,0.3);
+  transform:translateX(-4px);
+}
+
+.lessons-list-header-content{
+  flex:1;
+}
+
+.lessons-list-title{
+  font-size:22px;
+  margin:0 0 4px 0;
+  color:var(--gold-2);
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:700;
+}
+
+.lessons-list-count{
+  margin:0;
+  font-size:13px;
+  color:var(--muted);
+}
+
+.lessons-list{
+  padding:8px 0;
+}
+
+.lesson-list-item{
+  display:flex;
+  align-items:flex-start;
+  gap:16px;
+  padding:16px 24px;
+  cursor:pointer;
+  transition:all .2s ease;
+  position:relative;
+  border-left:3px solid transparent;
+}
+
+.lesson-list-item:hover{
+  background:rgba(212,175,55,0.05);
+  border-left-color:var(--gold-1);
+}
+
+/* Linha vertical conectando as bolinhas */
+.lesson-list-item:not(:last-child)::before{
+  content:'';
+  position:absolute;
+  left:38px;
+  top:40px;
+  width:2px;
+  height:calc(100% - 16px);
+  background:rgba(212,175,55,0.2);
+}
+
+.lesson-list-bullet{
+  width:20px;
+  height:20px;
+  border-radius:50%;
+  background:linear-gradient(135deg,var(--gold-1),var(--gold-2));
+  flex-shrink:0;
+  margin-top:4px;
+  box-shadow:0 2px 8px rgba(212,175,55,0.4);
+  position:relative;
+  z-index:1;
+}
+
+.lesson-list-content{
+  flex:1;
+  display:flex;
+  gap:8px;
+  align-items:baseline;
+}
+
+.lesson-list-number{
+  font-size:15px;
+  font-weight:600;
+  color:var(--muted);
+  flex-shrink:0;
+}
+
+.lesson-list-info{
+  flex:1;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.lesson-list-title{
+  font-size:16px;
+  font-weight:600;
+  color:var(--text);
+  margin:0;
+  line-height:1.4;
+}
+
+/* Coming Soon Badge */
+.coming-soon-badge{
+  display:inline-flex;
+  align-items:center;
+  padding:4px 10px;
+  background:rgba(255,165,0,0.15);
+  border:1px solid rgba(255,165,0,0.3);
+  border-radius:6px;
+  font-size:11px;
+  font-weight:700;
+  color:#ffa500;
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+}
+
+/* Coming Soon Item Style */
+.lesson-list-item.coming-soon{
+  opacity:0.5;
+  cursor:not-allowed;
+}
+
+.lesson-list-item.coming-soon:hover{
+  background:transparent;
+  transform:none;
+}
+
+.lesson-list-item.coming-soon .lesson-list-title{
+  color:var(--muted);
+}
+
+/* Light mode adjustments */
+body[data-theme="light"] .lessons-list-container{
+  background:var(--bg-secondary);
+  box-shadow:0 2px 12px rgba(0,0,0,0.04);
+}
+
+body[data-theme="light"] .lessons-list-header{
+  background:rgba(212,175,55,0.08);
+  border-bottom-color:rgba(180,148,31,0.15);
+}
+
+body[data-theme="light"] .btn-back-modules{
+  background:rgba(0,0,0,0.03);
+}
+
+body[data-theme="light"] .btn-back-modules:hover{
+  background:rgba(212,175,55,0.15);
+}
+
+body[data-theme="light"] .lesson-list-item:hover{
+  background:rgba(212,175,55,0.08);
+}
+
+body[data-theme="light"] .lesson-list-item:not(:last-child)::before{
+  background:rgba(180,148,31,0.25);
+}
+
+/* Responsive adjustments */
+@media (max-width:640px){
+  .lessons-list-header{
+    padding:16px 20px;
+  }
+  
+  .lessons-list-title{
+    font-size:18px;
+  }
+  
+  .lesson-list-item{
+    padding:14px 20px;
+  }
+  
+  .lesson-list-title{
+    font-size:15px;
+  }
+}
+
+/* ===== LESSONS PAGE SPECIFIC STYLES ===== */
+
+.lessons-page-container{
+  margin-top:24px;
+  max-width:1000px;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+/* ===== VIDEOS PAGE STYLES ===== */
+
+.videos-page-container{
+  margin-top:24px;
+  max-width:1400px;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+/* Breadcrumb */
+.breadcrumb-container{
+  margin-bottom:24px;
+}
+
+.breadcrumb{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:14px 20px;
+  background:var(--card-bg);
+  border:1px solid var(--border);
+  border-radius:12px;
+  flex-wrap:wrap;
+}
+
+.breadcrumb-item{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:15px;
+  color:var(--text-secondary);
+  font-weight:500;
+}
+
+.breadcrumb-item.active{
+  color:var(--gold-2);
+  font-weight:600;
+}
+
+.breadcrumb-icon{
+  font-size:18px;
+}
+
+.breadcrumb-separator{
+  color:var(--muted);
+  font-size:16px;
+  opacity:0.5;
+}
+
+/* Filter Tabs */
+.filter-tabs-container{
+  margin-bottom:28px;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+}
+
+.filter-tabs{
+  display:flex;
+  gap:12px;
+  padding:4px;
+  background:var(--glass);
+  border:1px solid var(--border);
+  border-radius:14px;
+  min-width:max-content;
+}
+
+.filter-tab{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:12px 18px;
+  border-radius:10px;
+  border:none;
+  background:transparent;
+  color:var(--text-secondary);
+  cursor:pointer;
+  font-size:14px;
+  font-weight:600;
+  transition:all 0.3s ease;
+  white-space:nowrap;
+}
+
+.filter-tab:hover{
+  background:var(--glass);
+  color:var(--text);
+}
+
+.filter-tab.active{
+  background:var(--accent);
+  color:#091014;
+  box-shadow:0 4px 12px rgba(212,175,55,0.3);
+}
+
+.filter-tab-icon{
+  font-size:16px;
+}
+
+.filter-tab-count{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:24px;
+  height:24px;
+  padding:0 8px;
+  background:rgba(0,0,0,0.15);
+  border-radius:12px;
+  font-size:12px;
+  font-weight:700;
+}
+
+.filter-tab.active .filter-tab-count{
+  background:rgba(0,0,0,0.25);
+  color:#091014;
+}
+
+/* Videos Grid */
+.videos-grid-container{
+  position:relative;
+}
+
+.videos-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(320px, 1fr));
+  gap:24px;
+}
+
+/* Lesson Group Header */
+.lesson-group-header{
+  grid-column:1 / -1;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:16px 20px;
+  background:var(--glass);
+  border:1px solid var(--border);
+  border-radius:12px;
+  margin-top:12px;
+}
+
+.lesson-group-header:first-child{
+  margin-top:0;
+}
+
+.lesson-group-title{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:0;
+  font-size:18px;
+  font-weight:700;
+  color:var(--gold-2);
+}
+
+.lesson-group-icon{
+  font-size:20px;
+}
+
+.lesson-group-count{
+  font-size:14px;
+  color:var(--muted);
+  font-weight:600;
+}
+
+/* Video Card */
+.video-card{
+  background:var(--card-bg);
+  border:1px solid var(--border);
+  border-radius:14px;
+  overflow:hidden;
+  cursor:pointer;
+  transition:all 0.3s ease;
+  display:flex;
+  flex-direction:column;
+}
+
+.video-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 12px 32px rgba(212,175,55,0.2);
+  border-color:rgba(212,175,55,0.3);
+}
+
+.video-card-thumbnail{
+  position:relative;
+  width:100%;
+  padding-top:56.25%; /* 16:9 aspect ratio */
+  background:linear-gradient(135deg, rgba(212,175,55,0.15), rgba(0,0,0,0.3));
+  overflow:hidden;
+}
+
+.video-thumbnail-icon{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%);
+  font-size:64px;
+  opacity:0.3;
+}
+
+.video-play-overlay{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.4);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  opacity:0;
+  transition:opacity 0.3s ease;
+}
+
+.video-card:hover .video-play-overlay{
+  opacity:1;
+}
+
+.video-play-btn{
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  background:var(--accent);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:24px;
+  color:#091014;
+  box-shadow:0 4px 16px rgba(212,175,55,0.4);
+  transition:transform 0.3s ease;
+}
+
+.video-card:hover .video-play-btn{
+  transform:scale(1.1);
+}
+
+.video-duration{
+  position:absolute;
+  bottom:12px;
+  right:12px;
+  padding:6px 10px;
+  background:rgba(0,0,0,0.85);
+  color:#fff;
+  border-radius:6px;
+  font-size:12px;
+  font-weight:700;
+}
+
+.video-card-body{
+  padding:16px;
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.video-card-title{
+  margin:0;
+  font-size:16px;
+  font-weight:700;
+  color:var(--text);
+  line-height:1.4;
+}
+
+.video-card-meta{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-top:auto;
+}
+
+.video-author{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.video-author-avatar{
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  background:var(--accent);
+  color:#091014;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12px;
+  font-weight:700;
+}
+
+.video-author-name{
+  font-size:13px;
+  color:var(--muted);
+  font-weight:500;
+}
+
+.video-lesson-badge{
+  padding:4px 10px;
+  background:var(--glass);
+  border:1px solid var(--border);
+  border-radius:8px;
+  font-size:11px;
+  color:var(--text-secondary);
+  font-weight:600;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:150px;
+}
+
+/* Video Modal */
+.modal-video{
+  max-width:900px;
+  width:90%;
+}
+
+.modal-close-btn{
+  position:absolute;
+  top:16px;
+  right:16px;
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  background:rgba(0,0,0,0.5);
+  border:none;
+  color:#fff;
+  font-size:20px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:all 0.3s ease;
+  z-index:10;
+}
+
+.modal-close-btn:hover{
+  background:rgba(212,175,55,0.8);
+  transform:rotate(90deg);
+}
+
+.video-modal-content{
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+}
+
+.video-modal-header{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px;
+}
+
+.video-modal-title{
+  margin:0 0 8px 0;
+  font-size:24px;
+  font-weight:700;
+  color:var(--gold-2);
+}
+
+.video-modal-lesson{
+  margin:0;
+  font-size:14px;
+  color:var(--muted);
+}
+
+.video-modal-player{
+  width:100%;
+  padding-top:56.25%; /* 16:9 aspect ratio */
+  position:relative;
+  border-radius:12px;
+  overflow:hidden;
+}
+
+.video-player-placeholder{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:linear-gradient(135deg, rgba(212,175,55,0.15), rgba(0,0,0,0.4));
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+}
+
+.video-player-icon{
+  font-size:80px;
+}
+
+.video-player-text{
+  margin:0;
+  color:var(--muted);
+  font-size:14px;
+}
+
+.video-modal-info{
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+}
+
+.video-modal-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:16px;
+  padding:16px;
+  background:var(--glass);
+  border:1px solid var(--border);
+  border-radius:12px;
+}
+
+.video-meta-item{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:14px;
+  color:var(--text-secondary);
+}
+
+.video-meta-icon{
+  font-size:16px;
+}
+
+.video-modal-actions{
+  display:flex;
+  gap:12px;
+  justify-content:center;
+}
+
+.btn-success{
+  background:linear-gradient(135deg,#22c55e,#16a34a) !important;
+}
+
+.btn-success:hover{
+  box-shadow:0 8px 30px rgba(34,197,94,0.4);
+}
+
+/* Light mode adjustments */
+body[data-theme="light"] .breadcrumb{
+  background:var(--bg-secondary);
+  box-shadow:0 2px 8px rgba(0,0,0,0.04);
+}
+
+body[data-theme="light"] .filter-tabs{
+  background:rgba(0,0,0,0.02);
+}
+
+body[data-theme="light"] .video-card{
+  box-shadow:0 2px 12px rgba(0,0,0,0.06);
+}
+
+body[data-theme="light"] .video-card:hover{
+  box-shadow:0 8px 24px rgba(212,175,55,0.25);
+}
+
+body[data-theme="light"] .lesson-group-header{
+  background:rgba(212,175,55,0.08);
+}
+
+/* Responsive */
+@media (max-width:768px){
+  .videos-grid{
+    grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
+    gap:16px;
+  }
+  
+  .filter-tabs-container{
+    margin-left:-20px;
+    margin-right:-20px;
+    padding:0 20px;
+  }
+  
+  .breadcrumb{
+    padding:12px 16px;
+    font-size:14px;
+  }
+  
+  .video-modal-title{
+    font-size:20px;
+  }
+  
+  .modal-video{
+    width:95%;
+  }
+}
+
