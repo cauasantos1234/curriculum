@@ -4,23 +4,38 @@
   const videosDatabase = {
     guitar: {
       beginner: {
-        // Aula 1: Acordes Básicos - Parte 1
-        lesson1: [
-          {id:101, lessonId:1, lessonTitle:'Acordes Básicos - Parte 1', title:'Introdução aos Acordes', duration:'5:23', author:'Mariana Silva', thumbnail:'🎸', order:1},
-          {id:102, lessonId:1, lessonTitle:'Acordes Básicos - Parte 1', title:'Acorde de Dó Maior', duration:'4:15', author:'Mariana Silva', thumbnail:'🎸', order:2},
-          {id:103, lessonId:1, lessonTitle:'Acordes Básicos - Parte 1', title:'Acorde de Sol Maior', duration:'3:56', author:'Mariana Silva', thumbnail:'🎸', order:3}
+        // Aula 101: Partes da guitarra e suas funções
+        lesson101: [
+          {id:10101, lessonId:101, lessonTitle:'Partes da guitarra e suas funções', title:'Corpo da Guitarra', duration:'5:23', author:'Mariana Silva', thumbnail:'🎸', order:1},
+          {id:10102, lessonId:101, lessonTitle:'Partes da guitarra e suas funções', title:'Braço e Trastes', duration:'4:15', author:'Mariana Silva', thumbnail:'🎸', order:2},
+          {id:10103, lessonId:101, lessonTitle:'Partes da guitarra e suas funções', title:'Captadores e Controles', duration:'6:30', author:'Mariana Silva', thumbnail:'🎸', order:3},
+          {id:10104, lessonId:101, lessonTitle:'Partes da guitarra e suas funções', title:'Ponte e Cordas', duration:'4:45', author:'Mariana Silva', thumbnail:'🎸', order:4}
         ],
-        // Aula 2: Posição das Mãos
-        lesson2: [
-          {id:201, lessonId:2, lessonTitle:'Posição das Mãos', title:'Postura Correta', duration:'3:45', author:'Carlos Mendes', thumbnail:'🎸', order:1},
-          {id:202, lessonId:2, lessonTitle:'Posição das Mãos', title:'Posição da Mão Esquerda', duration:'2:30', author:'Carlos Mendes', thumbnail:'🎸', order:2},
-          {id:203, lessonId:2, lessonTitle:'Posição das Mãos', title:'Posição da Mão Direita', duration:'2:00', author:'Carlos Mendes', thumbnail:'🎸', order:3}
+        // Aula 102: Tipos de guitarras
+        lesson102: [
+          {id:10201, lessonId:102, lessonTitle:'Tipos de guitarras (Strat, Les Paul, Tele, etc.)', title:'Fender Stratocaster', duration:'6:30', author:'Carlos Mendes', thumbnail:'🎸', order:1},
+          {id:10202, lessonId:102, lessonTitle:'Tipos de guitarras (Strat, Les Paul, Tele, etc.)', title:'Gibson Les Paul', duration:'5:45', author:'Carlos Mendes', thumbnail:'🎸', order:2},
+          {id:10203, lessonId:102, lessonTitle:'Tipos de guitarras (Strat, Les Paul, Tele, etc.)', title:'Fender Telecaster', duration:'5:20', author:'Carlos Mendes', thumbnail:'🎸', order:3},
+          {id:10204, lessonId:102, lessonTitle:'Tipos de guitarras (Strat, Les Paul, Tele, etc.)', title:'Outros Modelos Populares', duration:'7:15', author:'Carlos Mendes', thumbnail:'🎸', order:4}
         ],
-        // Aula 3: Primeiros Ritmos
-        lesson3: [
-          {id:301, lessonId:3, lessonTitle:'Primeiros Ritmos', title:'Ritmo Básico 4/4', duration:'6:12', author:'Ana Costa', thumbnail:'🎸', order:1},
-          {id:302, lessonId:3, lessonTitle:'Primeiros Ritmos', title:'Padrão de Palhetada', duration:'5:30', author:'Ana Costa', thumbnail:'🎸', order:2},
-          {id:303, lessonId:3, lessonTitle:'Primeiros Ritmos', title:'Exercício de Ritmo', duration:'3:40', author:'Ana Costa', thumbnail:'🎸', order:3}
+        // Aula 103: Como segurar a guitarra corretamente
+        lesson103: [
+          {id:10301, lessonId:103, lessonTitle:'Como segurar a guitarra corretamente', title:'Postura Sentado', duration:'4:20', author:'Ana Costa', thumbnail:'🎸', order:1},
+          {id:10302, lessonId:103, lessonTitle:'Como segurar a guitarra corretamente', title:'Postura em Pé', duration:'4:10', author:'Ana Costa', thumbnail:'🎸', order:2},
+          {id:10303, lessonId:103, lessonTitle:'Como segurar a guitarra corretamente', title:'Posição do Braço e Mão', duration:'5:30', author:'Ana Costa', thumbnail:'🎸', order:3}
+        ],
+        // Aula 104: Como afinar a guitarra
+        lesson104: [
+          {id:10401, lessonId:104, lessonTitle:'Como afinar a guitarra (manual e por app)', title:'Afinação Manual por Ouvido', duration:'6:45', author:'Pedro Santos', thumbnail:'🎸', order:1},
+          {id:10402, lessonId:104, lessonTitle:'Como afinar a guitarra (manual e por app)', title:'Usando Afinador Digital', duration:'4:30', author:'Pedro Santos', thumbnail:'🎸', order:2},
+          {id:10403, lessonId:104, lessonTitle:'Como afinar a guitarra (manual e por app)', title:'Apps de Afinação', duration:'5:15', author:'Pedro Santos', thumbnail:'🎸', order:3}
+        ],
+        // Aula 105: Cuidados e manutenção básica
+        lesson105: [
+          {id:10501, lessonId:105, lessonTitle:'Cuidados e manutenção básica', title:'Limpeza da Guitarra', duration:'5:50', author:'Lucas Oliveira', thumbnail:'🎸', order:1},
+          {id:10502, lessonId:105, lessonTitle:'Cuidados e manutenção básica', title:'Troca de Cordas', duration:'8:20', author:'Lucas Oliveira', thumbnail:'🎸', order:2},
+          {id:10503, lessonId:105, lessonTitle:'Cuidados e manutenção básica', title:'Armazenamento Correto', duration:'4:40', author:'Lucas Oliveira', thumbnail:'🎸', order:3},
+          {id:10504, lessonId:105, lessonTitle:'Cuidados e manutenção básica', title:'Manutenção Preventiva', duration:'6:10', author:'Lucas Oliveira', thumbnail:'🎸', order:4}
         ]
       }
     },
@@ -122,6 +137,7 @@
   const modalBody = document.getElementById('modalBody');
   const backToApp = document.getElementById('backToApp');
 
+  // Se veio da página de aulas com filtro, já inicia filtrado
   let currentFilter = lessonId ? parseInt(lessonId) : 'all';
 
   // Render page

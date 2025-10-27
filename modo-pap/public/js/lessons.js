@@ -5,7 +5,13 @@
     guitar:{
       beginner:[
         // Módulo 1
-        {id:1, moduleNumber:1, moduleName:'Módulo 1', title:'Módulo 1', lessons:[]},
+        {id:1, moduleNumber:1, moduleName:'Introdução à Guitarra', title:'Introdução à Guitarra', lessons:[
+          {id:101, title:'Partes da guitarra e suas funções', duration:'15:30', author:'Mariana Silva', progress:0, difficulty:'Fácil'},
+          {id:102, title:'Tipos de guitarras (Strat, Les Paul, Tele, etc.)', duration:'18:45', author:'Carlos Mendes', progress:0, difficulty:'Fácil'},
+          {id:103, title:'Como segurar a guitarra corretamente', duration:'10:20', author:'Ana Costa', progress:0, difficulty:'Fácil'},
+          {id:104, title:'Como afinar a guitarra (manual e por app)', duration:'12:15', author:'Pedro Santos', progress:0, difficulty:'Fácil'},
+          {id:105, title:'Cuidados e manutenção básica', duration:'14:40', author:'Lucas Oliveira', progress:0, difficulty:'Fácil'}
+        ]},
         // Módulo 2
         {id:2, moduleNumber:2, moduleName:'Módulo 2', title:'Módulo 2', lessons:[]},
         // Módulo 3
@@ -206,8 +212,8 @@
       `;
       
       item.addEventListener('click', () => {
-        // Redireciona para a página de vídeos filtrada por este módulo
-        window.location.href = `videos.html?instrument=${instrumentId}&level=${level}&lesson=${module.id}`;
+        // Redireciona para a página de aulas do módulo
+        window.location.href = `lessons-view.html?instrument=${instrumentId}&level=${level}&module=${module.id}`;
       });
       
       lessonsListContainer.appendChild(item);
