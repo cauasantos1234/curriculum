@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NewSong — Aulas do Módulo</title>
+  <link rel="stylesheet" href="css/theme.css">
+</head>
+<body data-theme="dark">
+  <div class="container">
+    <div class="card header">
+      <div class="brand">
+        <div class="logo">NS</div>
+        <div>
+          <h1 class="gold-text">NewSong</h1>
+          <small>Comunidade · Aprendizado · Música</small>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="themeToggle" class="btn-theme" aria-label="Alternar modo claro/escuro">
+          <span class="theme-icon">🌙</span>
+          <span class="theme-text">Modo Escuro</span>
+        </button>
+        <button id="backToApp" class="btn ghost">Voltar</button>
+      </div>
+    </div>
+
+    <div class="lessons-page-container">
+      <div class="lessons-list-container">
+        <div class="lessons-list-header">
+          <button class="btn-back-modules" id="btnBackToModules">
+            <span>←</span>
+          </button>
+          <div class="lessons-list-header-content">
+            <h3 class="lessons-list-title" id="lessonTitle">
+              <span id="moduleIcon"></span>
+              <span id="moduleName"></span>
+            </h3>
+            <p class="lessons-list-count" id="lessonCount">0 aulas</p>
+          </div>
+        </div>
+        <div class="lessons-list" id="lessonsList">
+          <!-- Lessons will be rendered here by JavaScript -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/lessons.js?v=20251028150500"></script>
+</body>
+</html>

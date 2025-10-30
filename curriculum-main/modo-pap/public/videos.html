@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NewSong — Vídeos das Aulas</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-theme="dark">
+  <div class="container">
+    <div class="card header">
+      <div class="brand">
+        <div class="logo">NS</div>
+        <div>
+          <h1 class="gold-text">NewSong</h1>
+          <small>Comunidade · Aprendizado · Música</small>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="themeToggle" class="btn-theme" aria-label="Alternar modo claro/escuro">
+          <span class="theme-icon">🌙</span>
+          <span class="theme-text">Modo Escuro</span>
+        </button>
+        <button id="backToApp" class="btn ghost">Voltar</button>
+      </div>
+    </div>
+
+    <div class="videos-page-container">
+      <!-- Breadcrumb -->
+      <div class="breadcrumb-container">
+        <div class="breadcrumb">
+          <span class="breadcrumb-item">
+            <span class="breadcrumb-icon">🎸</span>
+            <span id="instrumentName">Guitarra</span>
+          </span>
+          <span class="breadcrumb-separator">›</span>
+          <span class="breadcrumb-item">
+            <span id="moduleIcon">🥉</span>
+            <span id="moduleName">Módulo Bronze</span>
+          </span>
+          <span class="breadcrumb-separator" id="lessonSeparator" style="display:none;">›</span>
+          <span class="breadcrumb-item active" id="lessonNameBreadcrumb" style="display:none;">
+            <span id="lessonName"></span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Advanced Filters -->
+      <div class="advanced-filters-container">
+        <div class="filters-row">
+          <div class="filter-group search-filter">
+            <label class="filter-label">
+              <span class="filter-icon">🔍</span>
+              <span>Buscar vídeo</span>
+            </label>
+            <input type="text" 
+                   id="searchInput" 
+                   class="filter-input" 
+                   placeholder="Digite o título do vídeo...">
+          </div>
+          
+          <div class="filter-group">
+            <label class="filter-label">
+              <span class="filter-icon">👤</span>
+              <span>Professor</span>
+            </label>
+            <select id="teacherFilter" class="filter-select">
+              <option value="all">Todos os professores</option>
+            </select>
+          </div>
+          
+          <div class="filter-group">
+            <label class="filter-label">
+              <span class="filter-icon">📅</span>
+              <span>Ordenar por</span>
+            </label>
+            <select id="sortFilter" class="filter-select">
+              <option value="recent">Mais recentes</option>
+              <option value="oldest">Mais antigos</option>
+              <option value="title">Título (A-Z)</option>
+              <option value="duration">Duração</option>
+            </select>
+          </div>
+
+          <button id="clearFilters" class="btn-clear-filters" title="Limpar filtros">
+            <span>🔄</span>
+            <span>Limpar</span>
+          </button>
+        </div>
+
+        <div class="active-filters" id="activeFilters" style="display:none;">
+          <span class="active-filters-label">Filtros ativos:</span>
+          <div class="active-filters-tags" id="activeFiltersTags"></div>
+        </div>
+      </div>
+
+      <!-- Filter Tabs -->
+      <div class="filter-tabs-container">
+        <div class="filter-tabs" id="filterTabs">
+          <button class="filter-tab active" data-lesson="all">
+            <span class="filter-tab-icon">📚</span>
+            <span>Todas as Aulas</span>
+            <span class="filter-tab-count" id="countAll">0</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Videos Grid -->
+      <div class="videos-grid-container">
+        <div class="videos-grid" id="videosGrid">
+          <!-- Videos will be rendered here by JavaScript -->
+        </div>
+        
+        <div id="emptyState" class="empty-state" style="display:none;">
+          <div class="empty-state-icon">🎬</div>
+          <h3>Nenhum vídeo disponível</h3>
+          <p>Esta aula ainda não possui vídeos cadastrados.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Video Player -->
+  <div id="modalBackdrop" class="modal-backdrop" aria-hidden="true">
+    <div class="modal modal-video" role="dialog">
+      <button class="modal-close-btn" onclick="document.getElementById('modalBackdrop').style.display='none'">✕</button>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="js/videos.js"></script>
+</body>
+</html>

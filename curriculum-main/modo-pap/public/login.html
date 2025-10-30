@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NewSong — Login</title>
+  <link rel="stylesheet" href="css/theme.css">
+</head>
+<body>
+  <div class="auth-wrap">
+    <div class="auth-card card">
+      <div class="brand">
+        <div class="logo">NS</div>
+        <div>
+          <h1 class="gold-text">NewSong</h1>
+          <small class="small-muted">Aprenda música com estilo</small>
+        </div>
+      </div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <input class="input" id="email" type="email" placeholder="Email" required>
+        </div>
+        <div class="form-group">
+          <input class="input" id="password" type="password" placeholder="Senha" required>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;justify-content:space-between">
+          <button class="btn" type="submit">Entrar</button>
+          <a class="btn ghost" href="register.html">Registrar</a>
+        </div>
+        <div style="height:12px"></div>
+        <div class="small-muted">Este é um protótipo — o login é simulado no front-end.</div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/auth.js"></script>
+</body>
+</html>
