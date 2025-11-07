@@ -17,7 +17,8 @@
   "author": "Caua Sousa",
   "license": "MIT",
   "dependencies": {
-    "live-server": "^1.2.1"
+    "live-server": "^1.2.1",
+    "@supabase/supabase-js": "^2.39.0"
   },
   "devDependencies": {},
   "repository": {

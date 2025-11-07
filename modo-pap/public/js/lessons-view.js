@@ -1,11 +1,11 @@
-// lessons-view.js - Display lessons for a specific instrument and level
+// lessons-view.js - Display lessons for instrument and level
 (function(){
   // Estrutura de módulos com suas aulas
   const lessons = {
     guitar:{
       beginner:[
-        // Módulo 1 - Introdução à Guitarra
-        {id:1, moduleNumber:1, moduleName:'Introdução à Guitarra', title:'Introdução à Guitarra', lessons:[
+        // Módulo 1
+        {id:1, moduleNumber:1, moduleName:'Módulo 1', title:'Módulo 1 - Introdução à Guitarra', lessons:[
           {id:101, title:'Partes da guitarra e suas funções', duration:'15:30', author:'Mariana Silva', progress:0, difficulty:'Fácil'},
           {id:102, title:'Tipos de guitarras (Strat, Les Paul, Tele, etc.)', duration:'18:45', author:'Carlos Mendes', progress:0, difficulty:'Fácil'},
           {id:103, title:'Como segurar a guitarra corretamente', duration:'10:20', author:'Ana Costa', progress:0, difficulty:'Fácil'},
@@ -147,7 +147,7 @@
   };
 
   const modulesInfo = {
-    beginner:{title:'Módulo Bronze',desc:'Fundamentos e técnicas básicas',icon:'🥉',color:'#cd7f32'},
+    beginner:{title:'Nível Bronze',desc:'Fundamentos e técnicas básicas',icon:'🥉',color:'#cd7f32'},
     intermediate:{title:'Módulo Prata',desc:'Desenvolvimento de habilidades',icon:'🥈',color:'#c0c0c0'},
     advanced:{title:'Módulo Ouro',desc:'Técnicas profissionais',icon:'🥇',color:'#ffd700'}
   };
@@ -187,7 +187,7 @@
   // Render page
   function init(){
     if(moduleIcon) moduleIcon.textContent = moduleData.icon;
-    if(moduleName) moduleName.textContent = `${instrument.name} - ${currentModule ? currentModule.moduleName : 'Módulo'}`;
+    if(moduleName) moduleName.textContent = `${instrument.name} - ${currentModule ? currentModule.title : 'Módulo'}`;
     if(lessonCount) lessonCount.textContent = `${lessonsList.length} aulas`;
 
     renderLessonsList();
@@ -219,7 +219,6 @@
       `;
       
       item.addEventListener('click', () => {
-        // Redireciona para a página de vídeos filtrada por esta aula específica
         window.location.href = `videos.html?instrument=${instrumentId}&level=${level}&lesson=${lesson.id}`;
       });
       

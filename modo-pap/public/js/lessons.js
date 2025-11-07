@@ -1,11 +1,11 @@
-// lessons.js - Display lessons list for a specific instrument and level
+// lessons.js - Display lessons list for instrument and level
 (function(){
   // Estrutura de 6 módulos vazios para cada nível
   const lessons = {
     guitar:{
       beginner:[
         // Módulo 1
-        {id:1, moduleNumber:1, moduleName:'Introdução à Guitarra', title:'Introdução à Guitarra', lessons:[
+        {id:1, moduleNumber:1, moduleName:'Módulo 1', title:'Módulo 1 - Introdução à Guitarra', lessons:[
           {id:101, title:'Partes da guitarra e suas funções', duration:'15:30', author:'Mariana Silva', progress:0, difficulty:'Fácil'},
           {id:102, title:'Tipos de guitarras (Strat, Les Paul, Tele, etc.)', duration:'18:45', author:'Carlos Mendes', progress:0, difficulty:'Fácil'},
           {id:103, title:'Como segurar a guitarra corretamente', duration:'10:20', author:'Ana Costa', progress:0, difficulty:'Fácil'},
@@ -147,7 +147,7 @@
   };
 
   const modulesInfo = {
-    beginner:{title:'Módulo Bronze',desc:'Fundamentos e técnicas básicas',icon:'🥉',color:'#cd7f32'},
+    beginner:{title:'Nível Bronze',desc:'Fundamentos e técnicas básicas',icon:'🥉',color:'#cd7f32'},
     intermediate:{title:'Módulo Prata',desc:'Desenvolvimento de habilidades',icon:'🥈',color:'#c0c0c0'},
     advanced:{title:'Módulo Ouro',desc:'Técnicas profissionais',icon:'🥇',color:'#ffd700'}
   };
@@ -206,13 +206,12 @@
         <div class="lesson-list-content">
           <div class="lesson-list-number">${module.moduleNumber} - </div>
           <div class="lesson-list-info">
-            <h4 class="lesson-list-title">${module.title}</h4>
+            <h4 class="lesson-list-title">${module.moduleName}</h4>
           </div>
         </div>
       `;
       
       item.addEventListener('click', () => {
-        // Redireciona para a página de aulas do módulo
         window.location.href = `lessons-view.html?instrument=${instrumentId}&level=${level}&module=${module.id}`;
       });
       

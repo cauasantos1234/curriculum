@@ -1,11 +1,13 @@
+
 // app-main.js - render instruments, modules and lessons
 (function(){
+  // Usa dados compartilhados do shared-data.js
   const instruments = [
-    {id:'guitar',name:'Guitarra',symbol:'guitar',desc:'Elétrica e acústica',icon:'🎸',lessons:24,modules:3},
-    {id:'drums',name:'Bateria',symbol:'drums',desc:'Ritmo e grooves',icon:'🥁',lessons:18,modules:3},
-    {id:'keyboard',name:'Piano',symbol:'keyboard',desc:'Clássico e contemporâneo',icon:'🎹',lessons:21,modules:3},
-    {id:'viola',name:'Violão',symbol:'viola',desc:'Acústico e dedilhado',icon:'🪕',lessons:27,modules:3},
-    {id:'bass',name:'Baixo',symbol:'bass',desc:'Groove e harmonia',icon:'🎸',lessons:15,modules:3},
+    {...SHARED_INSTRUMENTS.guitar, lessons:24, modules:3, desc:'Elétrica e acústica'},
+    {...SHARED_INSTRUMENTS.drums, lessons:18, modules:3},
+    {...SHARED_INSTRUMENTS.keyboard, lessons:21, modules:3, desc:'Clássico e contemporâneo'},
+    {...SHARED_INSTRUMENTS.viola, lessons:27, modules:3, desc:'Acústico e dedilhado'},
+    {...SHARED_INSTRUMENTS.bass, lessons:15, modules:3, desc:'Groove e harmonia'}
   ];
 
   const lessons = {
@@ -23,7 +25,7 @@
       advanced:[
         {id:7,title:'Solos Complexos',duration:'25:18',author:'João Alves',progress:15,difficulty:'Difícil'},
         {id:8,title:'Sweep Picking',duration:'20:45',author:'Diego Martins',progress:0,difficulty:'Difícil'},
-        {id:9,title:'Improvização Avançada',duration:'30:12',author:'Bruno Cardoso',progress:5,difficulty:'Difícil'}
+        {id:9,title:'Improvisation Avançada',duration:'30:12',author:'Bruno Cardoso',progress:5,difficulty:'Difícil'}
       ]
     },
     drums:{
@@ -81,14 +83,11 @@
         {id:45,title:'Linhas Complexas Jazz',duration:'27:45',author:'Leonardo Jazz',progress:0,difficulty:'Difícil'},
         {id:46,title:'Técnicas Avançadas',duration:'33:10',author:'Vanessa Pro',progress:5,difficulty:'Difícil'}
       ]
-    },
+    }
   };
 
-  const modulesInfo = {
-    beginner:{title:'Módulo Bronze',desc:'Fundamentos e técnicas básicas',icon:'🥉',color:'#cd7f32'},
-    intermediate:{title:'Módulo Prata',desc:'Desenvolvimento de habilidades',icon:'🥈',color:'#c0c0c0'},
-    advanced:{title:'Módulo Ouro',desc:'Técnicas profissionais',icon:'🥇',color:'#ffd700'}
-  };
+  // Usa dados compartilhados
+  const modulesInfo = SHARED_MODULES_INFO;
 
   const instrumentsGrid = document.getElementById('instrumentsGrid');
   const modulesArea = document.getElementById('modulesArea');
@@ -173,7 +172,6 @@
           <div class="compact-module-icon">${moduleData.icon}</div>
           <div class="compact-module-info">
             <div class="compact-module-name">${levelLabel}</div>
-            <div class="compact-module-count">${lessonsList.length} aulas</div>
           </div>
           <button class="compact-module-btn" data-instrument="${inst.id}" data-level="${level}">
             Ver Aulas →
@@ -187,15 +185,57 @@
   function selectInstrument(inst){
     currentInstrument = inst;
     
-    // Update selection visual - collapse others, expand clicked
+    // Update selection visual with new advanced effects
     document.querySelectorAll('.instrument-card-enhanced').forEach(card=>{
       const isSelected = card.dataset.instrumentId === inst.id;
-      card.classList.toggle('selected', isSelected);
       
-      // Toggle modules details visibility
-      const modulesDetails = card.querySelector('.instrument-card-modules-details');
-      if(modulesDetails){
-        modulesDetails.style.display = isSelected ? 'block' : 'none';
+      if(isSelected){
+        card.classList.add('selected', 'expanded', 'glow-effect');
+        card.style.transform = 'scale(1.05) translateY(-10px)';
+        card.style.zIndex = '100';
+        
+        // Animate modules appearance with stagger effect
+        const modulesDetails = card.querySelector('.instrument-card-modules-details');
+        if(modulesDetails){
+          modulesDetails.style.display = 'block';
+          modulesDetails.style.opacity = '0';
+          modulesDetails.style.transform = 'translateY(20px)';
+          
+          setTimeout(()=>{
+            modulesDetails.style.transition = 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+            modulesDetails.style.opacity = '1';
+            modulesDetails.style.transform = 'translateY(0)';
+          }, 100);
+          
+          // Stagger animation for each module item
+          const moduleItems = modulesDetails.querySelectorAll('.compact-module-item');
+          moduleItems.forEach((item, index)=>{
+            item.style.opacity = '0';
+            item.style.transform = 'translateX(-30px) scale(0.9)';
+            setTimeout(()=>{
+              item.style.transition = 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
+              item.style.opacity = '1';
+              item.style.transform = 'translateX(0) scale(1)';
+            }, 200 + (index * 100));
+          });
+        }
+      } else {
+        card.classList.remove('selected', 'expanded', 'glow-effect');
+        card.style.transform = 'scale(0.95)';
+        card.style.opacity = '1';
+        card.style.filter = 'none';
+        card.style.zIndex = '1';
+        
+        // Hide modules with fade out
+        const modulesDetails = card.querySelector('.instrument-card-modules-details');
+        if(modulesDetails){
+          modulesDetails.style.transition = 'all 0.3s ease-out';
+          modulesDetails.style.opacity = '0';
+          modulesDetails.style.transform = 'translateY(-10px)';
+          setTimeout(()=>{
+            modulesDetails.style.display = 'none';
+          }, 300);
+        }
       }
     });
     
@@ -204,6 +244,14 @@
     if(modulesArea) modulesArea.innerHTML = '';
     if(lessonsArea) lessonsArea.innerHTML = '';
     if(emptyState) emptyState.style.display = 'none';
+    
+    // Smooth scroll to selected card
+    const selectedCard = document.querySelector(`.instrument-card-enhanced[data-instrument-id="${inst.id}"]`);
+    if(selectedCard){
+      setTimeout(()=>{
+        selectedCard.scrollIntoView({behavior:'smooth', block:'center'});
+      }, 300);
+    }
     
     // Attach event listeners to compact module buttons
     attachModuleButtonListeners();
@@ -369,8 +417,24 @@
     currentInstrument = null;
     currentLevel = null;
     
+    // Reset all cards with smooth animation
     document.querySelectorAll('.instrument-card-enhanced').forEach(card=>{
-      card.classList.remove('selected');
+      card.classList.remove('selected', 'expanded', 'glow-effect');
+      card.style.transition = 'all 0.5s cubic-bezier(0.4, 0.0, 0.2, 1)';
+      card.style.transform = 'scale(1)';
+      card.style.opacity = '1';
+      card.style.filter = 'none';
+      card.style.zIndex = 'auto';
+      
+      // Hide modules
+      const modulesDetails = card.querySelector('.instrument-card-modules-details');
+      if(modulesDetails){
+        modulesDetails.style.transition = 'all 0.3s ease-out';
+        modulesDetails.style.opacity = '0';
+        setTimeout(()=>{
+          modulesDetails.style.display = 'none';
+        }, 300);
+      }
     });
     
     if(selectedInstrumentInfo) selectedInstrumentInfo.style.display = 'none';
@@ -401,130 +465,46 @@
   document.querySelectorAll('[data-nav]').forEach(btn=>btn.addEventListener('click', ()=>{
     document.querySelectorAll('[data-nav]').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    const target = btn.dataset.nav === 'home' ? 'homeSection' : 'lessonsSection';
-    document.getElementById('homeSection').style.display = target === 'homeSection' ? '' : 'none';
-    document.getElementById('lessonsSection').style.display = target === 'lessonsSection' ? '' : 'none';
+    const navValue = btn.dataset.nav;
+    
+    // Handle navigation
+    if(navValue === 'upload'){
+      // Redirect to upload page
+      window.location.href = 'upload.html';
+      return;
+    }
+    
+    // Hide all sections
+    document.getElementById('homeSection').style.display = 'none';
+    document.getElementById('lessonsSection').style.display = 'none';
+    
+    // Show the selected section
+    if(navValue === 'home'){
+      document.getElementById('homeSection').style.display = '';
+    } else if(navValue === 'lessons'){
+      document.getElementById('lessonsSection').style.display = '';
+    }
     
     // Reset lessons section when navigating away
-    if(target !== 'lessonsSection'){
+    if(navValue !== 'lessons'){
       clearInstrumentSelection();
     }
   }));
 
-  // Clear instrument button
-  const clearInstrumentBtn = document.getElementById('clearInstrument');
-  if(clearInstrumentBtn){
-    clearInstrumentBtn.addEventListener('click', clearInstrumentSelection);
-  }
-
-  // Level filter
-  if(levelFilter){
-    levelFilter.addEventListener('change', (e)=>{
-      const selectedLevel = e.target.value;
-      if(!currentInstrument) return;
+  // Logout button
+  const logoutBtn = document.getElementById('logoutBtn');
+  if(logoutBtn){
+    logoutBtn.addEventListener('click', () => {
+      // Clear any stored data
+      localStorage.removeItem('newsong-user');
+      localStorage.removeItem('newsong-auth');
       
-      if(selectedLevel === 'all'){
-        renderModules(currentInstrument);
-        if(lessonsArea) lessonsArea.innerHTML = '';
-      } else {
-        renderLessons(currentInstrument, selectedLevel);
-      }
+      // Redirect to login page
+      window.location.href = 'login.html';
     });
   }
 
-  // Search functionality
-  if(lessonSearch){
-    lessonSearch.addEventListener('input', (e)=>{
-      const searchTerm = e.target.value.toLowerCase().trim();
-      
-      if(!searchTerm){
-        // Reset to show all
-        if(currentInstrument && currentLevel){
-          renderLessons(currentInstrument, currentLevel);
-        } else if(currentInstrument){
-          renderModules(currentInstrument);
-        }
-        return;
-      }
-      
-      // Search across all lessons for current instrument
-      if(!currentInstrument) return;
-      
-      const allLessons = [];
-      Object.keys(lessons[currentInstrument.id]).forEach(level=>{
-        lessons[currentInstrument.id][level].forEach(lesson=>{
-          if(lesson.title.toLowerCase().includes(searchTerm) || 
-             lesson.author.toLowerCase().includes(searchTerm)){
-            allLessons.push({...lesson, level});
-          }
-        });
-      });
-      
-      // Render search results
-      if(lessonsArea){
-        lessonsArea.innerHTML = `
-          <h3 class="lessons-area-title">
-            <span>🔍</span>
-            <span>Resultados da Busca: "${searchTerm}"</span>
-          </h3>
-        `;
-        
-        if(allLessons.length === 0){
-          lessonsArea.innerHTML += '<div class="empty-state"><div class="empty-state-icon">🔍</div><h3>Nenhum resultado encontrado</h3><p>Tente buscar com outros termos.</p></div>';
-          return;
-        }
-        
-        const grid = document.createElement('div');
-        grid.className = 'lessons-grid-enhanced';
-        
-        allLessons.forEach(lesson=>{
-          const card = document.createElement('div');
-          card.className = 'lesson-card-enhanced';
-          card.innerHTML = `
-            <div class="lesson-card-thumbnail">
-              <div class="lesson-play-btn">▶</div>
-            </div>
-            <div class="lesson-card-body">
-              <div class="lesson-card-meta">
-                <div class="lesson-meta-item">⏱️ ${lesson.duration}</div>
-                <div class="lesson-meta-item">📊 ${lesson.difficulty}</div>
-                <div class="lesson-meta-item module-level-badge ${lesson.level}" style="padding:4px 8px">${lesson.level === 'beginner' ? 'Bronze' : lesson.level === 'intermediate' ? 'Prata' : 'Ouro'}</div>
-              </div>
-              <h4 class="lesson-card-title">${lesson.title}</h4>
-              <div class="lesson-card-author">
-                <div class="lesson-author-avatar">${lesson.author.charAt(0)}</div>
-                <div class="lesson-author-name">Por ${lesson.author}</div>
-              </div>
-              <div class="lesson-card-progress">
-                <div class="lesson-progress-label">
-                  <span>Progresso</span>
-                  <span>${lesson.progress}%</span>
-                </div>
-                <div class="lesson-progress-bar">
-                  <div class="lesson-progress-fill" style="width:${lesson.progress}%"></div>
-                </div>
-              </div>
-            </div>
-          `;
-          
-          card.addEventListener('click', ()=>{
-            openLessonModal(lesson, currentInstrument);
-          });
-          
-          grid.appendChild(card);
-        });
-        
-        lessonsArea.appendChild(grid);
-      }
-    });
-  }
-
-  // logout (no redirect for prototyping)
-  const logoutBtn = document.getElementById('logoutBtn'); 
-  if(logoutBtn) logoutBtn.addEventListener('click', ()=>{ 
-    localStorage.removeItem('ns-session'); 
-    alert('Sessão encerrada (modo protótipo).'); 
-  });
+  // Search functionality (removed - not used in current page structure)
 
   // init
   function init(){
@@ -694,37 +674,6 @@
     }
   }
 
-  // --- helpers: render SVG icons and equalizer ---
-  function renderSVG(name){
-    // simple symbolic SVGs — placeholders with gold gradient
-    return `
-      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <defs>
-          <linearGradient id="goldGrad" x1="0" x2="1" y1="0" y2="1">
-            <stop offset="0" stop-color="#d4af37" />
-            <stop offset="1" stop-color="#ffd76b" />
-          </linearGradient>
-        </defs>
-        <rect x="0" y="0" width="100" height="100" rx="12" fill="rgba(0,0,0,0.02)" />
-        <g class="gold-fill">
-          `+iconPath(name)+`
-        </g>
-      </svg>
-    `;
-  }
-
-  function iconPath(name){
-    // very simple stylized paths to represent instruments
-    switch(name){
-      case 'guitar': return `<path d="M30 70c6-6 10-10 16-10s10 4 16 10 18-10 22-22-10-28-22-22-20 18-32 10-10 30 0 34z" fill="url(#goldGrad)"/>`;
-      case 'drums': return `<circle cx="50" cy="48" r="18" fill="url(#goldGrad)"/>`;
-      case 'keyboard': return `<rect x="20" y="40" width="60" height="20" rx="3" fill="url(#goldGrad)"/>`;
-      case 'viola': return `<path d="M30 70c8-4 12-8 18-8s10 4 18 8 10-16 6-24-18-8-24 0-18 8-18 24z" fill="url(#goldGrad)"/>`;
-      case 'bass': return `<path d="M28 68c6-6 12-8 18-8s10 6 18 8 14-14 12-24-20-4-26 0-18 8-20 24z" fill="url(#goldGrad)"/>`;
-      default: return `<circle cx="50" cy="50" r="20" fill="url(#goldGrad)"/>`;
-    }
-  }
-
   function renderEqualizerSVG(){
     return `
       <svg class="equalizer" viewBox="0 0 140 100" xmlns="http://www.w3.org/2000/svg">
@@ -787,3 +736,4 @@
   initThemeToggle();
 
 })();
+

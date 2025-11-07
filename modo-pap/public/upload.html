@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NewSong — Enviar Vídeo</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-theme="dark">
+  <div class="container">
+    <!-- Header -->
+    <div class="card header">
+      <div class="brand">
+        <div class="logo">NS</div>
+        <div>
+          <h1 class="gold-text">NewSong</h1>
+          <small>Comunidade · Aprendizado · Música</small>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="themeToggle" class="btn-theme" aria-label="Alternar modo claro/escuro">
+          <span class="theme-icon">🌙</span>
+          <span class="theme-text">Modo Escuro</span>
+        </button>
+        <button id="backToApp" class="btn ghost">Voltar</button>
+      </div>
+    </div>
+
+    <!-- Upload Page Container -->
+    <div class="upload-page-container">
+      <!-- Hero Section -->
+      <div class="upload-hero">
+        <div class="upload-hero-content">
+          <div class="upload-hero-badge">
+            <span class="badge-icon">🎬</span>
+            <span>Compartilhe Seu Conhecimento</span>
+          </div>
+          <h2 class="upload-hero-title">Enviar Vídeo de Aula</h2>
+          <p class="upload-hero-subtitle">Ajude a comunidade NewSong compartilhando suas aulas e conhecimentos musicais.</p>
+        </div>
+      </div>
+
+      <!-- Main Grid: Form + Sidebar -->
+      <div class="upload-grid">
+        <!-- Main Form Area -->
+        <div class="upload-main">
+          <div class="upload-form-card">
+            <form id="uploadVideoForm" class="upload-form">
+              
+              <!-- Upload Type Selector -->
+              <div class="upload-type-selector">
+                <button type="button" class="upload-type-btn active" id="btnYouTube">
+                  <span>▶️</span>
+                  <span>Link do YouTube</span>
+                </button>
+                <button type="button" class="upload-type-btn" id="btnFileUpload">
+                  <span>📁</span>
+                  <span>Upload de Arquivo</span>
+                </button>
+              </div>
+
+              <!-- YouTube Section -->
+              <div class="upload-section active" id="youtubeSection">
+                <div class="form-section">
+                  <div class="form-section-header">
+                    <div class="section-icon-wrapper">
+                      <span class="section-icon">🔗</span>
+                    </div>
+                    <div>
+                      <h3 class="section-title">Link do YouTube</h3>
+                      <p class="section-desc">Cole a URL do vídeo do YouTube</p>
+                    </div>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label class="form-label">
+                      <span>URL do Vídeo</span>
+                      <span class="required">*</span>
+                    </label>
+                    <input type="url" 
+                           id="videoUrl" 
+                           class="form-input" 
+                           placeholder="https://www.youtube.com/watch?v=..."
+                           autocomplete="off">
+                    <p class="form-hint">
+                      <span class="hint-icon">💡</span>
+                      <span>Exemplo: https://www.youtube.com/watch?v=xxxxx ou https://youtu.be/xxxxx</span>
+                    </p>
+                  </div>
+
+                  <!-- Video Preview -->
+                  <div id="videoPreview" class="video-preview" style="display:none;">
+                    <div class="video-preview-header">
+                      <span class="preview-icon">👁️</span>
+                      <span>Pré-visualização</span>
+                    </div>
+                    <div id="videoPreviewContainer" class="video-preview-container"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- File Upload Section -->
+              <div class="upload-section" id="fileSection">
+                <div class="form-section">
+                  <div class="form-section-header">
+                    <div class="section-icon-wrapper">
+                      <span class="section-icon">📤</span>
+                    </div>
+                    <div>
+                      <h3 class="section-title">Upload de Arquivo</h3>
+                      <p class="section-desc">Envie um vídeo do seu computador</p>
+                    </div>
+                  </div>
+                  
+                  <div class="file-upload-area" id="fileUploadArea">
+                    <div class="upload-icon">📹</div>
+                    <p class="upload-text">Clique ou arraste o vídeo aqui</p>
+                    <p class="upload-hint">MP4, WebM, MOV (máx. 100MB)</p>
+                    <p class="upload-hint" style="font-size:11px;margin-top:4px;opacity:0.7">✨ Armazenamento avançado ativado</p>
+                    <input type="file" id="videoFile" accept="video/*" hidden>
+                  </div>
+
+                  <div class="file-info" id="fileInfo" style="display:none;">
+                    <span class="file-icon">🎬</span>
+                    <div class="file-details">
+                      <p class="file-name" id="fileName">video.mp4</p>
+                      <p class="file-size" id="fileSize">25.4 MB</p>
+                    </div>
+                    <button type="button" class="remove-file" id="removeFile">✕</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Video Information -->
+              <div class="form-section">
+                <div class="form-section-header">
+                  <div class="section-icon-wrapper">
+                    <span class="section-icon">📝</span>
+                  </div>
+                  <div>
+                    <h3 class="section-title">Informações do Vídeo</h3>
+                    <p class="section-desc">Preencha os detalhes da sua aula</p>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">
+                      <span>Título do Vídeo</span>
+                      <span class="required">*</span>
+                    </label>
+                    <input type="text" 
+                           id="videoTitle" 
+                           class="form-input" 
+                           placeholder="Ex: Técnica de Palhetada Alternada"
+                           required>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">
+                      <span>Duração</span>
+                      <span class="required">*</span>
+                    </label>
+                    <input type="text" 
+                           id="videoDuration" 
+                           class="form-input" 
+                           placeholder="Ex: 8:45"
+                           pattern="[0-9]+:[0-9]{2}"
+                           required>
+                    <p class="form-hint">
+                      <span class="hint-icon">⏱️</span>
+                      <span>Formato: minutos:segundos (ex: 8:45)</span>
+                    </p>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">
+                    <span>Descrição</span>
+                  </label>
+                  <textarea id="videoDescription" 
+                            class="form-textarea" 
+                            placeholder="Descreva brevemente o conteúdo da aula..."
+                            rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">
+                    <span>Seu Nome (Professor)</span>
+                    <span class="required">*</span>
+                  </label>
+                  <input type="text" 
+                         id="videoAuthor" 
+                         class="form-input" 
+                         placeholder="Seu nome completo"
+                         required>
+                </div>
+              </div>
+
+              <!-- Categorization -->
+              <div class="form-section">
+                <div class="form-section-header">
+                  <div class="section-icon-wrapper">
+                    <span class="section-icon">🎯</span>
+                  </div>
+                  <div>
+                    <h3 class="section-title">Categorização</h3>
+                    <p class="section-desc">Onde seu vídeo será exibido</p>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">
+                      <span>Instrumento</span>
+                      <span class="required">*</span>
+                    </label>
+                    <select id="videoInstrument" class="form-select" required>
+                      <option value="">Selecione o instrumento</option>
+                      <option value="guitar">🎸 Guitarra</option>
+                      <option value="drums">🥁 Bateria</option>
+                      <option value="keyboard">🎹 Piano</option>
+                      <option value="viola">🪕 Violão</option>
+                      <option value="bass">🎸 Baixo</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">
+                      <span>Nível</span>
+                      <span class="required">*</span>
+                    </label>
+                    <select id="videoModule" class="form-select" required>
+                      <option value="">Selecione o nível</option>
+                      <option value="bronze">🥉 Bronze (Iniciante)</option>
+                      <option value="silver">🥈 Prata (Intermediário)</option>
+                      <option value="gold">🥇 Ouro (Avançado)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">
+                    <span>Aula</span>
+                    <span class="required">*</span>
+                  </label>
+                  <select id="videoLesson" class="form-select" disabled required>
+                    <option value="">Selecione instrumento e nível primeiro</option>
+                  </select>
+                  <p class="form-hint">
+                    <span class="hint-icon">ℹ️</span>
+                    <span>Selecione instrumento e nível para ver as aulas disponíveis</span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- Form Actions -->
+              <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="cancelBtn">
+                  <span>✕</span>
+                  <span>Cancelar</span>
+                </button>
+                <button type="submit" class="btn btn-primary">
+                  <span>✓</span>
+                  <span>Publicar Vídeo</span>
+                </button>
+              </div>
+
+            </form>
+          </div>
+        </div>
+
+        <!-- Sidebar with Tips -->
+        <div class="upload-sidebar">
+          <!-- Tips Card -->
+          <div class="sidebar-card">
+            <h3 class="sidebar-title">
+              <span>💡</span>
+              <span>Dicas para Vídeos de Qualidade</span>
+            </h3>
+            <ul class="tips-list">
+              <li class="tip-item">
+                <span class="tip-icon">🎥</span>
+                <div>
+                  <strong>Boa Iluminação</strong>
+                  <p>Grave em ambiente bem iluminado, de preferência com luz natural</p>
+                </div>
+              </li>
+              <li class="tip-item">
+                <span class="tip-icon">🎤</span>
+                <div>
+                  <strong>Áudio Claro</strong>
+                  <p>Use um microfone de qualidade e grave em local silencioso</p>
+                </div>
+              </li>
+              <li class="tip-item">
+                <span class="tip-icon">📐</span>
+                <div>
+                  <strong>Enquadramento</strong>
+                  <p>Posicione a câmera mostrando suas mãos e o instrumento claramente</p>
+                </div>
+              </li>
+              <li class="tip-item">
+                <span class="tip-icon">⏱️</span>
+                <div>
+                  <strong>Seja Objetivo</strong>
+                  <p>Mantenha vídeos entre 5-15 minutos para melhor engajamento</p>
+                </div>
+              </li>
+              <li class="tip-item">
+                <span class="tip-icon">📚</span>
+                <div>
+                  <strong>Conteúdo Organizado</strong>
+                  <p>Estruture sua aula: introdução, prática e conclusão</p>
+                </div>
+              </li>
+              <li class="tip-item">
+                <span class="tip-icon">🎯</span>
+                <div>
+                  <strong>Foco no Aprendizado</strong>
+                  <p>Explique técnicas passo a passo, demonstre devagar primeiro</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Stats Card -->
+          <div class="sidebar-card">
+            <h3 class="sidebar-title">
+              <span>📊</span>
+              <span>Estatísticas</span>
+            </h3>
+            <div class="stats-grid">
+              <div class="stat-box">
+                <span class="stat-value" id="totalVideos">0</span>
+                <span class="stat-label">Seus Vídeos</span>
+              </div>
+              <div class="stat-box">
+                <span class="stat-value" id="totalViews">0</span>
+                <span class="stat-label">Visualizações</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Guidelines Card -->
+          <div class="sidebar-card">
+            <h3 class="sidebar-title">
+              <span>⚠️</span>
+              <span>Diretrizes</span>
+            </h3>
+            <ul class="guidelines-list">
+              <li>✓ Conteúdo original e educativo</li>
+              <li>✓ Respeito aos direitos autorais</li>
+              <li>✓ Linguagem apropriada</li>
+              <li>✓ Foco em ensinar música</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="modalBackdrop" class="modal-backdrop" aria-hidden="true">
+    <div class="modal" role="dialog">
+      <button class="modal-close-btn" onclick="document.getElementById('modalBackdrop').style.display='none'">✕</button>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="js/video-storage.js"></script>
+  <script src="js/upload.js"></script>
+</body>
+</html>
