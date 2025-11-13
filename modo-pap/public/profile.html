@@ -1,0 +1,785 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NewSong — Perfil do Aluno</title>
+  <link rel="stylesheet" href="css/theme.css?v=20251113006">
+  <style>
+    .profile-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      margin-top: 128px; /* Compensate for fixed header */
+      padding: 40px 24px;
+    }
+
+    .profile-header-section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 40px;
+      margin-bottom: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .profile-header-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(212,175,55,0.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .profile-header-content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .profile-avatar-large {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+      border: 4px solid rgba(212,175,55,0.2);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    }
+
+    .profile-info {
+      flex: 1;
+    }
+
+    .profile-name-section {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    .profile-name {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--text);
+      margin: 0;
+    }
+
+    .profile-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: linear-gradient(135deg, rgba(212,175,55,0.2), rgba(212,175,55,0.1));
+      border: 1px solid rgba(212,175,55,0.3);
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #d4af37;
+    }
+
+    .profile-email {
+      font-size: 16px;
+      color: var(--muted);
+      margin: 0 0 8px 0;
+    }
+
+    .profile-join-date {
+      font-size: 14px;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .profile-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 24px;
+      margin-top: 32px;
+    }
+
+    .profile-stat-card {
+      background: var(--bg-2);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .profile-stat-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(212,175,55,0.3);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+
+    .profile-stat-icon {
+      font-size: 36px;
+      margin-bottom: 12px;
+    }
+
+    .profile-stat-value {
+      font-size: 32px;
+      font-weight: 800;
+      color: #d4af37;
+      margin-bottom: 8px;
+    }
+
+    .profile-stat-label {
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .profile-sections {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 32px;
+      margin-top: 32px;
+    }
+
+    .profile-main-section {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .profile-sidebar-section {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .profile-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px;
+    }
+
+    .profile-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .profile-card-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .edit-profile-btn {
+      padding: 10px 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .edit-profile-btn:hover {
+      background: rgba(212,175,55,0.1);
+      border-color: #d4af37;
+      transform: translateY(-2px);
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .info-label {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .info-value {
+      font-size: 16px;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .instruments-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .instrument-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: var(--bg-2);
+      border: 1px solid rgba(212,175,55,0.2);
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      transition: all 0.3s ease;
+    }
+
+    .instrument-tag:hover {
+      background: rgba(212,175,55,0.1);
+      border-color: #d4af37;
+      transform: scale(1.05);
+    }
+
+    .progress-item {
+      margin-bottom: 20px;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .progress-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .progress-percentage {
+      font-size: 14px;
+      font-weight: 700;
+      color: #d4af37;
+    }
+
+    .progress-bar-container {
+      height: 12px;
+      background: var(--bg-2);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #d4af37, #f4d03f);
+      border-radius: 6px;
+      transition: width 1s ease;
+    }
+
+    .achievements-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .achievement-card {
+      background: var(--bg-2);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .achievement-card:hover {
+      border-color: rgba(212,175,55,0.3);
+      transform: scale(1.05);
+    }
+
+    .achievement-icon {
+      font-size: 40px;
+      margin-bottom: 8px;
+    }
+
+    .achievement-name {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .activity-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .activity-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 16px;
+      background: var(--bg-2);
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .activity-item:hover {
+      background: rgba(212,175,55,0.05);
+      transform: translateX(4px);
+    }
+
+    .activity-icon {
+      font-size: 32px;
+      flex-shrink: 0;
+    }
+
+    .activity-content {
+      flex: 1;
+    }
+
+    .activity-text {
+      font-size: 14px;
+      color: var(--text);
+      margin: 0 0 4px 0;
+    }
+
+    .activity-time {
+      font-size: 12px;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    @media (max-width: 1024px) {
+      .profile-sections {
+        grid-template-columns: 1fr;
+      }
+      
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .achievements-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .profile-header-content {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .profile-name-section {
+        flex-direction: column;
+      }
+      
+      .profile-stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+  <div class="container">
+    <div class="card header">
+      <div class="brand">
+        <div class="logo">NS</div>
+        <div>
+          <h1 class="gold-text">NewSong</h1>
+          <small>Comunidade · Aprendizado · Música</small>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="themeToggle" class="btn-theme" aria-label="Alternar modo claro/escuro">
+          <span class="theme-icon">🌙</span>
+          <span class="theme-text">Modo Escuro</span>
+        </button>
+        <button id="backBtn" class="btn ghost">← Voltar</button>
+      </div>
+    </div>
+
+    <div class="profile-container">
+      <!-- Profile Header -->
+      <div class="profile-header-section">
+        <div class="profile-header-content">
+          <div class="profile-avatar-large" id="profileAvatar">A</div>
+          <div class="profile-info">
+            <div class="profile-name-section">
+              <h1 class="profile-name" id="profileName">Aluno Exemplo</h1>
+              <span class="profile-badge">
+                <span>🏆</span>
+                <span>Nível Bronze</span>
+              </span>
+            </div>
+            <p class="profile-email" id="profileEmail">aluno@exemplo.com</p>
+            <p class="profile-join-date">
+              <span>📅</span>
+              Membro desde Janeiro 2024
+            </p>
+          </div>
+        </div>
+
+        <!-- Profile Stats -->
+        <div class="profile-stats-grid">
+          <div class="profile-stat-card">
+            <div class="profile-stat-icon">🎓</div>
+            <div class="profile-stat-value">12</div>
+            <div class="profile-stat-label">Aulas Concluídas</div>
+          </div>
+          <div class="profile-stat-card">
+            <div class="profile-stat-icon">⏱️</div>
+            <div class="profile-stat-value">8h 30m</div>
+            <div class="profile-stat-label">Tempo de Estudo</div>
+          </div>
+          <div class="profile-stat-card">
+            <div class="profile-stat-icon">🔥</div>
+            <div class="profile-stat-value">7</div>
+            <div class="profile-stat-label">Dias Consecutivos</div>
+          </div>
+          <div class="profile-stat-card">
+            <div class="profile-stat-icon">🏅</div>
+            <div class="profile-stat-value">5</div>
+            <div class="profile-stat-label">Conquistas</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile Content Sections -->
+      <div class="profile-sections">
+        <!-- Main Section -->
+        <div class="profile-main-section">
+          <!-- Personal Information -->
+          <div class="profile-card">
+            <div class="profile-card-header">
+              <h2 class="profile-card-title">
+                <span>👤</span>
+                Informações Pessoais
+              </h2>
+              <button class="edit-profile-btn" id="editInfoBtn">
+                <span>✏️</span>
+                Editar
+              </button>
+            </div>
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="info-label">Nome Completo</div>
+                <div class="info-value" id="infoFullName">Aluno Exemplo da Silva</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Email</div>
+                <div class="info-value" id="infoEmail">aluno@exemplo.com</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Telefone</div>
+                <div class="info-value" id="infoPhone">(11) 98765-4321</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Localização</div>
+                <div class="info-value" id="infoLocation">São Paulo, SP</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Data de Nascimento</div>
+                <div class="info-value" id="infoBirthdate">15/03/1995</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Nível de Experiência</div>
+                <div class="info-value" id="infoLevel">Iniciante</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Instruments -->
+          <div class="profile-card">
+            <div class="profile-card-header">
+              <h2 class="profile-card-title">
+                <span>🎸</span>
+                Meus Instrumentos
+              </h2>
+              <button class="edit-profile-btn" id="editInstrumentsBtn">
+                <span>➕</span>
+                Adicionar
+              </button>
+            </div>
+            <div class="instruments-list" id="instrumentsList">
+              <div class="instrument-tag">
+                <span>🎸</span>
+                <span>Guitarra</span>
+              </div>
+              <div class="instrument-tag">
+                <span>🎹</span>
+                <span>Teclado</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Learning Progress -->
+          <div class="profile-card">
+            <div class="profile-card-header">
+              <h2 class="profile-card-title">
+                <span>📊</span>
+                Progresso de Aprendizado
+              </h2>
+            </div>
+            <div class="progress-list">
+              <div class="progress-item">
+                <div class="progress-header">
+                  <span class="progress-name">🎸 Guitarra - Nível Iniciante</span>
+                  <span class="progress-percentage">65%</span>
+                </div>
+                <div class="progress-bar-container">
+                  <div class="progress-bar-fill" style="width: 65%"></div>
+                </div>
+              </div>
+              <div class="progress-item">
+                <div class="progress-header">
+                  <span class="progress-name">🎹 Teclado - Nível Iniciante</span>
+                  <span class="progress-percentage">40%</span>
+                </div>
+                <div class="progress-bar-container">
+                  <div class="progress-bar-fill" style="width: 40%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Activity -->
+          <div class="profile-card">
+            <div class="profile-card-header">
+              <h2 class="profile-card-title">
+                <span>⚡</span>
+                Atividade Recente
+              </h2>
+            </div>
+            <div class="activity-list">
+              <div class="activity-item">
+                <div class="activity-icon">✅</div>
+                <div class="activity-content">
+                  <p class="activity-text">Completou a aula <strong>"Acordes Básicos - Parte 1"</strong></p>
+                  <p class="activity-time">Há 2 horas</p>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon">🎯</div>
+                <div class="activity-content">
+                  <p class="activity-text">Conquistou o badge <strong>"Primeira Aula Completa"</strong></p>
+                  <p class="activity-time">Há 1 dia</p>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon">📚</div>
+                <div class="activity-content">
+                  <p class="activity-text">Iniciou o módulo <strong>"Guitarra Iniciante"</strong></p>
+                  <p class="activity-time">Há 3 dias</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar Section -->
+        <div class="profile-sidebar-section">
+          <!-- Achievements -->
+          <div class="profile-card">
+            <div class="profile-card-header">
+              <h2 class="profile-card-title">
+                <span>🏆</span>
+                Conquistas
+              </h2>
+            </div>
+            <div class="achievements-grid">
+              <div class="achievement-card">
+                <div class="achievement-icon">🎓</div>
+                <p class="achievement-name">Primeira Aula</p>
+              </div>
+              <div class="achievement-card">
+                <div class="achievement-icon">🔥</div>
+                <p class="achievement-name">7 Dias Seguidos</p>
+              </div>
+              <div class="achievement-card">
+                <div class="achievement-icon">⭐</div>
+                <p class="achievement-name">10 Aulas Concluídas</p>
+              </div>
+              <div class="achievement-card">
+                <div class="achievement-icon">🎸</div>
+                <p class="achievement-name">Guitarrista Bronze</p>
+              </div>
+              <div class="achievement-card">
+                <div class="achievement-icon">🎹</div>
+                <p class="achievement-name">Tecladista Iniciante</p>
+              </div>
+              <div class="achievement-card" style="opacity: 0.4;">
+                <div class="achievement-icon">🏅</div>
+                <p class="achievement-name">Bloqueado</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Learning Goals -->
+          <div class="profile-card">
+            <div class="profile-card-header">
+              <h2 class="profile-card-title">
+                <span>🎯</span>
+                Metas de Estudo
+              </h2>
+              <button class="edit-profile-btn" id="editGoalsBtn">
+                <span>✏️</span>
+                Editar
+              </button>
+            </div>
+            <div class="activity-list">
+              <div class="activity-item">
+                <div class="activity-icon">✅</div>
+                <div class="activity-content">
+                  <p class="activity-text"><strong>Estudar 30 min por dia</strong></p>
+                  <p class="activity-time">7/7 dias concluídos</p>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon">📚</div>
+                <div class="activity-content">
+                  <p class="activity-text"><strong>Completar Módulo Iniciante</strong></p>
+                  <p class="activity-time">12/20 aulas</p>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon">🎸</div>
+                <div class="activity-content">
+                  <p class="activity-text"><strong>Aprender 5 músicas</strong></p>
+                  <p class="activity-time">2/5 músicas</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Preferences -->
+          <div class="profile-card">
+            <div class="profile-card-header">
+              <h2 class="profile-card-title">
+                <span>⚙️</span>
+                Preferências
+              </h2>
+            </div>
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="info-label">Idioma</div>
+                <div class="info-value">Português (BR)</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Notificações</div>
+                <div class="info-value">Ativadas</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Theme Toggle
+    function initThemeToggle(){
+      const themeToggle = document.getElementById('themeToggle');
+      const body = document.body;
+      const THEME_STORAGE_KEY = 'newsong-theme';
+
+      const savedTheme = localStorage.getItem(THEME_STORAGE_KEY) || 'dark';
+      body.setAttribute('data-theme', savedTheme);
+      updateThemeButton(savedTheme);
+
+      if(themeToggle){
+        themeToggle.addEventListener('click', ()=>{
+          const currentTheme = body.getAttribute('data-theme');
+          const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+          
+          body.classList.add('theme-transition');
+          body.setAttribute('data-theme', newTheme);
+          localStorage.setItem(THEME_STORAGE_KEY, newTheme);
+          updateThemeButton(newTheme);
+          
+          setTimeout(() => {
+            body.classList.remove('theme-transition');
+          }, 400);
+        });
+      }
+    }
+
+    function updateThemeButton(theme){
+      const themeToggle = document.getElementById('themeToggle');
+      const themeIcon = themeToggle?.querySelector('.theme-icon');
+      const themeText = themeToggle?.querySelector('.theme-text');
+      
+      if(themeIcon){
+        themeIcon.textContent = theme === 'dark' ? '🌙' : '☀️';
+      }
+      
+      if(themeText){
+        themeText.textContent = theme === 'dark' ? 'Modo Escuro' : 'Modo Claro';
+      }
+    }
+
+    // Back button
+    const backBtn = document.getElementById('backBtn');
+    if(backBtn){
+      backBtn.addEventListener('click', () => {
+        window.location.href = 'app.html';
+      });
+    }
+
+    // Edit buttons (placeholder functionality)
+    const editInfoBtn = document.getElementById('editInfoBtn');
+    const editInstrumentsBtn = document.getElementById('editInstrumentsBtn');
+    const editGoalsBtn = document.getElementById('editGoalsBtn');
+
+    if(editInfoBtn){
+      editInfoBtn.addEventListener('click', () => {
+        alert('Funcionalidade de edição será implementada em breve!');
+      });
+    }
+
+    if(editInstrumentsBtn){
+      editInstrumentsBtn.addEventListener('click', () => {
+        alert('Funcionalidade de adicionar instrumentos será implementada em breve!');
+      });
+    }
+
+    if(editGoalsBtn){
+      editGoalsBtn.addEventListener('click', () => {
+        alert('Funcionalidade de edição de metas será implementada em breve!');
+      });
+    }
+
+    // Animate progress bars on load
+    window.addEventListener('load', () => {
+      const progressBars = document.querySelectorAll('.progress-bar-fill');
+      progressBars.forEach(bar => {
+        const width = bar.style.width;
+        bar.style.width = '0%';
+        setTimeout(() => {
+          bar.style.width = width;
+        }, 300);
+      });
+    });
+
+    // Initialize theme
+    initThemeToggle();
+  </script>
+</body>
+</html>

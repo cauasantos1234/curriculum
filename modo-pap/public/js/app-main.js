@@ -258,6 +258,7 @@
   }
   
   function attachModuleButtonListeners(){
+    // Handle buttons in the compact modules (old style)
     document.querySelectorAll('.compact-module-btn').forEach(btn=>{
       btn.addEventListener('click', (e)=>{
         e.stopPropagation();
@@ -267,8 +268,20 @@
         
         if(inst){
           currentLevel = level;
-          
-          // Redireciona para a página de aulas (listagem)
+          window.location.href = `lessons.html?instrument=${instrumentId}&level=${level}`;
+        }
+      });
+    });
+    
+    // Handle module level cards in modal
+    document.querySelectorAll('.module-level-card').forEach(card=>{
+      card.addEventListener('click', ()=>{
+        const instrumentId = card.dataset.instrument;
+        const level = card.dataset.level;
+        
+        if(instrumentId && level){
+          // Close modal and redirect
+          closeInstrumentModuleModal();
           window.location.href = `lessons.html?instrument=${instrumentId}&level=${level}`;
         }
       });
@@ -491,6 +504,15 @@
     }
   }));
 
+  // Profile button
+  const profileBtn = document.getElementById('profileBtn');
+  if(profileBtn){
+    profileBtn.addEventListener('click', () => {
+      // Redirect to profile page
+      window.location.href = 'profile.html';
+    });
+  }
+
   // Logout button
   const logoutBtn = document.getElementById('logoutBtn');
   if(logoutBtn){
@@ -674,6 +696,22 @@
     }
   }
 
+  // Continue Learning button handler
+  const continueLearningBtn = document.getElementById('continueLearningBtn');
+  if(continueLearningBtn){
+    continueLearningBtn.addEventListener('click', ()=>{
+      openModal('Seguir Carreira', 'Escolha sua carreira musical e siga um caminho estruturado de aprendizado com módulos progressivos e certificação profissional.');
+    });
+  }
+
+  // Certified button handler
+  const certifiedBtn = document.getElementById('certifiedBtn');
+  if(certifiedBtn){
+    certifiedBtn.addEventListener('click', ()=>{
+      openModal('Certificados', 'Obtenha certificados reconhecidos ao concluir cada módulo de aprendizado. Compartilhe suas conquistas e valide suas habilidades musicais.');
+    });
+  }
+
   function renderEqualizerSVG(){
     return `
       <svg class="equalizer" viewBox="0 0 140 100" xmlns="http://www.w3.org/2000/svg">
@@ -734,6 +772,211 @@
 
   // Initialize theme toggle
   initThemeToggle();
+
+})();
+  
+  function openInstrumentModuleModal(instrument){
+    console.log('Opening side panel for:', instrument.name);
+    
+    const sidePanel = document.getElementById('instrumentSidePanel');
+    const sidePanelOverlay = document.getElementById('sidePanelOverlay');
+    const sidePanelIcon = document.getElementById('sidePanelIcon');
+    const sidePanelTitle = document.getElementById('sidePanelTitle');
+    const sidePanelModules = document.getElementById('sidePanelModules');
+    
+    console.log('Side panel element:', sidePanel);
+    
+    if(!sidePanel || !sidePanelIcon || !sidePanelTitle || !sidePanelModules){
+      console.error('Side panel elements not found!');
+      return;
+    }
+    
+    // Set instrument info
+    sidePanelIcon.textContent = instrument.icon;
+    sidePanelTitle.textContent = instrument.name;
+    
+    // Add progress indicator
+    const progressIndicator = `
+      <div class="side-panel-progress-indicator">
+        <div class="progress-dot bronze"></div>
+        <div class="progress-line"></div>
+        <div class="progress-dot prata"></div>
+        <div class="progress-line"></div>
+        <div class="progress-dot ouro"></div>
+      </div>
+    `;
+    sidePanelModules.innerHTML = progressIndicator;
+    
+    // Render modules
+    sidePanelModules.insertAdjacentHTML('beforeend', renderModulesForModal(instrument));
+    
+    console.log('Adding active class to side panel');
+    
+    // Show overlay and side panel with animation
+    if(sidePanelOverlay){
+      sidePanelOverlay.classList.add('active');
+    }
+    
+    requestAnimationFrame(() => {
+      sidePanel.classList.add('active');
+    });
+    
+    // Add info tooltip at the bottom
+    const infoTooltip = `
+      <div class="side-panel-info">
+        <div class="info-tooltip-icon">💡</div>
+        <div>
+          <p class="info-tooltip-text">
+            <strong>Dica:</strong> Escolha o nível que melhor corresponde à sua experiência atual. 
+            Cada módulo contém várias aulas progressivas que vão te ajudar a dominar o instrumento.
+          </p>
+        </div>
+      </div>
+    `;
+    sidePanelModules.insertAdjacentHTML('beforeend', infoTooltip);
+    
+    // Attach button listeners
+    setTimeout(() => {
+      attachModuleButtonListeners();
+    }, 100);
+  }
+  
+  function renderModulesForModal(instrument){
+    let html = '';
+    
+    // Bronze Level
+    const beginnerLessons = lessons[instrument.id]?.beginner || [];
+    const beginnerDuration = beginnerLessons.length > 0 ? '~2 meses' : 'Em breve';
+    html += `
+      <div class="module-level-card bronze" data-instrument="${instrument.id}" data-level="beginner">
+        <div class="module-level-header">
+          <div class="module-level-badge">🥉</div>
+          <div class="module-level-info">
+            <div class="module-level-name-section">
+              <span class="module-level-type">MÓDULO BRONZE</span>
+            </div>
+            <h3 class="module-level-name">Iniciante</h3>
+            <p class="module-level-description">Fundamentos e técnicas básicas para começar sua jornada musical</p>
+          </div>
+        </div>
+        <div class="module-level-stats">
+          <div class="module-stat-item">
+            <span class="module-stat-icon">📚</span>
+            <span>${beginnerLessons.length} aulas</span>
+          </div>
+          <div class="module-stat-item">
+            <span class="module-stat-icon">⏱️</span>
+            <span>${beginnerDuration}</span>
+          </div>
+        </div>
+        <button class="module-level-button">
+          <span>Começar Jornada</span>
+          <span class="button-arrow">→</span>
+        </button>
+      </div>
+    `;
+    
+    // Silver Level
+    const intermediateLessons = lessons[instrument.id]?.intermediate || [];
+    const intermediateDuration = intermediateLessons.length > 0 ? '~3 meses' : 'Em breve';
+    html += `
+      <div class="module-level-card prata" data-instrument="${instrument.id}" data-level="intermediate">
+        <div class="module-level-header">
+          <div class="module-level-badge">🥈</div>
+          <div class="module-level-info">
+            <div class="module-level-name-section">
+              <span class="module-level-type">MÓDULO PRATA</span>
+            </div>
+            <h3 class="module-level-name">Intermediário</h3>
+            <p class="module-level-description">Desenvolvimento de habilidades e técnicas mais complexas</p>
+          </div>
+        </div>
+        <div class="module-level-stats">
+          <div class="module-stat-item">
+            <span class="module-stat-icon">📚</span>
+            <span>${intermediateLessons.length} aulas</span>
+          </div>
+          <div class="module-stat-item">
+            <span class="module-stat-icon">⏱️</span>
+            <span>${intermediateDuration}</span>
+          </div>
+        </div>
+        <button class="module-level-button">
+          <span>Evoluir Habilidades</span>
+          <span class="button-arrow">→</span>
+        </button>
+      </div>
+    `;
+    
+    // Gold Level
+    const advancedLessons = lessons[instrument.id]?.advanced || [];
+    const advancedDuration = advancedLessons.length > 0 ? '~4 meses' : 'Em breve';
+    html += `
+      <div class="module-level-card ouro" data-instrument="${instrument.id}" data-level="advanced">
+        <div class="module-level-header">
+          <div class="module-level-badge">🥇</div>
+          <div class="module-level-info">
+            <div class="module-level-name-section">
+              <span class="module-level-type">MÓDULO OURO</span>
+            </div>
+            <h3 class="module-level-name">Avançado</h3>
+            <p class="module-level-description">Técnicas profissionais e domínio completo do instrumento</p>
+          </div>
+        </div>
+        <div class="module-level-stats">
+          <div class="module-stat-item">
+            <span class="module-stat-icon">📚</span>
+            <span>${advancedLessons.length} aulas</span>
+          </div>
+          <div class="module-stat-item">
+            <span class="module-stat-icon">⏱️</span>
+            <span>${advancedDuration}</span>
+          </div>
+        </div>
+        <button class="module-level-button">
+          <span>Dominar Técnicas</span>
+          <span class="button-arrow">→</span>
+        </button>
+      </div>
+    `;
+    
+    return html;
+  }
+  
+  function closeInstrumentModuleModal(){
+    const sidePanel = document.getElementById('instrumentSidePanel');
+    const sidePanelOverlay = document.getElementById('sidePanelOverlay');
+    
+    if(!sidePanel) return;
+    
+    sidePanel.classList.remove('active');
+    
+    if(sidePanelOverlay){
+      sidePanelOverlay.classList.remove('active');
+    }
+  }
+  
+  // Close side panel on close button click
+  const closeSidePanelBtn = document.getElementById('closeSidePanel');
+  if(closeSidePanelBtn){
+    closeSidePanelBtn.addEventListener('click', closeInstrumentModuleModal);
+  }
+  
+  // Close side panel on overlay click
+  const sidePanelOverlay = document.getElementById('sidePanelOverlay');
+  if(sidePanelOverlay){
+    sidePanelOverlay.addEventListener('click', closeInstrumentModuleModal);
+  }
+  
+  // Close side panel on ESC key
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === 'Escape'){
+      const sidePanel = document.getElementById('instrumentSidePanel');
+      if(sidePanel && sidePanel.classList.contains('active')){
+        closeInstrumentModuleModal();
+      }
+    }
+  });
 
 })();
 

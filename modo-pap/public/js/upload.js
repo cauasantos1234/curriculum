@@ -112,6 +112,8 @@
 
   // Initialize
   async function init(){
+    console.log('🎬 Upload page initialized');
+    
     // Initialize IndexedDB
     try{
       await VideoStorage.init();
@@ -122,6 +124,7 @@
       dbInitialized = false;
     }
     
+    setupNavigation();
     setupUploadTypeSelector();
     setupFileUpload();
     setupFormSelects();
@@ -131,6 +134,52 @@
     updateStats();
     initThemeToggle();
     showStorageInfo();
+    
+    console.log('✅ All upload page features initialized');
+  }
+
+  // Navigation
+  function setupNavigation(){
+    const menuButtons = document.querySelectorAll('.menu button[data-nav]');
+    console.log('📍 Setting up navigation, found', menuButtons.length, 'menu buttons');
+    
+    menuButtons.forEach(btn => {
+      const target = btn.getAttribute('data-nav');
+      console.log('  - Button:', btn.textContent.trim(), '-> data-nav:', target);
+      
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        console.log('🔘 Navigation clicked:', target);
+        
+        if(target === 'home'){
+          console.log('➡️ Redirecting to app.html');
+          window.location.href = 'app.html';
+        } else if(target === 'lessons'){
+          console.log('➡️ Redirecting to lessons.html');
+          window.location.href = 'lessons.html';
+        } else if(target === 'upload'){
+          console.log('ℹ️ Already on upload page');
+          // Already on upload page
+          return;
+        }
+      });
+    });
+    
+    // Also setup back button
+    const backBtn = document.getElementById('backToApp');
+    if(backBtn){
+      console.log('🔙 Back button found, setting up listener');
+      backBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('🔙 Back button clicked, redirecting to app.html');
+        window.location.href = 'app.html';
+      });
+    } else {
+      console.warn('⚠️ Back button not found');
+    }
   }
 
   // Upload type selector
@@ -605,12 +654,6 @@
         } else {
           window.location.href = 'app.html';
         }
-      });
-    }
-    
-    if(backToApp){
-      backToApp.addEventListener('click', () => {
-        window.location.href = 'app.html';
       });
     }
   }

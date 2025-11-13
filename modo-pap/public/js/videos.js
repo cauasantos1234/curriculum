@@ -212,6 +212,15 @@
   const modalBody = document.getElementById('modalBody');
   const backToApp = document.getElementById('backToApp');
   
+  // Context card elements
+  const contextIcon = document.getElementById('contextIcon');
+  const contextTitle = document.getElementById('contextTitle');
+  const contextSubtitle = document.getElementById('contextSubtitle');
+  const contextInstrument = document.getElementById('contextInstrument');
+  const contextLevel = document.getElementById('contextLevel');
+  const contextModule = document.getElementById('contextModule');
+  const contextLesson = document.getElementById('contextLesson');
+  
   // Advanced filter elements
   const searchInput = document.getElementById('searchInput');
   const teacherFilter = document.getElementById('teacherFilter');
@@ -225,7 +234,82 @@
   let currentTeacher = 'all';
   let currentSort = 'recent';
 
+  // Update context info card
+  function updateContextCard(){
+    // Update icon
+    if(contextIcon){
+      contextIcon.textContent = instrument.icon;
+    }
+    
+    // Update title and subtitle
+    if(contextTitle){
+      contextTitle.textContent = instrument.name;
+    }
+    
+    if(contextSubtitle){
+      contextSubtitle.textContent = instrument.desc;
+    }
+    
+    // Update instrument
+    if(contextInstrument){
+      contextInstrument.textContent = instrument.name;
+    }
+    
+    // Update level
+    if(contextLevel){
+      const levelNames = {
+        beginner: 'Bronze (Iniciante)',
+        intermediate: 'Prata (Intermediário)',
+        advanced: 'Ouro (Avançado)'
+      };
+      contextLevel.textContent = levelNames[level] || moduleData.title;
+    }
+    
+    // Update module - show module number instead of repeating level
+    if(contextModule){
+      const moduleNumbers = {
+        beginner: 'Módulo 1 - Bronze',
+        intermediate: 'Módulo 2 - Prata',
+        advanced: 'Módulo 3 - Ouro'
+      };
+      contextModule.textContent = moduleNumbers[level] || moduleData.title;
+    }
+    
+    // Update lesson
+    if(contextLesson){
+      if(lessonId && allVideos.length > 0){
+        const firstVideo = allVideos.find(v => v.lessonId === parseInt(lessonId));
+        if(firstVideo){
+          contextLesson.textContent = firstVideo.lessonTitle;
+        } else {
+          contextLesson.textContent = 'Todas as Aulas';
+        }
+      } else {
+        contextLesson.textContent = 'Todas as Aulas';
+      }
+    }
+  }
+  
+  // Update only the lesson in context card (when switching tabs)
+  function updateContextCardLesson(){
+    if(!contextLesson) return;
+    
+    if(currentFilter === 'all'){
+      contextLesson.textContent = 'Todas as Aulas';
+    } else if(allVideos.length > 0){
+      const firstVideo = allVideos.find(v => v.lessonId === currentFilter);
+      if(firstVideo){
+        contextLesson.textContent = firstVideo.lessonTitle;
+      } else {
+        contextLesson.textContent = 'Todas as Aulas';
+      }
+    }
+  }
+
   async function init(){
+    // Update context card
+    updateContextCard();
+    
     // Update breadcrumb with instrument name
     if(instrumentName) instrumentName.textContent = instrument.name;
     
@@ -479,6 +563,9 @@
         const lessonFilter = tab.dataset.lesson;
         currentFilter = lessonFilter === 'all' ? 'all' : parseInt(lessonFilter);
         
+        // Update context card with new lesson info
+        updateContextCardLesson();
+        
         renderFilterTabs(); // Re-render to show navigation
         renderVideos();
       });
@@ -492,6 +579,7 @@
       prevBtn.addEventListener('click', () => {
         if(currentLessonIndex > 0){
           currentFilter = parseInt(sortedLessonIds[currentLessonIndex - 1]);
+          updateContextCardLesson();
           renderFilterTabs();
           renderVideos();
         }
@@ -502,6 +590,7 @@
       nextBtn.addEventListener('click', () => {
         if(currentLessonIndex < totalLessons - 1){
           currentFilter = parseInt(sortedLessonIds[currentLessonIndex + 1]);
+          updateContextCardLesson();
           renderFilterTabs();
           renderVideos();
         }

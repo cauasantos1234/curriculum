@@ -3,8 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <title>NewSong — Home</title>
-  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/theme.css?v=20251113008">
 </head>
 <body data-theme="dark">
   <div class="container">
@@ -20,6 +23,10 @@
         <button id="themeToggle" class="btn-theme" aria-label="Alternar modo claro/escuro">
           <span class="theme-icon">🌙</span>
           <span class="theme-text">Modo Escuro</span>
+        </button>
+        <button id="profileBtn" class="btn-profile" aria-label="Abrir perfil">
+          <span class="profile-icon">👤</span>
+          <span class="profile-text">Perfil</span>
         </button>
         <button id="logoutBtn" class="btn ghost">Sair</button>
       </div>
@@ -37,39 +44,46 @@
 
       <main>
         <section id="homeSection">
-          <!-- Hero Banner Aprimorado -->
-          <div class="hero-banner-enhanced fade-up">
-            <div class="hero-content-main">
-              <div class="hero-badge">
-                <span class="badge-icon">✨</span>
+          <!-- Hero Banner Professional -->
+          <div class="hero-banner-professional">
+            <div class="hero-background-image">
+              <img src="https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=1600&h=900&fit=crop&q=80" 
+                   alt="Guitarras em exposição" 
+                   onerror="this.style.opacity='0.3'">
+              <div class="hero-overlay"></div>
+            </div>
+            <div class="hero-content-professional">
+              <div class="hero-badge-pro">
+                <span class="badge-icon">🎸</span>
                 <span>Bem-vindo ao NewSong</span>
               </div>
-              <h2 class="hero-title">Aprenda. Toque. Inspire.</h2>
-              <p class="hero-subtitle">Transforme sua paixão pela música em realidade com nossa plataforma colaborativa de ensino musical.</p>
-              <div class="hero-actions">
-                <button class="btn-primary-large" data-nav="lessons">Começar Agora</button>
-                <button class="btn-secondary-large" id="exploreTourBtn">Tour Guiado</button>
+              <h1 class="hero-title-pro">Aprenda Música de Forma Profissional</h1>
+              <p class="hero-subtitle-pro">
+                Plataforma completa de ensino musical com metodologia comprovada e acompanhamento personalizado para desenvolver suas habilidades musicais.
+              </p>
+              <div class="hero-actions-pro">
+                <button class="btn-explore-courses" data-nav="lessons">
+                  <span>Explorar Cursos</span>
+                  <span class="btn-arrow">→</span>
+                </button>
+                <button class="btn-know-platform" id="exploreTourBtn">
+                  <span>Conhecer Plataforma</span>
+                </button>
               </div>
-              <div class="hero-features">
-                <div class="feature-item">
-                  <span class="feature-icon">🎯</span>
-                  <span>Aulas Práticas</span>
-                </div>
-                <div class="feature-item">
-                  <span class="feature-icon">👥</span>
-                  <span>Comunidade Ativa</span>
-                </div>
-                <div class="feature-item">
-                  <span class="feature-icon">🏆</span>
-                  <span>Certificados</span>
-                </div>
+              <div class="hero-quick-links">
+                <button class="quick-link-item" data-nav="lessons">
+                  <span class="quick-link-icon">🎸</span>
+                  <span class="quick-link-text">Aulas em Vídeo</span>
+                </button>
+                <button class="quick-link-item" id="continueLearningBtn">
+                  <span class="quick-link-icon">📚</span>
+                  <span class="quick-link-text">Seguir Carreira</span>
+                </button>
+                <button class="quick-link-item" id="certifiedBtn">
+                  <span class="quick-link-icon">�</span>
+                  <span class="quick-link-text">Certificados</span>
+                </button>
               </div>
-            </div>
-            <div class="hero-visual-container">
-              <div class="floating-music-note note-1">🎵</div>
-              <div class="floating-music-note note-2">🎶</div>
-              <div class="floating-music-note note-3">🎸</div>
-              <div class="hero-circle pulse"></div>
             </div>
           </div>
 
@@ -84,24 +98,56 @@
             </div>
             <div id="featuredCarousel" class="carousel-enhanced">
               <div class="carousel-slide-enhanced active">
-                <div class="slide-icon">🔥</div>
-                <h4>Aulas Mais Populares</h4>
-                <p>Descubra os cursos mais assistidos da semana e junte-se a milhares de alunos.</p>
+                <div class="slide-background">
+                  <img src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800&h=600&fit=crop&q=80" 
+                       alt="Pessoa tocando música" 
+                       onerror="this.style.opacity='0.3'">
+                  <div class="slide-overlay"></div>
+                </div>
+                <div class="slide-content">
+                  <div class="slide-icon">🔥</div>
+                  <h4>Aulas Mais Populares</h4>
+                  <p>Descubra os cursos mais assistidos da semana e junte-se a milhares de alunos.</p>
+                </div>
               </div>
               <div class="carousel-slide-enhanced">
-                <div class="slide-icon">🏅</div>
-                <h4>Desafios Semanais</h4>
-                <p>Participe dos desafios e ganhe prêmios exclusivos e reconhecimento.</p>
+                <div class="slide-background">
+                  <img src="https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=800&h=600&fit=crop&q=80" 
+                       alt="Estúdio musical" 
+                       onerror="this.style.opacity='0.3'">
+                  <div class="slide-overlay"></div>
+                </div>
+                <div class="slide-content">
+                  <div class="slide-icon">🏅</div>
+                  <h4>Desafios Semanais</h4>
+                  <p>Participe dos desafios e ganhe prêmios exclusivos e reconhecimento.</p>
+                </div>
               </div>
               <div class="carousel-slide-enhanced">
-                <div class="slide-icon">📺</div>
-                <h4>Sessões ao Vivo</h4>
-                <p>Interaja em tempo real com instrutores e receba feedback personalizado.</p>
+                <div class="slide-background">
+                  <img src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=800&h=600&fit=crop&q=80" 
+                       alt="Sessão ao vivo" 
+                       onerror="this.style.opacity='0.3'">
+                  <div class="slide-overlay"></div>
+                </div>
+                <div class="slide-content">
+                  <div class="slide-icon">📺</div>
+                  <h4>Sessões ao Vivo</h4>
+                  <p>Interaja em tempo real com instrutores e receba feedback personalizado.</p>
+                </div>
               </div>
               <div class="carousel-slide-enhanced">
-                <div class="slide-icon">🎓</div>
-                <h4>Novos Módulos</h4>
-                <p>Confira os últimos conteúdos adicionados por nossa comunidade de instrutores.</p>
+                <div class="slide-background">
+                  <img src="https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=800&h=600&fit=crop&q=80" 
+                       alt="Novos módulos" 
+                       onerror="this.style.opacity='0.3'">
+                  <div class="slide-overlay"></div>
+                </div>
+                <div class="slide-content">
+                  <div class="slide-icon">🎓</div>
+                  <h4>Novos Módulos</h4>
+                  <p>Confira os últimos conteúdos adicionados por nossa comunidade de instrutores.</p>
+                </div>
               </div>
             </div>
             <div class="carousel-indicators">
@@ -256,25 +302,13 @@
           </div>
 
           <!-- Instruments Grid Enhanced -->
-          <div class="instruments-section">
+          <div class="instruments-section" style="position:relative">
             <h3 class="section-title">
               <span class="title-icon">🎸</span>
               <span>Escolha seu Instrumento</span>
             </h3>
             <div class="instruments-grid-enhanced" id="instrumentsGrid">
               <!-- instruments rendered by JS -->
-            </div>
-          </div>
-
-          <!-- Selected Instrument Info -->
-          <div id="selectedInstrumentInfo" class="selected-instrument-info" style="display:none">
-            <div class="instrument-info-header">
-              <div class="instrument-info-icon">🎸</div>
-              <div class="instrument-info-content">
-                <h3 class="instrument-info-title">Guitarra</h3>
-                <p class="instrument-info-desc">Explore os módulos disponíveis para este instrumento</p>
-              </div>
-              <button class="btn-clear-selection" id="clearInstrument">Voltar</button>
             </div>
           </div>
 
@@ -301,7 +335,7 @@
     </div>
   </div>
 
-  <script src="js/shared-data.js"></script>
-  <script src="js/app-main.js"></script>
+  <script src="js/shared-data.js?v=20251113008"></script>
+  <script src="js/app-main.js?v=20251113008"></script>
 </body>
 </html>

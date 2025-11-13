@@ -4,8 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>NewSong — Vídeos das Aulas</title>
-  <link rel="stylesheet" href="css/theme.css">
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/theme.css?v=20251113006">
+  <link rel="stylesheet" href="css/styles.css?v=20251113006">
   <style>
     /* Centralizar iframe do YouTube e vídeos de upload no modal */
     .video-modal-player iframe,
@@ -38,6 +38,60 @@
     </div>
 
     <div class="videos-page-container">
+      <!-- Context Info Card -->
+      <div class="context-info-card">
+        <div class="context-header">
+          <div class="context-icon" id="contextIcon">🎸</div>
+          <div class="context-main">
+            <h2 class="context-title" id="contextTitle">Contexto da Navegação</h2>
+            <p class="context-subtitle" id="contextSubtitle">Informações sobre o conteúdo atual</p>
+          </div>
+        </div>
+        <div class="context-details">
+          <div class="context-item">
+            <div class="context-item-label">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 18V5l12-2v13"></path>
+                <circle cx="6" cy="18" r="3"></circle>
+                <circle cx="18" cy="16" r="3"></circle>
+              </svg>
+              <span>Instrumento</span>
+            </div>
+            <div class="context-item-value" id="contextInstrument">Guitarra</div>
+          </div>
+          <div class="context-item">
+            <div class="context-item-label">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+              </svg>
+              <span>Nível</span>
+            </div>
+            <div class="context-item-value" id="contextLevel">Bronze (Iniciante)</div>
+          </div>
+          <div class="context-item">
+            <div class="context-item-label">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+              </svg>
+              <span>Módulo</span>
+            </div>
+            <div class="context-item-value" id="contextModule">Módulo Bronze</div>
+          </div>
+          <div class="context-item">
+            <div class="context-item-label">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+              </svg>
+              <span>Aula Atual</span>
+            </div>
+            <div class="context-item-value" id="contextLesson">Todas as Aulas</div>
+          </div>
+        </div>
+      </div>
+
       <!-- Breadcrumb -->
       <div class="breadcrumb-container">
         <div class="breadcrumb">
