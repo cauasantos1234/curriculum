@@ -179,14 +179,18 @@
   function completeLesson(lessonId, duration, instrument, level){
     const progress = loadProgress();
     
+    console.log(`🎓 Tentando completar aula: ${lessonId}`);
+    console.log('📚 Aulas já completadas:', progress.completedLessons);
+    
     // Verificar se já foi concluída
     if(progress.completedLessons.includes(lessonId)){
-      console.log('Aula já concluída:', lessonId);
+      console.log('⚠️ Aula já concluída:', lessonId);
       return progress;
     }
 
     // Adicionar aula concluída
     progress.completedLessons.push(lessonId);
+    console.log(`✅ Aula ${lessonId} adicionada. Total de aulas: ${progress.completedLessons.length}`);
     
     // Adicionar tempo de estudo (converter duração de HH:MM ou MM:SS para minutos)
     if(duration){
@@ -205,6 +209,7 @@
 
     // Salvar
     saveProgress(progress);
+    console.log('💾 Progresso salvo com sucesso');
 
     // Adicionar XP pela conclusão da aula (se XPSystem estiver disponível)
     if (window.XPSystem) {
@@ -434,6 +439,62 @@
     return true;
   }
 
+  // Contar quantos usuários diferentes concluíram um vídeo específico
+  function getVideoCompletions(videoId) {
+    try {
+      // Converter para string e number para comparação
+      const videoIdStr = String(videoId);
+      const videoIdNum = Number(videoId);
+      
+      console.log(`🔍 Procurando conclusões para videoId: ${videoId} (string: "${videoIdStr}", number: ${videoIdNum})`);
+      
+      // Verificar todos os usuários no localStorage
+      let totalCompletions = 0;
+      const usersWhoCompleted = [];
+      
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        
+        // Verificar se é uma chave de progresso de usuário
+        if (key && key.startsWith('newsong-user-progress-')) {
+          try {
+            const progressData = localStorage.getItem(key);
+            if (progressData) {
+              const progress = JSON.parse(progressData);
+              
+              // Verificar se este usuário completou este vídeo/aula
+              // Comparar tanto como string quanto como number
+              if (progress.completedLessons) {
+                const found = progress.completedLessons.some(id => {
+                  return String(id) === videoIdStr || Number(id) === videoIdNum || id === videoId;
+                });
+                
+                if (found) {
+                  totalCompletions++;
+                  const userEmail = key.replace('newsong-user-progress-', '');
+                  usersWhoCompleted.push(userEmail);
+                  console.log(`✅ Usuário ${userEmail} completou vídeo ${videoId}`);
+                }
+              }
+            }
+          } catch (e) {
+            console.error('Erro ao processar progresso:', e);
+          }
+        }
+      }
+      
+      console.log(`📊 Total de conclusões para vídeo ${videoId}: ${totalCompletions}`);
+      if (usersWhoCompleted.length > 0) {
+        console.log('👥 Usuários que completaram:', usersWhoCompleted);
+      }
+      
+      return totalCompletions;
+    } catch (e) {
+      console.error('Erro ao contar conclusões:', e);
+      return 0;
+    }
+  }
+
   // Exportar API pública
   window.UserProgress = {
     loadProgress,
@@ -446,6 +507,7 @@
     clearProgressCache,
     ensureUserProgress,
     getCurrentUser,
+    getVideoCompletions,
     ACHIEVEMENTS
   };
 

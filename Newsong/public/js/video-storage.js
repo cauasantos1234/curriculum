@@ -97,6 +97,23 @@
     });
   }
 
+  // Update video
+  function updateVideo(id, videoData){
+    return new Promise((resolve, reject) => {
+      if(!db){
+        reject(new Error('Database not initialized'));
+        return;
+      }
+      
+      const transaction = db.transaction([STORE_NAME], 'readwrite');
+      const objectStore = transaction.objectStore(STORE_NAME);
+      const request = objectStore.put({...videoData, id: id});
+      
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  }
+
   // Get storage usage estimate
   function getStorageEstimate(){
     if(navigator.storage && navigator.storage.estimate){
@@ -144,8 +161,10 @@
     init: initDB,
     save: saveVideo,
     getAll: getAllVideos,
+    getAllVideos: getAllVideos, // Alias para compatibilidade
     get: getVideo,
     delete: deleteVideo,
+    update: updateVideo,
     getStorageEstimate: getStorageEstimate,
     countVideosByModule: countVideosByModule,
     countVideosByLesson: countVideosByLesson

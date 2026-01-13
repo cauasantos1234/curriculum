@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teste de Interações - NewSong</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+      color: #fff;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+      color: #d4af37;
+      font-size: 2.5rem;
+    }
+    
+    .subtitle {
+      text-align: center;
+      color: #888;
+      margin-bottom: 40px;
+    }
+    
+    .section {
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid rgba(212, 175, 55, 0.3);
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+    
+    .section h2 {
+      color: #d4af37;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .status-box {
+      background: rgba(0, 0, 0, 0.3);
+      border-left: 4px solid #d4af37;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 4px;
+    }
+    
+    .status-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .status-item:last-child {
+      border-bottom: none;
+    }
+    
+    .status-label {
+      color: #aaa;
+    }
+    
+    .status-value {
+      color: #fff;
+      font-weight: bold;
+    }
+    
+    .success {
+      color: #22c55e !important;
+    }
+    
+    .error {
+      color: #ef4444 !important;
+    }
+    
+    .warning {
+      color: #f59e0b !important;
+    }
+    
+    button {
+      background: linear-gradient(135deg, #d4af37, #f4d03f);
+      border: none;
+      color: #000;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 5px;
+      transition: all 0.3s;
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(212, 175, 55, 0.4);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    .btn-secondary {
+      background: linear-gradient(135deg, #555, #777);
+      color: #fff;
+    }
+    
+    .console-output {
+      background: #000;
+      border: 2px solid #333;
+      border-radius: 8px;
+      padding: 15px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      max-height: 400px;
+      overflow-y: auto;
+      margin-top: 15px;
+    }
+    
+    .console-output div {
+      padding: 4px 0;
+      border-bottom: 1px solid #222;
+    }
+    
+    .console-output div:last-child {
+      border-bottom: none;
+    }
+    
+    .log-info { color: #60a5fa; }
+    .log-success { color: #22c55e; }
+    .log-error { color: #ef4444; }
+    .log-warning { color: #f59e0b; }
+    
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    input, select {
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(212, 175, 55, 0.3);
+      color: #fff;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 14px;
+      width: 100%;
+      margin: 8px 0;
+    }
+    
+    input:focus, select:focus {
+      outline: none;
+      border-color: #d4af37;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧪 Teste de Interações do Sistema</h1>
+    <p class="subtitle">Valide todas as funcionalidades de likes, views, avaliações e estatísticas</p>
+    
+    <!-- Sessão Atual -->
+    <div class="section">
+      <h2>👤 Sessão Atual</h2>
+      <div class="status-box" id="sessionInfo">
+        <div class="status-item">
+          <span class="status-label">Status:</span>
+          <span class="status-value" id="sessionStatus">Carregando...</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Email:</span>
+          <span class="status-value" id="sessionEmail">-</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Nome:</span>
+          <span class="status-value" id="sessionName">-</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Teste de Vídeos -->
+    <div class="section">
+      <h2>📹 Vídeos Disponíveis</h2>
+      <div class="button-group">
+        <button onclick="loadAllVideos()">🔄 Carregar Vídeos</button>
+        <button onclick="clearConsole()" class="btn-secondary">🧹 Limpar Console</button>
+      </div>
+      <div class="status-box">
+        <div class="status-item">
+          <span class="status-label">Total no IndexedDB:</span>
+          <span class="status-value" id="totalVideos">0</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Vídeos do Professor Atual:</span>
+          <span class="status-value" id="teacherVideos">0</span>
+        </div>
+      </div>
+      <div>
+        <label>Selecione um vídeo para testar:</label>
+        <select id="videoSelect" onchange="selectVideo()">
+          <option value="">-- Selecione um vídeo --</option>
+        </select>
+      </div>
+    </div>
+    
+    <!-- Teste de Likes/Dislikes -->
+    <div class="section">
+      <h2>👍 Likes e Dislikes</h2>
+      <div class="status-box" id="likeStats">
+        <div class="status-item">
+          <span class="status-label">Video ID:</span>
+          <span class="status-value" id="selectedVideoId">-</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Likes:</span>
+          <span class="status-value" id="likesCount">0</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Dislikes:</span>
+          <span class="status-value" id="dislikesCount">0</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Seu Status:</span>
+          <span class="status-value" id="userStatus">-</span>
+        </div>
+      </div>
+      <div class="button-group">
+        <button onclick="testLike()">👍 Dar Like</button>
+        <button onclick="testDislike()">👎 Dar Dislike</button>
+        <button onclick="refreshStats()">🔄 Atualizar Stats</button>
+      </div>
+    </div>
+    
+    <!-- Teste de Views -->
+    <div class="section">
+      <h2>👁️ Visualizações</h2>
+      <div class="status-box">
+        <div class="status-item">
+          <span class="status-label">Total de Views:</span>
+          <span class="status-value" id="viewsCount">0</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Viewers Únicos:</span>
+          <span class="status-value" id="uniqueViewers">0</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Você assistiu:</span>
+          <span class="status-value" id="userViewed">Não</span>
+        </div>
+      </div>
+      <div class="button-group">
+        <button onclick="testView()">👁️ Registrar Visualização</button>
+      </div>
+    </div>
+    
+    <!-- Teste de Estatísticas do Professor -->
+    <div class="section">
+      <h2>📊 Estatísticas do Professor</h2>
+      <div class="button-group">
+        <button onclick="loadTeacherStats()">📈 Carregar Estatísticas</button>
+      </div>
+      <div class="status-box" id="teacherStatsBox">
+        <div class="status-item">
+          <span class="status-label">Vídeos Enviados:</span>
+          <span class="status-value" id="statsVideos">0</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Total de Likes:</span>
+          <span class="status-value" id="statsLikes">0</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Total de Views:</span>
+          <span class="status-value" id="statsViews">0</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Console de Debug -->
+    <div class="section">
+      <h2>🖥️ Console de Debug</h2>
+      <div class="console-output" id="console">
+        <div class="log-info">Sistema iniciado. Aguardando testes...</div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="js/video-storage.js?v=1.0.1"></script>
+  <script src="js/video-views.js?v=1.0.1"></script>
+  <script src="js/video-unified.js?v=1.0.1"></script>
+  
+  <script>
+    let selectedVideoId = null;
+    let currentSession = null;
+    
+    // Log personalizado
+    function log(message, type = 'info') {
+      const console = document.getElementById('console');
+      const timestamp = new Date().toLocaleTimeString();
+      const div = document.createElement('div');
+      div.className = `log-${type}`;
+      div.textContent = `[${timestamp}] ${message}`;
+      console.appendChild(div);
+      console.scrollTop = console.scrollHeight;
+      
+      // Também logar no console do navegador
+      console[type === 'error' ? 'error' : 'log'](message);
+    }
+    
+    function clearConsole() {
+      document.getElementById('console').innerHTML = '<div class="log-info">Console limpo.</div>';
+    }
+    
+    // Carregar sessão
+    async function loadSession() {
+      try {
+        const sessionData = localStorage.getItem('ns-session');
+        if (!sessionData) {
+          document.getElementById('sessionStatus').textContent = 'Não logado';
+          document.getElementById('sessionStatus').className = 'status-value error';
+          log('Nenhuma sessão encontrada. Faça login primeiro.', 'warning');
+          return null;
+        }
+        
+        currentSession = JSON.parse(sessionData);
+        document.getElementById('sessionStatus').textContent = 'Ativo';
+        document.getElementById('sessionStatus').className = 'status-value success';
+        document.getElementById('sessionEmail').textContent = currentSession.email || '-';
+        document.getElementById('sessionName').textContent = currentSession.name || '-';
+        
+        log(`Sessão carregada: ${currentSession.email}`, 'success');
+        return currentSession;
+      } catch (e) {
+        log(`Erro ao carregar sessão: ${e.message}`, 'error');
+        return null;
+      }
+    }
+    
+    // Carregar todos os vídeos
+    async function loadAllVideos() {
+      try {
+        log('Carregando vídeos do IndexedDB...', 'info');
+        
+        if (!window.VideoStorage) {
+          log('VideoStorage não disponível!', 'error');
+          return;
+        }
+        
+        await window.VideoStorage.init();
+        const allVideos = await window.VideoStorage.getAllVideos();
+        
+        document.getElementById('totalVideos').textContent = allVideos.length;
+        log(`Total de vídeos no banco: ${allVideos.length}`, 'success');
+        
+        // Filtrar vídeos do professor atual
+        if (currentSession && currentSession.email) {
+          const teacherVideos = allVideos.filter(v => v.teacherEmail === currentSession.email);
+          document.getElementById('teacherVideos').textContent = teacherVideos.length;
+          log(`Vídeos do professor ${currentSession.email}: ${teacherVideos.length}`, 'info');
+        }
+        
+        // Preencher select
+        const select = document.getElementById('videoSelect');
+        select.innerHTML = '<option value="">-- Selecione um vídeo --</option>';
+        allVideos.forEach(video => {
+          const option = document.createElement('option');
+          option.value = video.id;
+          option.textContent = `${video.title} (ID: ${video.id})`;
+          select.appendChild(option);
+        });
+        
+      } catch (e) {
+        log(`Erro ao carregar vídeos: ${e.message}`, 'error');
+      }
+    }
+    
+    // Selecionar vídeo
+    function selectVideo() {
+      const select = document.getElementById('videoSelect');
+      selectedVideoId = select.value;
+      
+      if (!selectedVideoId) {
+        log('Nenhum vídeo selecionado', 'warning');
+        return;
+      }
+      
+      document.getElementById('selectedVideoId').textContent = selectedVideoId;
+      log(`Vídeo selecionado: ${selectedVideoId}`, 'info');
+      refreshStats();
+    }
+    
+    // Atualizar estatísticas do vídeo selecionado
+    function refreshStats() {
+      if (!selectedVideoId) {
+        log('Selecione um vídeo primeiro!', 'warning');
+        return;
+      }
+      
+      if (!window.VideoUnified) {
+        log('VideoUnified não disponível!', 'error');
+        return;
+      }
+      
+      const stats = window.VideoUnified.getVideoStats(selectedVideoId);
+      
+      document.getElementById('likesCount').textContent = stats.likes;
+      document.getElementById('dislikesCount').textContent = stats.dislikes;
+      document.getElementById('viewsCount').textContent = stats.views;
+      
+      let userStatus = 'Sem interação';
+      if (stats.userLiked) userStatus = '👍 Liked';
+      else if (stats.userDisliked) userStatus = '👎 Disliked';
+      document.getElementById('userStatus').textContent = userStatus;
+      
+      log(`Stats atualizadas: ${stats.likes} likes, ${stats.dislikes} dislikes, ${stats.views} views`, 'info');
+      
+      // Views
+      if (window.VideoViews) {
+        const viewStats = window.VideoViews.getVideoViewStats(selectedVideoId);
+        document.getElementById('uniqueViewers').textContent = viewStats.uniqueViewers || 0;
+        
+        const userEmail = currentSession?.email;
+        const userViewed = window.VideoViews.hasUserViewed(selectedVideoId, userEmail);
+        document.getElementById('userViewed').textContent = userViewed ? 'Sim ✓' : 'Não';
+      }
+    }
+    
+    // Teste de Like
+    function testLike() {
+      if (!selectedVideoId) {
+        log('Selecione um vídeo primeiro!', 'warning');
+        return;
+      }
+      
+      if (!window.VideoUnified) {
+        log('VideoUnified não disponível!', 'error');
+        return;
+      }
+      
+      log(`Testando LIKE no vídeo ${selectedVideoId}...`, 'info');
+      const result = window.VideoUnified.likeVideo(selectedVideoId);
+      
+      if (result.success) {
+        log(`✅ Like processado com sucesso!`, 'success');
+        log(`Resultado: ${result.likes} likes, ${result.dislikes} dislikes`, 'success');
+        refreshStats();
+      } else {
+        log(`❌ Erro ao dar like: ${result.error}`, 'error');
+      }
+    }
+    
+    // Teste de Dislike
+    function testDislike() {
+      if (!selectedVideoId) {
+        log('Selecione um vídeo primeiro!', 'warning');
+        return;
+      }
+      
+      if (!window.VideoUnified) {
+        log('VideoUnified não disponível!', 'error');
+        return;
+      }
+      
+      log(`Testando DISLIKE no vídeo ${selectedVideoId}...`, 'info');
+      const result = window.VideoUnified.dislikeVideo(selectedVideoId);
+      
+      if (result.success) {
+        log(`✅ Dislike processado com sucesso!`, 'success');
+        log(`Resultado: ${result.likes} likes, ${result.dislikes} dislikes`, 'success');
+        refreshStats();
+      } else {
+        log(`❌ Erro ao dar dislike: ${result.error}`, 'error');
+      }
+    }
+    
+    // Teste de View
+    function testView() {
+      if (!selectedVideoId) {
+        log('Selecione um vídeo primeiro!', 'warning');
+        return;
+      }
+      
+      if (!window.VideoViews) {
+        log('VideoViews não disponível!', 'error');
+        return;
+      }
+      
+      log(`Testando VISUALIZAÇÃO no vídeo ${selectedVideoId}...`, 'info');
+      const result = window.VideoViews.registerView(selectedVideoId);
+      
+      if (result.counted) {
+        log(`✅ Nova visualização registrada!`, 'success');
+        log(`Total: ${result.totalViews} views, ${result.uniqueViewers} únicos`, 'success');
+      } else {
+        log(`ℹ️ Você já visualizou este vídeo. Total: ${result.totalViews}`, 'info');
+      }
+      
+      refreshStats();
+    }
+    
+    // Carregar estatísticas do professor
+    async function loadTeacherStats() {
+      if (!currentSession || !currentSession.email) {
+        log('Faça login para ver estatísticas do professor', 'warning');
+        return;
+      }
+      
+      if (!window.VideoUnified) {
+        log('VideoUnified não disponível!', 'error');
+        return;
+      }
+      
+      log(`Carregando estatísticas de ${currentSession.email}...`, 'info');
+      
+      const videos = await window.VideoUnified.getTeacherVideoStats(currentSession.email);
+      
+      let totalLikes = 0;
+      let totalViews = 0;
+      
+      videos.forEach(video => {
+        totalLikes += video.likes || 0;
+        totalViews += video.views || 0;
+      });
+      
+      document.getElementById('statsVideos').textContent = videos.length;
+      document.getElementById('statsLikes').textContent = totalLikes;
+      document.getElementById('statsViews').textContent = totalViews;
+      
+      log(`✅ Estatísticas carregadas: ${videos.length} vídeos, ${totalLikes} likes, ${totalViews} views`, 'success');
+      
+      // Detalhes de cada vídeo
+      videos.forEach(video => {
+        log(`📹 ${video.title}: ${video.likes} likes, ${video.dislikes} dislikes, ${video.views} views`, 'info');
+      });
+    }
+    
+    // Inicializar
+    (async function init() {
+      log('Inicializando sistema de testes...', 'info');
+      
+      await loadSession();
+      
+      if (currentSession) {
+        await loadAllVideos();
+      }
+      
+      // Listener de eventos
+      window.addEventListener('videoLikeChanged', (e) => {
+        log(`🔔 Evento: videoLikeChanged - Video ${e.detail.videoId}`, 'info');
+        if (selectedVideoId == e.detail.videoId) {
+          refreshStats();
+        }
+      });
+      
+      log('✅ Sistema pronto para testes!', 'success');
+    })();
+  </script>
+</body>
+</html>

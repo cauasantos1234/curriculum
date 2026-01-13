@@ -3,8 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="pragma" content="no-cache" />
+  <meta http-equiv="expires" content="0" />
   <title>NewSong — Login</title>
-  <link rel="stylesheet" href="css/theme.css?v=20251113006">
+  <link rel="stylesheet" href="css/theme.css?v=1.0.0">
   <style>
     .login-container {
       min-height: 100vh;
@@ -535,17 +538,21 @@
       });
     });
   </script>
-  <script src="js/supabase.js"></script>
-  <script>
-    // Inicializar Supabase
-    const SUPABASE_URL = 'https://wbzaktlcxgmctocgtifj.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndienFrdGxjeGdtY3RvY2d0aWZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQyNjY2NDksImV4cCI6MjA0OTg0MjY0OX0.L8a3yODrJdpnfDPrAG-gSTMwTZFWiYjvwgnRXCO2Bn0';
-    
-    if (typeof window.supabase !== 'undefined' && typeof window.supabase.createClient === 'function') {
-      window.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-      console.log('✅ Supabase inicializado no login.html');
-    }
-  </script>
+  
+  <!-- Scripts Supabase e Criptografia -->
+  <script async defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0"></script>
+  
+  <!-- bcryptjs para hash seguro de senhas -->
+  <script async defer src="https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcryptjs.min.js"></script>
+  
+  <!-- Sistema de Criptografia de Senhas -->
+  <script src="js/password-crypto.js?v=1.0.0"></script>
+  
+  <!-- Configuração Segura do Supabase (lê de .env) -->
+  <script src="js/supabase-config.js?v=1.0.0"></script>
+  
+  <!-- Autenticação -->
+  <script src="js/auth.js?v=1.0.0"></script>
   <script src="js/auth.js"></script>
 </body>
 </html>

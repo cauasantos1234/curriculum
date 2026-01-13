@@ -273,10 +273,21 @@
   }
 
   function saveUser(data){
+    // Garantir que a senha seja criptografada antes de salvar
+    if (data.password && !data.password.startsWith('$')) {
+      console.warn('⚠️ Tentativa de salvar senha em texto plano - será criptografada');
+      // A senha será criptografada pelo auth.js antes de chamar saveUser
+    }
+    
     const users = JSON.parse(localStorage.getItem('ns-users')||'[]');
     users.push(data); 
     localStorage.setItem('ns-users', JSON.stringify(users));
-    console.log('Usuário salvo:', data);
+    console.log('✅ Usuário salvo com segurança:', {
+      name: data.name,
+      email: data.email,
+      role: data.role,
+      hashStatus: data.password ? (data.password.startsWith('$') ? '🔒 Criptografado' : '⚠️ Texto plano') : 'N/A'
+    });
     console.log('Total de usuários:', users.length);
   }
   
@@ -332,50 +343,161 @@
   console.log('Digite "debugAuth.criarProfessorTeste()" para criar um professor de teste');
 
   if(loginForm){
-    loginForm.addEventListener('submit', e=>{
+    loginForm.addEventListener('submit', async e=>{
       e.preventDefault();
       const emailInput = document.getElementById('email');
       const passInput = document.getElementById('password');
       const email = emailInput.value.toLowerCase().trim();
       const pass = passInput.value;
-      const users = JSON.parse(localStorage.getItem('ns-users')||'[]');
       
       console.log('=== TENTATIVA DE LOGIN ====================');
-      console.log('Email digitado (original):', emailInput.value);
-      console.log('Email processado (lowercase + trim):', email);
-      console.log('Senha digitada:', pass);
-      console.log('Comprimento da senha:', pass.length);
-      console.log('Total de usuários registrados:', users.length);
-      console.log('===========================================');
+      console.log('Email:', email);
+      console.log('Tentando autenticar via Supabase primeiro...');
       
-      console.log('Comparando com usuários registrados:');
-      users.forEach((u, index) => {
-        const userEmailProcessed = u.email.toLowerCase().trim();
-        console.log(`\nUsuário ${index + 1}:`, {
-          nome: u.name,
-          email_original: u.email,
-          email_processado: userEmailProcessed,
-          senha: u.password,
-          tipo: u.role,
-          email_match: userEmailProcessed === email,
-          senha_match: u.password === pass,
-          login_valido: (userEmailProcessed === email && u.password === pass)
+      // PRIORIDADE 1: Tentar login no Supabase primeiro
+      if (typeof window.supabase !== 'undefined' && window.supabase.auth) {
+        try {
+          console.log('🔄 Autenticando no Supabase...');
+          const {data, error} = await window.supabase.auth.signInWithPassword({
+            email: email,
+            password: pass
+          });
+          
+          if (error) {
+            console.log('⚠️ Supabase retornou erro:', error.message);
+            // Se Supabase falhar, tentar localStorage
+            tryLocalStorageLogin();
+          } else {
+            console.log('✅ Login no Supabase bem-sucedido!');
+            console.log('User ID:', data.user.id);
+            console.log('User metadata:', data.user.user_metadata);
+            
+            // Salvar sessão local
+            const userName = data.user.user_metadata?.name || data.user.email.split('@')[0];
+            const userRole = data.user.user_metadata?.role || 'student';
+            
+            localStorage.setItem('ns-session', JSON.stringify({
+              email: data.user.email,
+              name: userName,
+              role: userRole,
+              supabase_id: data.user.id
+            }));
+            
+            // Sincronizar com localStorage também
+            const users = JSON.parse(localStorage.getItem('ns-users')||'[]');
+            const localUser = users.find(u=>u.email.toLowerCase().trim() === email);
+            if (!localUser) {
+              saveUser({
+                name: userName,
+                email: data.user.email,
+                password: pass,
+                role: userRole
+              });
+              console.log('✅ Usuário sincronizado no localStorage');
+            }
+            
+            // Verificar se o usuário tem progresso, se não tiver, criar um vazio
+            const userProgressKey = `newsong-user-progress-${data.user.email}`;
+            if(!localStorage.getItem(userProgressKey)){
+              const emptyProgress = {
+                completedLessons: [],
+                studyTime: 0,
+                lastStudyDate: null,
+                studyStreak: 0,
+                achievements: [],
+                instrumentProgress: {},
+                startDate: new Date().toISOString()
+              };
+              localStorage.setItem(userProgressKey, JSON.stringify(emptyProgress));
+              console.log(`Progresso inicial criado para ${data.user.email}`);
+            }
+            
+            window.location.href = 'app.html';
+          }
+        } catch (err) {
+          console.warn('⚠️ Erro ao conectar com Supabase:', err);
+          tryLocalStorageLogin();
+        }
+      } else {
+        console.warn('⚠️ Supabase não disponível - usando localStorage');
+        tryLocalStorageLogin();
+      }
+      
+      // FALLBACK: Login via localStorage
+      function tryLocalStorageLogin() {
+        console.log('🔄 Tentando login via localStorage...');
+        const users = JSON.parse(localStorage.getItem('ns-users')||'[]');
+        console.log('Total de usuários no localStorage:', users.length);
+        
+        // Procurar usuário por email
+        const userFound = users.find(u => u.email.toLowerCase().trim() === email);
+        
+        if (!userFound) {
+          console.log('❌ LOGIN FALHOU - Email não encontrado!');
+          showNotification(
+            'Conta não encontrada neste PC',
+            'Esta conta não está registrada neste computador. Por favor, <strong>registre-se novamente</strong> com o mesmo email e senha para sincronizar via Supabase.',
+            'error'
+          );
+          return;
+        }
+        
+        // Comparar senha (com suporte a senhas antigas em texto plano)
+        let passwordMatch = false;
+        
+        if (userFound.password.startsWith('$')) {
+          // Senha criptografada - comparar com hash
+          if (window.passwordCrypto) {
+            window.passwordCrypto.comparePassword(pass, userFound.password).then(match => {
+              if (match) {
+                loginSuccess(userFound);
+              } else {
+                showNotification(
+                  'Senha incorreta',
+                  'A senha está incorreta. Por favor, tente novamente.',
+                  'error'
+                );
+              }
+            });
+            return;
+          } else {
+            console.warn('⚠️ Sistema de criptografia não disponível');
+            passwordMatch = false;
+          }
+        } else {
+          // Senha em texto plano (compatibilidade com dados antigos)
+          passwordMatch = (pass === userFound.password);
+        }
+        
+        if (passwordMatch) {
+          loginSuccess(userFound);
+        } else {
+          console.log('❌ LOGIN FALHOU - Senha incorreta!');
+          showNotification(
+            'Senha incorreta',
+            'A senha está incorreta. Por favor, tente novamente.',
+            'error'
+          );
+        }
+      }
+      
+      // Função para processar login bem-sucedido
+      function loginSuccess(user) {
+        console.log('✅ LOGIN LOCAL BEM-SUCEDIDO!');
+        console.log('Usuário:', {
+          name: user.name,
+          email: user.email,
+          role: user.role
         });
-      });
-      
-      const match = users.find(u=>u.email.toLowerCase().trim() === email && u.password === pass);
-      
-      if(match){ 
-        console.log('\n✅ LOGIN BEM-SUCEDIDO!');
-        console.log('Usuário autenticado:', match);
+        
         localStorage.setItem('ns-session', JSON.stringify({
-          email: match.email,
-          name: match.name,
-          role: match.role || 'student'
+          email: user.email,
+          name: user.name,
+          role: user.role || 'student'
         }));
         
-        // Verificar se o usuário tem progresso, se não tiver, criar um vazio
-        const userProgressKey = `newsong-user-progress-${match.email}`;
+        // Verificar se o usuário tem progresso
+        const userProgressKey = `newsong-user-progress-${user.email}`;
         if(!localStorage.getItem(userProgressKey)){
           const emptyProgress = {
             completedLessons: [],
@@ -387,58 +509,10 @@
             startDate: new Date().toISOString()
           };
           localStorage.setItem(userProgressKey, JSON.stringify(emptyProgress));
-          console.log(`Progresso inicial criado para ${match.email} no login`);
-        } else {
-          console.log(`Progresso existente carregado para ${match.email}`);
+          console.log(`Progresso inicial criado para ${user.email}`);
         }
         
-        // NOVO: Login no Supabase também
-        if (typeof window.supabase !== 'undefined' && window.supabase.auth) {
-          console.log('🔄 Fazendo login no Supabase também...');
-          window.supabase.auth.signInWithPassword({
-            email: email,
-            password: pass
-          }).then(({data, error}) => {
-            if (error) {
-              console.warn('⚠️ Erro ao fazer login no Supabase (isso é normal se o usuário não existe lá ainda):', error.message);
-              // Não bloqueia o login - continua mesmo se Supabase falhar
-              window.location.href = 'app.html';
-            } else {
-              console.log('✅ Login no Supabase bem-sucedido!');
-              console.log('User ID no Supabase:', data.user.id);
-              window.location.href = 'app.html';
-            }
-          }).catch(err => {
-            console.warn('⚠️ Erro ao conectar com Supabase:', err);
-            // Continua mesmo se Supabase falhar
-            window.location.href = 'app.html';
-          });
-        } else {
-          console.warn('⚠️ Supabase não disponível - pulando autenticação Supabase');
-          window.location.href = 'app.html';
-        } 
-      } else { 
-        console.log('\n❌ LOGIN FALHOU!');
-        
-        // Verificar se o email existe
-        const emailExists = users.find(u=>u.email.toLowerCase().trim() === email);
-        
-        if (emailExists) {
-          console.log('Email encontrado mas senha incorreta');
-          console.log('Usuário encontrado:', emailExists);
-          showNotification(
-            'Senha incorreta',
-            'A senha está incorreta. Por favor, tente novamente ou clique em "Esqueceu a senha?".',
-            'error'
-          );
-        } else {
-          console.log('Email não encontrado no sistema');
-          showNotification(
-            'Usuário não encontrado',
-            'Não encontramos uma conta com este email. Verifique se digitou corretamente ou <strong>crie uma nova conta</strong>.',
-            'error'
-          );
-        }
+        window.location.href = 'app.html';
       }
       
       console.log('===========================================');
@@ -446,74 +520,174 @@
   }
 
   if(registerForm){
-    registerForm.addEventListener('submit', e=>{
+    registerForm.addEventListener('submit', async e=>{
       e.preventDefault();
       const name = document.getElementById('name').value.trim();
       const email = document.getElementById('email').value.toLowerCase().trim();
       const pass = document.getElementById('password').value;
       const accountType = document.querySelector('input[name="accountType"]:checked').value;
       
-      // Verificar se o email já existe
-      const users = JSON.parse(localStorage.getItem('ns-users')||'[]');
-      const emailExists = users.find(u => u.email.toLowerCase().trim() === email);
+      console.log('=== REGISTRANDO USUÁRIO ====================');
+      console.log('Nome:', name);
+      console.log('Email:', email);
+      console.log('Tipo:', accountType);
       
-      if (emailExists) {
-        showNotification(
-          'Email já cadastrado',
-          'Este email já está registrado. Por favor, faça login ou use outro email.',
-          'error'
-        );
-        return;
-      }
-      
-      console.log('Registrando usuário:', {name, email, role: accountType});
-      saveUser({name,email,password:pass,role:accountType});
-      
-      // Inicializar progresso vazio para o novo usuário
-      const newUserProgressKey = `newsong-user-progress-${email}`;
-      const emptyProgress = {
-        completedLessons: [],
-        studyTime: 0,
-        lastStudyDate: null,
-        studyStreak: 0,
-        achievements: [],
-        instrumentProgress: {},
-        startDate: new Date().toISOString()
-      };
-      localStorage.setItem(newUserProgressKey, JSON.stringify(emptyProgress));
-      console.log(`Progresso inicial criado para ${email}`);
-      
-      // NOVO: Registrar no Supabase também
+      // PRIORIDADE 1: Registrar no Supabase primeiro
       if (typeof window.supabase !== 'undefined' && window.supabase.auth) {
-        console.log('🔄 Registrando no Supabase também...');
-        window.supabase.auth.signUp({
-          email: email,
-          password: pass,
-          options: {
-            data: {
-              name: name,
-              role: accountType
+        try {
+          console.log('🔄 Registrando no Supabase...');
+          const {data, error} = await window.supabase.auth.signUp({
+            email: email,
+            password: pass,
+            options: {
+              data: {
+                name: name,
+                role: accountType
+              }
             }
-          }
-        }).then(({data, error}) => {
+          });
+          
           if (error) {
             console.warn('⚠️ Erro ao registrar no Supabase:', error.message);
-            // Não bloqueia o registro - continua mesmo se Supabase falhar
+            
+            // Se o usuário já existe no Supabase, verificar localStorage
+            if (error.message.includes('already registered') || error.message.includes('already exists')) {
+              showNotification(
+                'Email já cadastrado',
+                'Este email já está registrado. Por favor, faça <strong>login</strong> ou use outro email.',
+                'error'
+              );
+              return;
+            }
+            
+            // Para outros erros, tentar salvar localmente
+            console.log('Salvando localmente como fallback...');
+            saveLocalUser();
           } else {
             console.log('✅ Registro no Supabase bem-sucedido!');
-            console.log('User ID no Supabase:', data.user?.id);
+            console.log('User ID:', data.user?.id);
+            
+            // Criptografar senha antes de salvar localmente
+            if (window.passwordCrypto) {
+              window.passwordCrypto.hashPassword(pass).then(hashedPassword => {
+                saveUser({
+                  name, 
+                  email, 
+                  password: hashedPassword, 
+                  role: accountType
+                });
+                
+                console.log('✅ Usuário sincronizado no localStorage com senha criptografada');
+                
+                // Inicializar progresso
+                const newUserProgressKey = `newsong-user-progress-${email}`;
+                const emptyProgress = {
+                  completedLessons: [],
+                  studyTime: 0,
+                  lastStudyDate: null,
+                  studyStreak: 0,
+                  achievements: [],
+                  instrumentProgress: {},
+                  startDate: new Date().toISOString()
+                };
+                localStorage.setItem(newUserProgressKey, JSON.stringify(emptyProgress));
+                console.log(`Progresso inicial criado para ${email}`);
+                
+                showSuccessAndRedirect();
+              });
+            } else {
+              // Fallback
+              saveUser({name, email, password:pass, role:accountType});
+              const newUserProgressKey = `newsong-user-progress-${email}`;
+              const emptyProgress = {
+                completedLessons: [],
+                studyTime: 0,
+                lastStudyDate: null,
+                studyStreak: 0,
+                achievements: [],
+                instrumentProgress: {},
+                startDate: new Date().toISOString()
+              };
+              localStorage.setItem(newUserProgressKey, JSON.stringify(emptyProgress));
+              showSuccessAndRedirect();
+            }
           }
-          
-          // Continua com a notificação independentemente do Supabase
-          showSuccessAndRedirect();
-        }).catch(err => {
+        } catch (err) {
           console.warn('⚠️ Erro ao conectar com Supabase:', err);
-          // Continua mesmo se Supabase falhar
-          showSuccessAndRedirect();
-        });
+          console.log('Salvando localmente como fallback...');
+          saveLocalUser();
+        }
       } else {
-        console.warn('⚠️ Supabase não disponível - pulando registro Supabase');
-        showSuccessAndRedirect();
+        console.warn('⚠️ Supabase não disponível - salvando apenas localmente');
+        saveLocalUser();
+      }
+      
+      // Função para salvar localmente
+      function saveLocalUser() {
+        // Verificar se o email já existe localmente
+        const users = JSON.parse(localStorage.getItem('ns-users')||'[]');
+        const emailExists = users.find(u => u.email.toLowerCase().trim() === email);
+        
+        if (emailExists) {
+          showNotification(
+            'Email já cadastrado',
+            'Este email já está registrado localmente. Por favor, faça login ou use outro email.',
+            'error'
+          );
+          return;
+        }
+        
+        console.log('Salvando usuário no localStorage com senha criptografada...');
+        
+        // Criptografar senha antes de salvar
+        if (window.passwordCrypto) {
+          window.passwordCrypto.hashPassword(pass).then(hashedPassword => {
+            saveUser({
+              name, 
+              email, 
+              password: hashedPassword, 
+              role: accountType
+            });
+            
+            // Inicializar progresso vazio
+            const newUserProgressKey = `newsong-user-progress-${email}`;
+            const emptyProgress = {
+              completedLessons: [],
+              studyTime: 0,
+              lastStudyDate: null,
+              studyStreak: 0,
+              achievements: [],
+              instrumentProgress: {},
+              startDate: new Date().toISOString()
+            };
+            localStorage.setItem(newUserProgressKey, JSON.stringify(emptyProgress));
+            console.log(`Progresso inicial criado para ${email}`);
+            
+            showSuccessAndRedirect();
+          });
+        } else {
+          // Fallback se crypto não disponível (manter compatibilidade)
+          console.warn('⚠️ Sistema de criptografia não disponível - usando texto plano como fallback');
+          saveUser({
+            name, 
+            email, 
+            password: pass, 
+            role: accountType
+          });
+          
+          const newUserProgressKey = `newsong-user-progress-${email}`;
+          const emptyProgress = {
+            completedLessons: [],
+            studyTime: 0,
+            lastStudyDate: null,
+            studyStreak: 0,
+            achievements: [],
+            instrumentProgress: {},
+            startDate: new Date().toISOString()
+          };
+          localStorage.setItem(newUserProgressKey, JSON.stringify(emptyProgress));
+          showSuccessAndRedirect();
+        }
       }
       
       function showSuccessAndRedirect() {

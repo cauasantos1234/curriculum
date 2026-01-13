@@ -1074,7 +1074,7 @@
           </div>
           
           <div class="video-modal-actions">
-            <button class="btn-mark-watched" id="btnCompleteLesson-${video.lessonId}" data-lesson-id="${video.lessonId}" data-duration="${video.duration}" data-instrument="${instrumentId}" data-level="${level}">
+            <button class="btn-mark-watched" id="btnCompleteLesson-${video.lessonId || video.id}" data-lesson-id="${video.lessonId || video.id}" data-duration="${video.duration}" data-instrument="${instrumentId}" data-level="${level}">
               <span>✓</span>
               <span>Concluir Aula</span>
             </button>
@@ -1165,11 +1165,22 @@ Compartilhe suas dúvidas, aprendizados ou dicas sobre esta aula!"
   
   // Inicializar botão de concluir aula
   function initializeCompleteLessonButton(video){
-    const btn = document.getElementById(`btnCompleteLesson-${video.lessonId}`);
+    const completionId = video.lessonId || video.id;
+    const btn = document.getElementById(`btnCompleteLesson-${completionId}`);
     if(!btn) return;
     
+    // Verificar se o usuário atual é o autor do vídeo (professor)
+    const session = JSON.parse(localStorage.getItem('ns-session') || '{}');
+    const isOwnVideo = session.email && video.author && session.email === video.author;
+    
+    if(isOwnVideo) {
+      // Ocultar botão para professores visualizando seus próprios vídeos
+      btn.style.display = 'none';
+      return;
+    }
+    
     // Verificar se já foi concluída
-    if(window.UserProgress && window.UserProgress.isLessonCompleted(video.lessonId)){
+    if(window.UserProgress && window.UserProgress.isLessonCompleted(completionId)){
       btn.innerHTML = '<span>✓</span><span>Aula Concluída</span>';
       btn.classList.add('completed');
       btn.disabled = true;
@@ -1189,6 +1200,13 @@ Compartilhe suas dúvidas, aprendizados ou dicas sobre esta aula!"
   function handleCompleteLesson(video, btn){
     if(!window.UserProgress){
       alert('Sistema de progresso não está disponível.');
+      return;
+    }
+    
+    // Verificar se o usuário atual é o autor do vídeo (professor)
+    const session = JSON.parse(localStorage.getItem('ns-session') || '{}');
+    if(session.email && video.author && session.email === video.author) {
+      alert('⚠️ Professores não podem marcar suas próprias aulas como concluídas.\n\nApenas alunos podem ganhar XP e progresso.');
       return;
     }
     
@@ -1258,8 +1276,12 @@ Compartilhe suas dúvidas, aprendizados ou dicas sobre esta aula!"
       }, 300);
       
       // 🌟 MOSTRAR MODAL DE AVALIAÇÃO DO PROFESSOR após 1 segundo
+      // Verificar se o usuário não é o próprio professor
       setTimeout(() => {
-        if (window.showTeacherRatingModal && video.author) {
+        const session = JSON.parse(localStorage.getItem('ns-session') || '{}');
+        const isOwnVideo = session.email && video.author && session.email === video.author;
+        
+        if (!isOwnVideo && window.showTeacherRatingModal && video.author) {
           window.showTeacherRatingModal(
             video.author,
             lessonId,
@@ -1312,7 +1334,38 @@ Compartilhe suas dúvidas, aprendizados ou dicas sobre esta aula!"
     }, 3000);
   }
   
-  // Video Interaction Functions (Likes/Dislikes)
+  // Atualizar UI de interação do vídeo
+  function updateVideoInteractionUI(videoId, stats) {
+    const likeBtn = document.querySelector(`.btn-like[data-video-id="${videoId}"]`);
+    const dislikeBtn = document.querySelector(`.btn-dislike[data-video-id="${videoId}"]`);
+    const likeCountEl = document.getElementById(`likeCount-${videoId}`);
+    const dislikeCountEl = document.getElementById(`dislikeCount-${videoId}`);
+    
+    // Atualizar contadores
+    if(likeCountEl) likeCountEl.textContent = stats.likes || 0;
+    if(dislikeCountEl) dislikeCountEl.textContent = stats.dislikes || 0;
+    
+    // Atualizar classes active
+    if(likeBtn) {
+      if(stats.userLiked) {
+        likeBtn.classList.add('active');
+      } else {
+        likeBtn.classList.remove('active');
+      }
+    }
+    
+    if(dislikeBtn) {
+      if(stats.userDisliked) {
+        dislikeBtn.classList.add('active');
+      } else {
+        dislikeBtn.classList.remove('active');
+      }
+    }
+    
+    console.log(`🔄 UI atualizada - Video ${videoId}: ${stats.likes} likes, ${stats.dislikes} dislikes`);
+  }
+  
+  // Video Interaction Functions (Likes/Dislikes) - Usando sistema unificado
   window.handleLike = function(videoId){
     const session = JSON.parse(localStorage.getItem('ns-session'));
     if(!session || !session.email){
@@ -1320,6 +1373,21 @@ Compartilhe suas dúvidas, aprendizados ou dicas sobre esta aula!"
       return;
     }
     
+    // Usar sistema unificado se disponível
+    if(window.VideoUnified && window.VideoUnified.likeVideo) {
+      const result = window.VideoUnified.likeVideo(videoId);
+      
+      if(result.success) {
+        // Atualizar UI
+        updateVideoInteractionUI(videoId, result);
+        console.log(`✅ Like processado: ${result.likes} likes, ${result.dislikes} dislikes`);
+      } else {
+        alert(result.error || 'Erro ao curtir vídeo');
+      }
+      return;
+    }
+    
+    // Fallback para sistema antigo
     const likeBtn = document.querySelector(`.btn-like[data-video-id="${videoId}"]`);
     const dislikeBtn = document.querySelector(`.btn-dislike[data-video-id="${videoId}"]`);
     const likeCountEl = document.getElementById(`likeCount-${videoId}`);
@@ -1361,6 +1429,21 @@ Compartilhe suas dúvidas, aprendizados ou dicas sobre esta aula!"
       return;
     }
     
+    // Usar sistema unificado se disponível
+    if(window.VideoUnified && window.VideoUnified.dislikeVideo) {
+      const result = window.VideoUnified.dislikeVideo(videoId);
+      
+      if(result.success) {
+        // Atualizar UI
+        updateVideoInteractionUI(videoId, result);
+        console.log(`✅ Dislike processado: ${result.likes} likes, ${result.dislikes} dislikes`);
+      } else {
+        alert(result.error || 'Erro ao dar dislike');
+      }
+      return;
+    }
+    
+    // Fallback para sistema antigo
     const likeBtn = document.querySelector(`.btn-like[data-video-id="${videoId}"]`);
     const dislikeBtn = document.querySelector(`.btn-dislike[data-video-id="${videoId}"]`);
     const dislikeCountEl = document.getElementById(`dislikeCount-${videoId}`);
@@ -1397,21 +1480,29 @@ Compartilhe suas dúvidas, aprendizados ou dicas sobre esta aula!"
   
   function initializeVideoInteractions(videoId){
     const session = JSON.parse(localStorage.getItem('ns-session'));
-    const statsKey = `video-${videoId}-interaction`;
-    const stats = JSON.parse(localStorage.getItem(statsKey) || '{"likes":0,"dislikes":0}');
     
-    document.getElementById(`likeCount-${videoId}`).textContent = stats.likes;
-    document.getElementById(`dislikeCount-${videoId}`).textContent = stats.dislikes;
-    
-    // Check if current user has liked or disliked
-    if(session && session.email){
-      const likeKey = `video-${videoId}-like-${session.email}`;
-      const dislikeKey = `video-${videoId}-dislike-${session.email}`;
+    // Usar sistema unificado se disponível
+    if(window.VideoUnified && window.VideoUnified.getVideoStats) {
+      const stats = window.VideoUnified.getVideoStats(videoId);
+      updateVideoInteractionUI(videoId, stats);
+    } else {
+      // Fallback para sistema antigo
+      const statsKey = `video-${videoId}-interaction`;
+      const stats = JSON.parse(localStorage.getItem(statsKey) || '{"likes":0,"dislikes":0}');
       
-      if(localStorage.getItem(likeKey) === 'liked'){
-        document.querySelector(`.btn-like[data-video-id="${videoId}"]`).classList.add('active');
-      } else if(localStorage.getItem(dislikeKey) === 'disliked'){
-        document.querySelector(`.btn-dislike[data-video-id="${videoId}"]`).classList.add('active');
+      document.getElementById(`likeCount-${videoId}`).textContent = stats.likes;
+      document.getElementById(`dislikeCount-${videoId}`).textContent = stats.dislikes;
+      
+      // Check if current user has liked or disliked
+      if(session && session.email){
+        const likeKey = `video-${videoId}-like-${session.email}`;
+        const dislikeKey = `video-${videoId}-dislike-${session.email}`;
+        
+        if(localStorage.getItem(likeKey) === 'liked'){
+          document.querySelector(`.btn-like[data-video-id="${videoId}"]`).classList.add('active');
+        } else if(localStorage.getItem(dislikeKey) === 'disliked'){
+          document.querySelector(`.btn-dislike[data-video-id="${videoId}"]`).classList.add('active');
+        }
       }
     }
     
@@ -1993,6 +2084,19 @@ Compartilhe suas dúvidas, aprendizados ou dicas sobre esta aula!"
       console.error('❌ ERRO: SavedVideos não está disponível! Funcionalidade de salvos não funcionará.');
     }
   }, 1000);
+  
+  // Adicionar listener para eventos de likes/dislikes em tempo real
+  if(window.VideoUnified) {
+    window.addEventListener('videoLikeChanged', (e) => {
+      const { videoId, likes, dislikes, userLiked, userDisliked } = e.detail;
+      console.log(`🔄 Atualização em tempo real: vídeo ${videoId} - ${likes} likes, ${dislikes} dislikes`);
+      
+      // Atualizar UI se o vídeo estiver visível
+      updateVideoInteractionUI(videoId, { likes, dislikes, userLiked, userDisliked });
+    });
+    
+    console.log('✅ VideoUnified: Listener de eventos em tempo real ativado');
+  }
   
   } // Fim da função initVideos
 

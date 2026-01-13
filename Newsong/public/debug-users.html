@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - Usuários Supabase</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            font-family: 'Courier New', monospace;
+            color: #fff;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid #d4af37;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            color: #d4af37;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #aaa;
+            font-size: 14px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            background: #d4af37;
+            color: #1a1a2e;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            background: #e6c348;
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary {
+            background: #444;
+            color: #fff;
+        }
+        
+        .btn-secondary:hover {
+            background: #555;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 18px;
+            color: #d4af37;
+        }
+        
+        .spinner {
+            border: 3px solid rgba(212, 175, 55, 0.2);
+            border-top: 3px solid #d4af37;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error {
+            background: rgba(255, 100, 100, 0.2);
+            border: 2px solid #ff6464;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            color: #ff9999;
+        }
+        
+        .success {
+            background: rgba(100, 255, 100, 0.2);
+            border: 2px solid #64ff64;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            color: #99ff99;
+        }
+        
+        .user-card {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .user-card:hover {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+        }
+        
+        .user-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .user-name {
+            color: #d4af37;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .user-id {
+            color: #888;
+            font-size: 12px;
+            word-break: break-all;
+        }
+        
+        .user-field {
+            display: flex;
+            gap: 10px;
+            margin: 8px 0;
+            font-size: 13px;
+        }
+        
+        .field-label {
+            color: #d4af37;
+            font-weight: bold;
+            min-width: 100px;
+        }
+        
+        .field-value {
+            color: #ccc;
+            flex: 1;
+            word-break: break-word;
+        }
+        
+        .user-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #333;
+        }
+        
+        .btn-small {
+            flex: 1;
+            padding: 8px 12px;
+            font-size: 12px;
+        }
+        
+        .stats {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid #d4af37;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #d4af37;
+        }
+        
+        .stat-label {
+            color: #aaa;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        
+        .users-list {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .empty {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Debug - Usuários do Supabase</h1>
+            <p>Veja todos os usuários cadastrados e teste o sistema</p>
+        </div>
+        
+        <div class="controls">
+            <button onclick="carregarUsuarios()">🔄 Carregar Usuários</button>
+            <button class="btn-secondary" onclick="testConexao()">📡 Testar Conexão</button>
+            <button class="btn-secondary" onclick="limparConsole()">🗑️ Limpar</button>
+            <button class="btn-secondary" onclick="voltarParaLogin()">← Voltar</button>
+        </div>
+        
+        <div id="content">
+            <div class="loading">
+                <p>Clique em "Carregar Usuários" para começar</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.4"></script>
+    
+    <script>
+        const SUPABASE_URL = 'https://wbzaktlcxgmctocgtifj.supabase.co';
+        const SUPABASE_KEY = 'sb_secret_A5MvD0t69ct-WxE6t8higw_HeBnWc06';
+        
+        let supabase = null;
+        
+        // Inicializar Supabase
+        function init() {
+            try {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                console.log('✅ Supabase inicializado');
+            } catch (err) {
+                mostrarErro('Erro ao inicializar Supabase: ' + err.message);
+            }
+        }
+        
+        // Testar conexão
+        async function testConexao() {
+            if (!supabase) init();
+            
+            try {
+                mostrarCarregando('Testando conexão com Supabase...');
+                
+                const { data, error } = await supabase.auth.getSession();
+                
+                if (error) {
+                    mostrarErro('❌ Erro na conexão: ' + error.message);
+                } else {
+                    mostrarSucesso('✅ Conexão bem-sucedida! Status: ' + (data?.session ? 'Autenticado' : 'Não autenticado'));
+                }
+            } catch (err) {
+                mostrarErro('❌ Erro: ' + err.message);
+            }
+        }
+        
+        // Carregar usuários
+        async function carregarUsuarios() {
+            if (!supabase) init();
+            
+            try {
+                mostrarCarregando('Carregando usuários...');
+                
+                // Tentar obter usuários usando a API de admin
+                const { data, error } = await supabase.auth.admin.listUsers();
+                
+                if (error) {
+                    console.error('Erro ao listar usuários:', error);
+                    mostrarErro('❌ Erro: ' + error.message + '<br><br><em>A chave de API pode não ter permissão admin. Use uma chave service_role ao invés de anon.</em>');
+                    return;
+                }
+                
+                console.log('Usuários carregados:', data);
+                
+                if (!data || data.users.length === 0) {
+                    mostrarVazio('Nenhum usuário encontrado no Supabase');
+                    return;
+                }
+                
+                exibirUsuarios(data.users);
+                
+            } catch (err) {
+                console.error('Erro:', err);
+                mostrarErro('❌ Erro: ' + err.message);
+            }
+        }
+        
+        // Exibir usuários
+        function exibirUsuarios(usuarios) {
+            let html = `
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value">${usuarios.length}</div>
+                        <div class="stat-label">Total de Usuários</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${usuarios.filter(u => u.email_confirmed_at).length}</div>
+                        <div class="stat-label">Email Confirmado</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${usuarios.filter(u => !u.email_confirmed_at).length}</div>
+                        <div class="stat-label">Pendente de Confirmação</div>
+                    </div>
+                </div>
+                <div class="users-list">
+            `;
+            
+            usuarios.forEach((user, index) => {
+                const role = user.user_metadata?.role || 'Não definido';
+                const name = user.user_metadata?.name || user.email.split('@')[0];
+                const confirmed = user.email_confirmed_at ? '✅ Sim' : '❌ Não';
+                
+                html += `
+                    <div class="user-card">
+                        <div class="user-header">
+                            <div>
+                                <div class="user-name">${index + 1}. ${name}</div>
+                                <div class="user-id">ID: ${user.id}</div>
+                            </div>
+                        </div>
+                        <div class="user-field">
+                            <span class="field-label">Email:</span>
+                            <span class="field-value">${user.email}</span>
+                        </div>
+                        <div class="user-field">
+                            <span class="field-label">Tipo:</span>
+                            <span class="field-value">${role === 'teacher' ? '👨‍🏫 Professor' : role === 'student' ? '👨‍🎓 Aluno' : role}</span>
+                        </div>
+                        <div class="user-field">
+                            <span class="field-label">Email Confirmado:</span>
+                            <span class="field-value">${confirmed}</span>
+                        </div>
+                        <div class="user-field">
+                            <span class="field-label">Criado em:</span>
+                            <span class="field-value">${new Date(user.created_at).toLocaleString('pt-BR')}</span>
+                        </div>
+                        <div class="user-field">
+                            <span class="field-label">Último login:</span>
+                            <span class="field-value">${user.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleString('pt-BR') : 'Nunca'}</span>
+                        </div>
+                        <div class="user-actions">
+                            <button class="btn-small" onclick="copiarEmail('${user.email}')">📋 Copiar Email</button>
+                            <button class="btn-small" onclick="abrirLogin('${user.email}')">🔑 Entrar</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            document.getElementById('content').innerHTML = html;
+        }
+        
+        // Copiar email para a área de transferência
+        function copiarEmail(email) {
+            navigator.clipboard.writeText(email);
+            alert('Email copiado: ' + email);
+        }
+        
+        // Abrir página de login com email pré-preenchido
+        function abrirLogin(email) {
+            window.location.href = 'login.html?email=' + encodeURIComponent(email);
+        }
+        
+        // Exibir mensagens
+        function mostrarCarregando(msg) {
+            document.getElementById('content').innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>${msg}</p>
+                </div>
+            `;
+        }
+        
+        function mostrarErro(msg) {
+            document.getElementById('content').innerHTML = `
+                <div class="error">${msg}</div>
+                <button onclick="carregarUsuarios()">🔄 Tentar Novamente</button>
+            `;
+        }
+        
+        function mostrarSucesso(msg) {
+            document.getElementById('content').innerHTML = `
+                <div class="success">${msg}</div>
+                <button onclick="carregarUsuarios()">📋 Ver Usuários</button>
+            `;
+        }
+        
+        function mostrarVazio(msg) {
+            document.getElementById('content').innerHTML = `
+                <div class="empty">${msg}</div>
+            `;
+        }
+        
+        function limparConsole() {
+            console.clear();
+            document.getElementById('content').innerHTML = '<div class="loading"><p>Console e tela limpas</p></div>';
+        }
+        
+        function voltarParaLogin() {
+            window.location.href = 'login.html';
+        }
+        
+        // Inicializar quando a página carregar
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

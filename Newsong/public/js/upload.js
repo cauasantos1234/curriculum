@@ -529,7 +529,15 @@
     const selectedInstrument = instrumentSelect?.value;
     const selectedModule = moduleSelect?.value;
     
-    if(!selectedInstrument || !selectedModule || !lessonSelect) return;
+    console.log('🔄 Atualizando opções de aula...', {
+      instrumento: selectedInstrument,
+      modulo: selectedModule
+    });
+    
+    if(!selectedInstrument || !selectedModule || !lessonSelect) {
+      console.warn('⚠️ Faltam dados para atualizar aulas');
+      return;
+    }
     
     lessonSelect.disabled = false;
     lessonSelect.innerHTML = '<option value="">Selecione uma aula</option>';
@@ -543,9 +551,12 @@
     const levelKey = moduleMap[selectedModule];
     const lessonsList = lessonsStructure[selectedInstrument]?.[levelKey] || [];
     
+    console.log('📚 Aulas encontradas:', lessonsList.length);
+    
     if(lessonsList.length === 0){
       lessonSelect.innerHTML = '<option value="">Nenhuma aula disponível para este nível</option>';
       lessonSelect.disabled = true;
+      console.warn('⚠️ Nenhuma aula disponível para:', {instrumento: selectedInstrument, nivel: levelKey});
       return;
     }
     
@@ -555,6 +566,8 @@
       option.textContent = lesson.title;
       lessonSelect.appendChild(option);
     });
+    
+    console.log('✅ Aulas carregadas com sucesso no select');
   }
 
   // Video URL preview
@@ -747,11 +760,40 @@
         uploadType: currentUploadType
       };
       
-      // Validate required fields
-      if(!formData.title || !formData.duration || !formData.author || 
-         !formData.instrument || !formData.module || !formData.lesson){
+      // Debug: mostrar valores capturados
+      console.log('📋 Dados do formulário:', formData);
+      console.log('🎯 Módulo selecionado:', moduleSelect?.value);
+      console.log('📚 Aula selecionada:', lessonSelect?.value);
+      console.log('🔧 Lesson select disabled?', lessonSelect?.disabled);
+      console.log('⏱️ Duração capturada:', formData.duration);
+      console.log('📹 Tipo de upload:', currentUploadType);
+      
+      // Validate required fields (básicos) - DURAÇÃO NÃO É OBRIGATÓRIA AINDA
+      if(!formData.title || !formData.author || !formData.instrument){
         openModal('❌ Campos Obrigatórios', 
-          '<p>Por favor, preencha todos os campos marcados com <span style="color:#ef4444">*</span></p>');
+          '<p>Por favor, preencha todos os campos básicos marcados com <span style="color:#ef4444">*</span></p>' +
+          '<p style="margin-top:12px;font-size:14px;color:var(--muted)">Faltando: ' + 
+          [
+            !formData.title ? 'Título' : null,
+            !formData.author ? 'Professor' : null,
+            !formData.instrument ? 'Instrumento' : null
+          ].filter(Boolean).join(', ') + '</p>');
+        return;
+      }
+      
+      // Validate module (nível)
+      if(!formData.module){
+        openModal('❌ Nível Obrigatório', 
+          '<p>Por favor, selecione o <strong>nível</strong> do vídeo.</p>' +
+          '<p style="margin-top:12px;font-size:14px;color:var(--muted)">Escolha: Bronze (Iniciante), Prata (Intermediário) ou Ouro (Avançado)</p>');
+        return;
+      }
+      
+      // Validate lesson (aula)
+      if(!formData.lesson){
+        openModal('❌ Aula Obrigatória', 
+          '<p>Por favor, selecione uma <strong>aula</strong> para associar este vídeo.</p>' +
+          '<p style="margin-top:12px;font-size:14px;color:var(--muted)">💡 Dica: Certifique-se de ter selecionado o instrumento e o nível primeiro, depois escolha a aula na lista.</p>');
         return;
       }
       
@@ -762,10 +804,38 @@
         return;
       }
       
-      // Validate duration format (now auto-filled, but still check)
-      if(!formData.duration || formData.duration === 'Será detectado automaticamente'){
-        openModal('❌ Duração Não Detectada', 
-          '<p>Aguarde a detecção automática da duração do vídeo.</p>');
+      // Validate duration - Flexível para permitir preenchimento manual se necessário
+      if(!formData.duration || formData.duration === 'Será detectado automaticamente' || formData.duration.trim() === ''){
+        // Para upload de arquivo, a duração deve ser detectada
+        if(currentUploadType === 'file'){
+          openModal('⏱️ Duração Não Detectada', 
+            '<p>Aguarde a detecção automática da duração do vídeo.</p>' +
+            '<p style="margin-top:12px;font-size:14px;color:var(--muted)">💡 Dica: A duração é detectada automaticamente quando você seleciona o arquivo de vídeo. Aguarde alguns segundos.</p>');
+          return;
+        }
+        
+        // Para YouTube, perguntar se quer preencher manualmente
+        const shouldContinue = confirm(
+          '⏱️ Duração não detectada automaticamente.\n\n' +
+          'Você gostaria de:\n' +
+          '• OK = Preencher a duração manualmente agora\n' +
+          '• Cancelar = Voltar e aguardar detecção automática'
+        );
+        
+        if(!shouldContinue){
+          return;
+        }
+        
+        // Abrir campo de duração para preenchimento manual
+        const durationInput = document.getElementById('videoDuration');
+        if(durationInput){
+          durationInput.removeAttribute('readonly');
+          durationInput.focus();
+          durationInput.placeholder = 'Ex: 5:30 (5 minutos e 30 segundos)';
+          openModal('✏️ Preencha a Duração', 
+            '<p>Por favor, preencha a duração do vídeo manualmente.</p>' +
+            '<p style="margin-top:12px;font-size:14px;color:var(--muted)">Formato: MM:SS (ex: 5:30 para 5 minutos e 30 segundos)</p>');
+        }
         return;
       }
       
@@ -811,20 +881,29 @@
 
   async function saveVideoToStorage(videoData){
     try{
+      // Get current session to save teacher email
+      const session = JSON.parse(localStorage.getItem('ns-session') || 'null');
+      
       // Create new video object
       const newVideo = {
         title: videoData.title,
         description: videoData.description,
         duration: videoData.duration,
         author: videoData.author,
+        teacherEmail: session?.email || videoData.author, // IMPORTANTE: salvar email do professor
         instrument: videoData.instrument,
         module: videoData.module,
         lesson: videoData.lesson,
         uploadedAt: new Date().toISOString(),
         uploadType: videoData.uploadType,
         views: 0,
+        likes: 0,
+        rating: 0,
+        ratings: [],
         postedDate: new Date().toISOString()
       };
+      
+      console.log('💾 Salvando vídeo com email:', newVideo.teacherEmail);
       
       // Convert thumbnail to base64
       if(selectedThumbnail){
