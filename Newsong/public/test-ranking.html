@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teste de Ranking - Diagnóstico</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #0a0a0a;
+      color: #f7f2e6;
+    }
+    
+    h1 {
+      color: #d4af37;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .section {
+      background: #1a1a1a;
+      border: 2px solid #d4af37;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .section h2 {
+      color: #f4d03f;
+      margin-top: 0;
+      border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+      padding-bottom: 10px;
+    }
+    
+    button {
+      background: linear-gradient(135deg, #d4af37, #f4d03f);
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      color: #0a0a0a;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 5px;
+      font-size: 14px;
+    }
+    
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+    }
+    
+    button:active {
+      transform: scale(0.95);
+    }
+    
+    pre {
+      background: #0f0f0f;
+      border: 1px solid #333;
+      border-radius: 6px;
+      padding: 15px;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    
+    .success {
+      color: #4ade80;
+    }
+    
+    .error {
+      color: #f87171;
+    }
+    
+    .warning {
+      color: #fbbf24;
+    }
+    
+    .info {
+      color: #60a5fa;
+    }
+    
+    .status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+    
+    .status.ok {
+      background: #4ade80;
+      color: #0a0a0a;
+    }
+    
+    .status.fail {
+      background: #f87171;
+      color: white;
+    }
+    
+    .status.pending {
+      background: #fbbf24;
+      color: #0a0a0a;
+    }
+    
+    #output {
+      min-height: 100px;
+    }
+    
+    .test-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔍 Diagnóstico do Sistema de Ranking</h1>
+  
+  <!-- Seção 1: Status dos Sistemas -->
+  <div class="section">
+    <h2>1. Status dos Sistemas</h2>
+    <div id="systemStatus">
+      <p>Verificando...</p>
+    </div>
+  </div>
+  
+  <!-- Seção 2: Informações do Usuário -->
+  <div class="section">
+    <h2>2. Usuário Atual</h2>
+    <div id="userInfo">
+      <p>Carregando...</p>
+    </div>
+    <div style="margin-top: 10px;">
+      <button onclick="checkUser()">🔄 Recarregar Info do Usuário</button>
+      <button onclick="showLoginForm()" style="background: linear-gradient(135deg, #7c3aed, #06b6d4);">🔑 Fazer Login</button>
+      <button onclick="doLogout()" style="background: linear-gradient(135deg, #ef4444, #dc2626);">🚪 Sair</button>
+    </div>
+    <div id="loginForm" style="display: none; margin-top: 15px; padding: 20px; background: #0f0f0f; border-radius: 8px;">
+      <h3 style="margin-top: 0;">Login</h3>
+      <input type="email" id="loginEmail" placeholder="Email" style="width: 100%; padding: 10px; margin-bottom: 10px; background: #1a1a1a; border: 1px solid #333; color: #f7f2e6; border-radius: 6px;">
+      <input type="password" id="loginPassword" placeholder="Senha" style="width: 100%; padding: 10px; margin-bottom: 10px; background: #1a1a1a; border: 1px solid #333; color: #f7f2e6; border-radius: 6px;">
+      <button onclick="doLogin()">✅ Entrar</button>
+      <button onclick="hideLoginForm()" style="background: #666;">❌ Cancelar</button>
+    </div>
+  </div>
+  
+  <!-- Seção 3: Dados de XP -->
+  <div class="section">
+    <h2>3. Dados de XP do Usuário</h2>
+    <div id="xpData">
+      <p>Carregando...</p>
+    </div>
+    <button onclick="checkXP()">🔄 Recarregar XP</button>
+    <button onclick="addTestXP()">➕ Adicionar 100 XP de Teste</button>
+  </div>
+  
+  <!-- Seção 4: Ranking -->
+  <div class="section">
+    <h2>4. Dados do Ranking</h2>
+    <div class="test-grid">
+      <button onclick="testRankingXP()">📊 Testar Ranking por XP</button>
+      <button onclick="testRankingStreak()">🔥 Testar Ranking por Streak</button>
+      <button onclick="testUserRanking()">👤 Minha Posição no Ranking</button>
+      <button onclick="testDirectQuery()">🔍 Query Direta</button>
+    </div>
+    <div id="rankingData">
+      <p>Clique nos botões acima para testar</p>
+    </div>
+  </div>
+  
+  <!-- Seção 5: Teste de Views -->
+  <div class="section">
+    <h2>5. Teste de Views do Banco</h2>
+    <div class="test-grid">
+      <button onclick="checkViewXP()">👁️ Ver ranking_by_xp</button>
+      <button onclick="checkViewStreak()">👁️ Ver ranking_by_streak</button>
+      <button onclick="checkUserXPTable()">👁️ Ver user_xp</button>
+    </div>
+    <div id="viewData">
+      <p>Clique nos botões acima para testar</p>
+    </div>
+  </div>
+  
+  <!-- Seção 6: Console de Saída -->
+  <div class="section">
+    <h2>6. Console de Saída</h2>
+    <button onclick="clearOutput()">🧹 Limpar</button>
+    <button onclick="copyOutput()">📋 Copiar Resultados</button>
+    <pre id="output"></pre>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/supabase.js"></script>
+  <script>
+    // Inicializar Supabase
+    const SUPABASE_URL = 'https://wbzaktlcxgmctocgtifj.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndiemFrdGxjeGdtY3RvY2d0aWZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU3NjEzNTEsImV4cCI6MjA4MTMzNzM1MX0.i3I01z8CT1l6kBPhNwk8bgRwJP4Jq5MO3Rn2dEsoJSM';
+    
+    let supabaseClient = null;
+    
+    if (typeof supabase !== 'undefined' && supabase.createClient) {
+      supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      window.supabase = supabaseClient;
+      log('✅ Supabase conectado', 'success');
+    } else {
+      log('❌ Erro ao conectar Supabase', 'error');
+    }
+  </script>
+  <script src="js/xp-system.js"></script>
+  <script src="js/ranking-system.js"></script>
+  
+  <script>
+    let outputLog = [];
+    
+    function log(message, type = 'info') {
+      const timestamp = new Date().toLocaleTimeString();
+      const prefix = {
+        success: '✅',
+        error: '❌',
+        warning: '⚠️',
+        info: 'ℹ️'
+      }[type] || 'ℹ️';
+      
+      const logEntry = `[${timestamp}] ${prefix} ${message}`;
+      outputLog.push(logEntry);
+      
+      const output = document.getElementById('output');
+      if (output) {
+        output.textContent = outputLog.join('\n');
+        output.scrollTop = output.scrollHeight;
+      }
+      
+      console.log(logEntry);
+    }
+    
+    function clearOutput() {
+      outputLog = [];
+      document.getElementById('output').textContent = '';
+    }
+    
+    function copyOutput() {
+      const output = document.getElementById('output');
+      navigator.clipboard.writeText(output.textContent);
+      alert('Resultados copiados para a área de transferência!');
+    }
+    
+    // Verificar sistemas
+    async function checkSystems() {
+      const systemStatus = document.getElementById('systemStatus');
+      let html = '<ul style="list-style: none; padding: 0;">';
+      
+      // Supabase
+      const supabaseOk = typeof supabase !== 'undefined' && supabaseClient !== null;
+      html += `<li>Supabase: <span class="status ${supabaseOk ? 'ok' : 'fail'}">${supabaseOk ? 'OK' : 'ERRO'}</span></li>`;
+      log(`Supabase: ${supabaseOk ? 'OK' : 'ERRO'}`, supabaseOk ? 'success' : 'error');
+      
+      // XPSystem
+      const xpOk = typeof XPSystem !== 'undefined';
+      html += `<li>XPSystem: <span class="status ${xpOk ? 'ok' : 'fail'}">${xpOk ? 'OK' : 'ERRO'}</span></li>`;
+      log(`XPSystem: ${xpOk ? 'OK' : 'ERRO'}`, xpOk ? 'success' : 'error');
+      
+      // RankingSystem
+      const rankingOk = typeof RankingSystem !== 'undefined';
+      html += `<li>RankingSystem: <span class="status ${rankingOk ? 'ok' : 'fail'}">${rankingOk ? 'OK' : 'ERRO'}</span></li>`;
+      log(`RankingSystem: ${rankingOk ? 'OK' : 'ERRO'}`, rankingOk ? 'success' : 'error');
+      
+      html += '</ul>';
+      systemStatus.innerHTML = html;
+    }
+    
+    // Verificar usuário
+    async function checkUser() {
+      const userInfo = document.getElementById('userInfo');
+      userInfo.innerHTML = '<p>Carregando...</p>';
+      
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          log(`Erro ao buscar sessão: ${error.message}`, 'error');
+          userInfo.innerHTML = `<p class="error">❌ Erro: ${error.message}</p>`;
+          return;
+        }
+        
+        if (!session) {
+          log('Usuário não está logado', 'warning');
+          userInfo.innerHTML = '<p class="warning">⚠️ Você não está logado!</p>';
+          return;
+        }
+        
+        const user = session.user;
+        log(`Usuário logado: ${user.email}`, 'success');
+        
+        userInfo.innerHTML = `
+          <p><strong>ID:</strong> <code>${user.id}</code></p>
+          <p><strong>Email:</strong> ${user.email}</p>
+          <p><strong>Criado em:</strong> ${new Date(user.created_at).toLocaleString()}</p>
+        `;
+      } catch (error) {
+        log(`Erro: ${error.message}`, 'error');
+        userInfo.innerHTML = `<p class="error">❌ Erro: ${error.message}</p>`;
+      }
+    }
+    
+    // Mostrar formulário de login
+    function showLoginForm() {
+      document.getElementById('loginForm').style.display = 'block';
+    }
+    
+    // Esconder formulário de login
+    function hideLoginForm() {
+      document.getElementById('loginForm').style.display = 'none';
+    }
+    
+    // Fazer login
+    async function doLogin() {
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      
+      if (!email || !password) {
+        alert('Por favor, preencha email e senha');
+        return;
+      }
+      
+      try {
+        log(`Tentando fazer login com ${email}...`, 'info');
+        
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: email,
+          password: password
+        });
+        
+        if (error) {
+          log(`Erro ao fazer login: ${error.message}`, 'error');
+          alert(`❌ Erro: ${error.message}`);
+          return;
+        }
+        
+        log(`✅ Login bem-sucedido!`, 'success');
+        hideLoginForm();
+        await checkUser();
+        await checkXP();
+        alert('✅ Login realizado com sucesso!');
+      } catch (error) {
+        log(`Erro: ${error.message}`, 'error');
+        alert(`❌ Erro: ${error.message}`);
+      }
+    }
+    
+    // Fazer logout
+    async function doLogout() {
+      try {
+        log('Fazendo logout...', 'info');
+        await supabase.auth.signOut();
+        log('✅ Logout realizado', 'success');
+        await checkUser();
+        document.getElementById('xpData').innerHTML = '<p class="warning">Faça login para ver seus dados</p>';
+        alert('✅ Logout realizado!');
+      } catch (error) {
+        log(`Erro ao fazer logout: ${error.message}`, 'error');
+        alert(`❌ Erro: ${error.message}`);
+      }
+    }
+    
+    // Verificar XP
+    async function checkXP() {
+      const xpData = document.getElementById('xpData');
+      xpData.innerHTML = '<p>Carregando...</p>';
+      
+      try {
+        if (typeof XPSystem === 'undefined') {
+          log('XPSystem não está carregado', 'error');
+          xpData.innerHTML = '<p class="error">❌ XPSystem não carregado</p>';
+          return;
+        }
+        
+        const userXP = await XPSystem.getUserXP();
+        
+        if (!userXP) {
+          log('Usuário não tem dados de XP', 'warning');
+          xpData.innerHTML = '<p class="warning">⚠️ Sem dados de XP. Execute uma ação para ganhar XP!</p>';
+          return;
+        }
+        
+        log(`XP Total: ${userXP.total_xp}`, 'success');
+        
+        const levelProgress = XPSystem.getLevelProgress(userXP.total_xp);
+        
+        xpData.innerHTML = `
+          <p><strong>XP Total:</strong> <span class="success">${userXP.total_xp}</span></p>
+          <p><strong>Nível:</strong> ${userXP.level} (${levelProgress.levelName})</p>
+          <p><strong>Streak Atual:</strong> 🔥 ${userXP.current_streak} dias</p>
+          <p><strong>Maior Streak:</strong> ${userXP.longest_streak} dias</p>
+          <p><strong>Última Atividade:</strong> ${new Date(userXP.last_activity).toLocaleString()}</p>
+          <p><strong>Progresso:</strong> ${levelProgress.progress}% para próximo nível</p>
+        `;
+      } catch (error) {
+        log(`Erro ao buscar XP: ${error.message}`, 'error');
+        xpData.innerHTML = `<p class="error">❌ Erro: ${error.message}</p>`;
+      }
+    }
+    
+    // Adicionar XP de teste
+    async function addTestXP() {
+      try {
+        log('Adicionando 100 XP de teste...', 'info');
+        const result = await XPSystem.addXP('TEST', 100, null, 'XP de teste do diagnóstico');
+        
+        if (result) {
+          log('✅ 100 XP adicionado com sucesso!', 'success');
+          await checkXP();
+          alert('✅ 100 XP adicionado! Aguarde alguns segundos e teste o ranking.');
+        } else {
+          log('Erro ao adicionar XP', 'error');
+          alert('❌ Erro ao adicionar XP. Verifique se você está logado.');
+        }
+      } catch (error) {
+        log(`Erro: ${error.message}`, 'error');
+        alert(`❌ Erro: ${error.message}`);
+      }
+    }
+    
+    // Testar ranking por XP
+    async function testRankingXP() {
+      const rankingData = document.getElementById('rankingData');
+      rankingData.innerHTML = '<p>Carregando ranking por XP...</p>';
+      
+      try {
+        log('Buscando ranking por XP...', 'info');
+        const rankings = await RankingSystem.getRankingByXP(20);
+        
+        log(`Encontrados ${rankings.length} usuários no ranking`, 'success');
+        
+        if (rankings.length === 0) {
+          rankingData.innerHTML = '<p class="warning">⚠️ Nenhum usuário no ranking!</p>';
+          return;
+        }
+        
+        let html = '<table style="width: 100%; border-collapse: collapse;">';
+        html += '<tr style="background: #0f0f0f; border-bottom: 2px solid #d4af37;">';
+        html += '<th style="padding: 10px; text-align: left;">#</th>';
+        html += '<th style="padding: 10px; text-align: left;">Nome</th>';
+        html += '<th style="padding: 10px; text-align: left;">XP</th>';
+        html += '<th style="padding: 10px; text-align: left;">Nível</th>';
+        html += '<th style="padding: 10px; text-align: left;">Streak</th>';
+        html += '</tr>';
+        
+        rankings.forEach((user, index) => {
+          const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '';
+          html += `<tr style="border-bottom: 1px solid #333;">`;
+          html += `<td style="padding: 8px;">${medal} ${user.rank}</td>`;
+          html += `<td style="padding: 8px;">${user.user_name || 'Sem nome'}</td>`;
+          html += `<td style="padding: 8px;" class="success">${user.total_xp}</td>`;
+          html += `<td style="padding: 8px;">${user.level}</td>`;
+          html += `<td style="padding: 8px;">🔥 ${user.current_streak}</td>`;
+          html += `</tr>`;
+        });
+        
+        html += '</table>';
+        rankingData.innerHTML = html;
+      } catch (error) {
+        log(`Erro: ${error.message}`, 'error');
+        rankingData.innerHTML = `<p class="error">❌ Erro: ${error.message}</p>`;
+      }
+    }
+    
+    // Testar ranking por streak
+    async function testRankingStreak() {
+      const rankingData = document.getElementById('rankingData');
+      rankingData.innerHTML = '<p>Carregando ranking por streak...</p>';
+      
+      try {
+        log('Buscando ranking por streak...', 'info');
+        const rankings = await RankingSystem.getRankingByStreak(20);
+        
+        log(`Encontrados ${rankings.length} usuários com streak`, 'success');
+        
+        if (rankings.length === 0) {
+          rankingData.innerHTML = '<p class="warning">⚠️ Nenhum usuário com streak ativo!</p>';
+          return;
+        }
+        
+        let html = '<table style="width: 100%; border-collapse: collapse;">';
+        html += '<tr style="background: #0f0f0f; border-bottom: 2px solid #d4af37;">';
+        html += '<th style="padding: 10px; text-align: left;">#</th>';
+        html += '<th style="padding: 10px; text-align: left;">Nome</th>';
+        html += '<th style="padding: 10px; text-align: left;">Streak</th>';
+        html += '<th style="padding: 10px; text-align: left;">XP</th>';
+        html += '<th style="padding: 10px; text-align: left;">Nível</th>';
+        html += '</tr>';
+        
+        rankings.forEach((user, index) => {
+          html += `<tr style="border-bottom: 1px solid #333;">`;
+          html += `<td style="padding: 8px;">${user.rank}</td>`;
+          html += `<td style="padding: 8px;">${user.user_name || 'Sem nome'}</td>`;
+          html += `<td style="padding: 8px;" class="success">🔥 ${user.current_streak} dias</td>`;
+          html += `<td style="padding: 8px;">${user.total_xp}</td>`;
+          html += `<td style="padding: 8px;">${user.level}</td>`;
+          html += `</tr>`;
+        });
+        
+        html += '</table>';
+        rankingData.innerHTML = html;
+      } catch (error) {
+        log(`Erro: ${error.message}`, 'error');
+        rankingData.innerHTML = `<p class="error">❌ Erro: ${error.message}</p>`;
+      }
+    }
+    
+    // Testar posição do usuário
+    async function testUserRanking() {
+      const rankingData = document.getElementById('rankingData');
+      rankingData.innerHTML = '<p>Buscando sua posição...</p>';
+      
+      try {
+        log('Buscando posição do usuário no ranking...', 'info');
+        const userRanking = await RankingSystem.getCurrentUserRanking();
+        
+        if (!userRanking) {
+          log('Não foi possível obter ranking do usuário', 'warning');
+          rankingData.innerHTML = '<p class="warning">⚠️ Não foi possível obter sua posição. Você está logado?</p>';
+          return;
+        }
+        
+        log(`Posição XP: #${userRanking.xp_rank}, Streak: #${userRanking.streak_rank}`, 'success');
+        
+        rankingData.innerHTML = `
+          <div style="background: #0f0f0f; padding: 20px; border-radius: 8px;">
+            <h3 style="margin-top: 0; color: #d4af37;">Sua Posição no Ranking</h3>
+            <p><strong>Ranking por XP:</strong> <span class="success">#${userRanking.xp_rank}</span></p>
+            <p><strong>Ranking por Streak:</strong> <span class="success">#${userRanking.streak_rank}</span></p>
+            <p><strong>XP Total:</strong> ${userRanking.total_xp}</p>
+            <p><strong>Nível:</strong> ${userRanking.level}</p>
+            <p><strong>Streak Atual:</strong> 🔥 ${userRanking.current_streak} dias</p>
+            <p><strong>Maior Streak:</strong> ${userRanking.longest_streak} dias</p>
+          </div>
+        `;
+      } catch (error) {
+        log(`Erro: ${error.message}`, 'error');
+        rankingData.innerHTML = `<p class="error">❌ Erro: ${error.message}</p>`;
+      }
+    }
+    
+    // Query direta
+    async function testDirectQuery() {
+      const rankingData = document.getElementById('rankingData');
+      rankingData.innerHTML = '<p>Executando query direta...</p>';
+      
+      try {
+        log('Executando SELECT na tabela user_xp...', 'info');
+        
+        const { data, error } = await supabase
+          .from('user_xp')
+          .select('*')
+          .order('total_xp', { ascending: false })
+          .limit(10);
+        
+        if (error) {
+          log(`Erro na query: ${error.message}`, 'error');
+          rankingData.innerHTML = `<p class="error">❌ ${error.message}</p>`;
+          return;
+        }
+        
+        log(`Query retornou ${data.length} registros`, 'success');
+        rankingData.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+      } catch (error) {
+        log(`Erro: ${error.message}`, 'error');
+        rankingData.innerHTML = `<p class="error">❌ Erro: ${error.message}</p>`;
+      }
+    }
+    
+    // Verificar view ranking_by_xp
+    async function checkViewXP() {
+      const viewData = document.getElementById('viewData');
+      viewData.innerHTML = '<p>Carregando view ranking_by_xp...</p>';
+      
+      try {
+        log('SELECT * FROM ranking_by_xp...', 'info');
+        
+        const { data, error } = await supabase
+          .from('ranking_by_xp')
+          .select('*')
+          .limit(10);
+        
+        if (error) {
+          log(`ERRO: ${error.message}`, 'error');
+          log(`Código: ${error.code}`, 'error');
+          log(`Detalhes: ${error.details}`, 'error');
+          log(`Hint: ${error.hint}`, 'error');
+          viewData.innerHTML = `<pre class="error">❌ ${error.message}\n\nCódigo: ${error.code}\nDetalhes: ${error.details}\nHint: ${error.hint}</pre>`;
+          return;
+        }
+        
+        log(`✅ View retornou ${data.length} registros`, 'success');
+        viewData.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+      } catch (error) {
+        log(`Erro: ${error.message}`, 'error');
+        viewData.innerHTML = `<pre class="error">❌ ${error.message}</pre>`;
+      }
+    }
+    
+    // Verificar view ranking_by_streak
+    async function checkViewStreak() {
+      const viewData = document.getElementById('viewData');
+      viewData.innerHTML = '<p>Carregando view ranking_by_streak...</p>';
+      
+      try {
+        log('SELECT * FROM ranking_by_streak...', 'info');
+        
+        const { data, error } = await supabase
+          .from('ranking_by_streak')
+          .select('*')
+          .limit(10);
+        
+        if (error) {
+          log(`ERRO: ${error.message}`, 'error');
+          viewData.innerHTML = `<pre class="error">❌ ${error.message}\n\nCódigo: ${error.code}</pre>`;
+          return;
+        }
+        
+        log(`✅ View retornou ${data.length} registros`, 'success');
+        viewData.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+      } catch (error) {
+        log(`Erro: ${error.message}`, 'error');
+        viewData.innerHTML = `<pre class="error">❌ ${error.message}</pre>`;
+      }
+    }
+    
+    // Verificar tabela user_xp
+    async function checkUserXPTable() {
+      const viewData = document.getElementById('viewData');
+      viewData.innerHTML = '<p>Carregando tabela user_xp...</p>';
+      
+      try {
+        log('SELECT * FROM user_xp...', 'info');
+        
+        const { data, error } = await supabase
+          .from('user_xp')
+          .select('*')
+          .order('total_xp', { ascending: false })
+          .limit(10);
+        
+        if (error) {
+          log(`ERRO: ${error.message}`, 'error');
+          viewData.innerHTML = `<pre class="error">❌ ${error.message}</pre>`;
+          return;
+        }
+        
+        log(`✅ Tabela retornou ${data.length} registros`, 'success');
+        viewData.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+      } catch (error) {
+        log(`Erro: ${error.message}`, 'error');
+        viewData.innerHTML = `<pre class="error">❌ ${error.message}</pre>`;
+      }
+    }
+    
+    // Inicializar ao carregar
+    window.addEventListener('load', async () => {
+      log('Página de diagnóstico carregada', 'info');
+      
+      // Aguardar scripts carregarem
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      await checkSystems();
+      await checkUser();
+      await checkXP();
+      
+      log('Diagnóstico inicial completo', 'success');
+      log('Use os botões acima para testar cada funcionalidade', 'info');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NewSong — Aulas do Módulo</title>
+  <link rel="stylesheet" href="css/theme.css?v=20251113006">
+  <style>
+    /* Menu Hambúrguer Fixo */
+    .hamburger-btn {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1001;
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #d4af37, #f4d03f);
+      border: 3px solid #0a0a0a;
+      border-radius: 50px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 0;
+      box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.2);
+      transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    .hamburger-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 12px 32px rgba(212, 175, 55, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.3);
+    }
+
+    .hamburger-btn:active {
+      transform: scale(0.95);
+    }
+
+    .hamburger-line {
+      width: 28px;
+      height: 4px;
+      background: #0a0a0a;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .hamburger-btn.active .hamburger-line:nth-child(1) {
+      transform: rotate(45deg) translate(8px, 8px);
+    }
+
+    .hamburger-btn.active .hamburger-line:nth-child(2) {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+
+    .hamburger-btn.active .hamburger-line:nth-child(3) {
+      transform: rotate(-45deg) translate(8px, -8px);
+    }
+
+    /* Overlay */
+    .menu-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(4px);
+      z-index: 999;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.4s ease;
+    }
+
+    .menu-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Menu Lateral */
+    .side-menu {
+      position: fixed;
+      top: 0;
+      left: -320px;
+      width: 320px;
+      height: 100%;
+      background: linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 100%);
+      border-right: 2px solid rgba(212, 175, 55, 0.3);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      transition: left 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5);
+    }
+
+    .side-menu.active {
+      left: 0;
+    }
+
+    /* Header do Menu */
+    .menu-header {
+      padding: 32px 24px;
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.05));
+      border-bottom: 2px solid rgba(212, 175, 55, 0.2);
+    }
+
+    .menu-logo {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .menu-logo-icon {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #d4af37, #f4d03f);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 900;
+      color: #0a0a0a;
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+    }
+
+    .menu-logo-text h2 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #d4af37, #f4d03f);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .menu-logo-text p {
+      margin: 4px 0 0 0;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+      font-weight: 500;
+    }
+
+    /* Perfil no Menu */
+    .menu-profile {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 20px;
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(6, 182, 212, 0.1));
+      border: 2px solid rgba(124, 58, 237, 0.3);
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .menu-profile:hover {
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.25), rgba(6, 182, 212, 0.15));
+      border-color: rgba(124, 58, 237, 0.5);
+      transform: translateX(4px);
+    }
+
+    .menu-profile-avatar {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #7c3aed, #06b6d4);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+    }
+
+    .menu-profile-info h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      color: #f7f2e6;
+    }
+
+    .menu-profile-info p {
+      margin: 4px 0 0 0;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* Divisor */
+    .menu-divider {
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
+      margin: 24px 0;
+    }
+
+    /* Itens do Menu */
+    .menu-items {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      background: transparent;
+      border: 2px solid transparent;
+      border-radius: 14px;
+      color: #f7f2e6;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 12px;
+      text-decoration: none;
+      width: 100%;
+      text-align: left;
+    }
+
+    .menu-item.active {
+      background: transparent;
+      border-color: transparent;
+      color: #f7f2e6;
+    }
+
+    .menu-item:hover {
+      background: rgba(212, 175, 55, 0.1) !important;
+      border-color: rgba(212, 175, 55, 0.3) !important;
+      transform: translateX(8px);
+    }
+
+    .menu-item-icon {
+      font-size: 24px;
+      width: 32px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .menu-item-text {
+      flex: 1;
+    }
+
+    /* Footer do Menu */
+    .menu-footer {
+      padding: 24px;
+      border-top: 2px solid rgba(212, 175, 55, 0.2);
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .menu-logout {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 16px;
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.1));
+      border: 2px solid rgba(239, 68, 68, 0.3);
+      border-radius: 14px;
+      color: #ef4444;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+
+    .menu-logout:hover {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(220, 38, 38, 0.2));
+      border-color: rgba(239, 68, 68, 0.5);
+      transform: scale(1.02);
+    }
+
+    /* Responsivo */
+    @media (max-width: 640px) {
+      .side-menu {
+        width: 280px;
+        left: -280px;
+      }
+      
+      .hamburger-btn {
+        width: 50px;
+        height: 50px;
+      }
+      
+      .hamburger-line {
+        width: 24px;
+        height: 3px;
+      }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+  <div class="container">
+    <!-- Botão Hambúrguer -->
+    <button class="hamburger-btn" id="hamburgerBtn" aria-label="Menu">
+      <div class="hamburger-line"></div>
+      <div class="hamburger-line"></div>
+      <div class="hamburger-line"></div>
+    </button>
+
+    <!-- Overlay -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <!-- Menu Lateral -->
+    <nav class="side-menu" id="sideMenu">
+      <!-- Header -->
+      <div class="menu-header">
+        <div class="menu-logo">
+          <div class="menu-logo-icon">NS</div>
+          <div class="menu-logo-text">
+            <h2>NewSong</h2>
+            <p>Comunidade Musical</p>
+          </div>
+        </div>
+
+        <!-- Perfil -->
+        <a href="profile.html" class="menu-profile" id="menuProfile">
+          <div class="menu-profile-avatar" id="menuAvatar">A</div>
+          <div class="menu-profile-info">
+            <h3 id="menuUserName">Aluno</h3>
+            <p id="menuUserEmail">aluno@exemplo.com</p>
+          </div>
+        </a>
+      </div>
+
+      <!-- Divisor -->
+      <div class="menu-divider"></div>
+
+      <!-- Itens do Menu (Aluno) -->
+      <div class="menu-items" id="menuItems">
+        <a href="app.html" class="menu-item" data-page="home">
+          <span class="menu-item-icon">🏠</span>
+          <span class="menu-item-text">Início</span>
+        </a>
+        <a href="app.html" class="menu-item active" data-page="lessons">
+          <span class="menu-item-icon">📚</span>
+          <span class="menu-item-text">Aulas</span>
+        </a>
+        <a href="saved.html" class="menu-item" data-page="saved">
+          <span class="menu-item-icon">⭐</span>
+          <span class="menu-item-text">Salvos</span>
+        </a>
+      </div>
+
+      <!-- Footer -->
+      <div class="menu-footer">
+        <button class="menu-logout" id="menuLogout">
+          <span>🚪</span>
+          <span>Sair</span>
+        </button>
+      </div>
+    </nav>
+
+    <div class="lessons-page-container">
+      <div class="lessons-list-container">
+        <div class="lessons-list-header">
+          <button class="btn-back-modules" id="btnBackToModules">
+            <span>←</span>
+          </button>
+          <div class="lessons-list-header-content">
+            <h3 class="lessons-list-title" id="lessonTitle">
+              <span id="moduleIcon"></span>
+              <span id="moduleName"></span>
+            </h3>
+            <p class="lessons-list-count" id="lessonCount">0 aulas</p>
+          </div>
+        </div>
+        <div class="lessons-list" id="lessonsList">
+          <!-- Lessons will be rendered here by JavaScript -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/shared-menu.js"></script>
+  <script src="js/shared-lessons-data.js"></script>
+  <script src="js/user-progress.js"></script>
+  <script src="js/lessons.js?v=20251028150500"></script>
+</body>
+</html>

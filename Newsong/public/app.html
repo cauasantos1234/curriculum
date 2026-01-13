@@ -1,0 +1,902 @@
+﻿<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>NewSong — Home</title>
+  <link rel="stylesheet" href="css/theme.css?v=20251113008">
+  <style>
+    /* Menu Hambúrguer Fixo */
+    .hamburger-btn {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1001;
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #d4af37, #f4d03f);
+      border: 3px solid #0a0a0a;
+      border-radius: 50px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 0;
+      box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.2);
+      transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    .hamburger-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 12px 32px rgba(212, 175, 55, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.3);
+    }
+
+    .hamburger-btn:active {
+      transform: scale(0.95);
+    }
+
+    .hamburger-line {
+      width: 28px;
+      height: 4px;
+      background: #0a0a0a;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .hamburger-btn.active .hamburger-line:nth-child(1) {
+      transform: rotate(45deg) translate(8px, 8px);
+    }
+
+    .hamburger-btn.active .hamburger-line:nth-child(2) {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+
+    .hamburger-btn.active .hamburger-line:nth-child(3) {
+      transform: rotate(-45deg) translate(8px, -8px);
+    }
+
+    /* Overlay */
+    .menu-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(4px);
+      z-index: 999;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.4s ease;
+    }
+
+    .menu-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Menu Lateral */
+    .side-menu {
+      position: fixed;
+      top: 0;
+      left: -320px;
+      width: 320px;
+      height: 100%;
+      background: linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 100%);
+      border-right: 2px solid rgba(212, 175, 55, 0.3);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      transition: left 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5);
+      overflow-y: auto; /* Para Edge */
+    }
+
+    .side-menu.active {
+      left: 0;
+    }
+
+    /* Header do Menu */
+    .menu-header {
+      padding: 32px 24px 32px 100px; /* Ainda mais à direita */
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.05));
+      border-bottom: 2px solid rgba(212, 175, 55, 0.2);
+    }
+
+    .menu-logo {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .menu-logo-icon {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #d4af37, #f4d03f);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 900;
+      color: #0a0a0a;
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+    }
+
+    .menu-logo-text h2 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #d4af37, #f4d03f);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      color: #d4af37; /* Fallback para Edge */
+    }
+
+    .menu-logo-text p {
+      margin: 4px 0 0 0;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+      font-weight: 500;
+    }
+
+    /* Perfil no Menu */
+    .menu-profile {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 20px;
+      margin-left: -50px; /* Move o perfil mais para a esquerda */
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(6, 182, 212, 0.1));
+      border: 2px solid rgba(124, 58, 237, 0.3);
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .menu-profile:hover {
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.25), rgba(6, 182, 212, 0.15));
+      border-color: rgba(124, 58, 237, 0.5);
+      transform: translateX(4px);
+    }
+
+    .menu-profile-avatar {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #7c3aed, #06b6d4);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+    }
+
+    .menu-profile-info h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      color: #f7f2e6;
+    }
+
+    .menu-profile-info p {
+      margin: 4px 0 0 0;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* Divisor */
+    .menu-divider {
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
+      margin: 24px 0;
+    }
+
+    /* Itens do Menu */
+    .menu-items {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch; /* Para suavidade no scroll */
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      background: transparent;
+      border: 2px solid transparent;
+      border-radius: 14px;
+      color: #f7f2e6;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 12px;
+      text-decoration: none;
+      width: 100%;
+      text-align: left;
+      box-sizing: border-box; /* Para Edge */
+    }
+
+    .menu-item.active {
+      background: transparent;
+      border-color: transparent;
+      color: #f7f2e6;
+    }
+
+    .menu-item:hover {
+      background: rgba(212, 175, 55, 0.1) !important;
+      border-color: rgba(212, 175, 55, 0.3) !important;
+      transform: translateX(8px);
+    }
+
+    .menu-item-icon {
+      font-size: 24px;
+      width: 32px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .menu-item-text {
+      flex: 1;
+      font-size: 16px; /* Aumentado de 14px para 16px */
+      font-weight: 600;
+    }
+
+    /* Footer do Menu */
+    .menu-footer {
+      padding: 24px;
+      border-top: 2px solid rgba(212, 175, 55, 0.2);
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .menu-logout {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 16px;
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.1));
+      border: 2px solid rgba(239, 68, 68, 0.3);
+      border-radius: 14px;
+      color: #ef4444;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+
+    .menu-logout:hover {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(220, 38, 38, 0.2));
+      border-color: rgba(239, 68, 68, 0.5);
+      transform: scale(1.02);
+    }
+
+    /* Responsivo */
+    @media (max-width: 640px) {
+      .side-menu {
+        width: 280px;
+        left: -280px;
+      }
+      
+      .hamburger-btn {
+        width: 50px;
+        height: 50px;
+      }
+      
+      .hamburger-line {
+        width: 24px;
+        height: 3px;
+      }
+    }
+
+    /* Suporte específico para Edge/Chromium */
+    @supports (-ms-ime-align: auto) {
+      .menu-logo-text h2 {
+        background: none;
+        -webkit-background-clip: unset;
+        -webkit-text-fill-color: unset;
+        background-clip: unset;
+        color: #d4af37;
+      }
+      
+      .side-menu {
+        will-change: transform;
+      }
+    }
+
+    /* Fallback para navegadores que não suportam background-clip */
+    @supports not (-webkit-background-clip: text) {
+      .menu-logo-text h2 {
+        background: none;
+        color: #d4af37;
+      }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+  <div class="container">
+    <!-- Botão Hambúrguer -->
+    <button class="hamburger-btn" id="hamburgerBtn" aria-label="Menu">
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+    </button>
+
+    <!-- Overlay -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <!-- Menu Lateral -->
+    <nav class="side-menu" id="sideMenu">
+      <!-- Header -->
+      <div class="menu-header">
+        <div class="menu-logo">
+          <div class="menu-logo-icon">NS</div>
+          <div class="menu-logo-text">
+            <h2>NewSong</h2>
+            <p>Comunidade Musical</p>
+          </div>
+        </div>
+
+        <!-- Perfil -->
+        <a href="profile.html" class="menu-profile" id="menuProfile">
+          <div class="menu-profile-avatar" id="menuAvatar">A</div>
+          <div class="menu-profile-info">
+            <h3 id="menuUserName">Aluno</h3>
+            <p id="menuUserEmail">aluno@exemplo.com</p>
+          </div>
+        </a>
+      </div>
+
+      <!-- Divisor -->
+      <div class="menu-divider"></div>
+
+      <!-- Itens do Menu (Aluno) -->
+      <div class="menu-items" id="menuItems">
+        <a href="app.html" class="menu-item" data-page="home">
+          <span class="menu-item-icon">⌂</span>
+          <span class="menu-item-text">Início</span>
+        </a>
+        <a href="app.html#lessonsSection" class="menu-item" data-page="lessons">
+          <span class="menu-item-icon">🎓</span>
+          <span class="menu-item-text">Aulas</span>
+        </a>
+        <a href="saved.html" class="menu-item" data-page="saved">
+          <span class="menu-item-icon">⭐</span>
+          <span class="menu-item-text">Salvos</span>
+        </a>
+      </div>
+
+      <!-- Footer -->
+      <div class="menu-footer">
+        <button class="menu-logout" id="menuLogout">
+          <span>◀</span>
+          <span>Sair</span>
+        </button>
+      </div>
+    </nav>
+
+      <main class="main-full">
+        <section id="homeSection">
+          <!-- Hero Banner Professional -->
+          <div class="hero-banner-professional">
+            <div class="hero-background-image">
+              <img src="https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=1600&h=900&fit=crop&q=80" 
+                   alt="Guitarras em exposição" 
+                   onerror="this.style.opacity='0.3'">
+              <div class="hero-overlay"></div>
+            </div>
+            <div class="hero-content-professional">
+              <div class="hero-badge-pro">
+                <span class="badge-icon">🎸</span>
+                <span>Bem-vindo ao NewSong</span>
+              </div>
+              <h1 class="hero-title-pro">Aprenda Música de Forma Profissional</h1>
+              <p class="hero-subtitle-pro">
+                Plataforma completa de ensino musical com metodologia comprovada e acompanhamento personalizado para desenvolver suas habilidades musicais.
+              </p>
+              <div class="hero-actions-pro">
+                <button class="btn-explore-courses" data-nav="lessons">
+                  <span>Explorar Cursos</span>
+                  <span class="btn-arrow">→</span>
+                </button>
+                <button class="btn-know-platform" id="exploreTourBtn">
+                  <span>Conhecer Plataforma</span>
+                </button>
+              </div>
+              <div class="hero-quick-links">
+                <button class="quick-link-item" data-nav="lessons">
+                  <span class="quick-link-icon">🎸</span>
+                  <span class="quick-link-text">Aulas em Vídeo</span>
+                </button>
+                <button class="quick-link-item" id="continueLearningBtn">
+                  <span class="quick-link-icon">📚</span>
+                  <span class="quick-link-text">Seguir Carreira</span>
+                </button>
+                <button class="quick-link-item" id="certifiedBtn">
+                  <span class="quick-link-icon">�</span>
+                  <span class="quick-link-text">Certificados</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Destaques com Carrossel Melhorado -->
+          <div class="card featured-section" style="margin-top:24px">
+            <div class="section-header">
+              <h3 class="gold-text">✨ Destaques da Semana</h3>
+              <div class="carousel-controls">
+                <button class="carousel-btn" id="prevSlide" aria-label="Anterior">←</button>
+                <button class="carousel-btn" id="nextSlide" aria-label="Próximo">→</button>
+              </div>
+            </div>
+            <div id="featuredCarousel" class="carousel-enhanced">
+              <div class="carousel-slide-enhanced active">
+                <div class="slide-background">
+                  <img src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800&h=600&fit=crop&q=80" 
+                       alt="Pessoa tocando música" 
+                       onerror="this.style.opacity='0.3'">
+                  <div class="slide-overlay"></div>
+                </div>
+                <div class="slide-content">
+                  <div class="slide-icon">🔥</div>
+                  <h4>Aulas Mais Populares</h4>
+                  <p>Descubra os cursos mais assistidos da semana e junte-se a milhares de alunos.</p>
+                </div>
+              </div>
+              <div class="carousel-slide-enhanced">
+                <div class="slide-background">
+                  <img src="https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=800&h=600&fit=crop&q=80" 
+                       alt="Estúdio musical" 
+                       onerror="this.style.opacity='0.3'">
+                  <div class="slide-overlay"></div>
+                </div>
+                <div class="slide-content">
+                  <div class="slide-icon">🏅</div>
+                  <h4>Desafios Semanais</h4>
+                  <p>Participe dos desafios e ganhe prêmios exclusivos e reconhecimento.</p>
+                </div>
+              </div>
+              <div class="carousel-slide-enhanced">
+                <div class="slide-background">
+                  <img src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=800&h=600&fit=crop&q=80" 
+                       alt="Sessão ao vivo" 
+                       onerror="this.style.opacity='0.3'">
+                  <div class="slide-overlay"></div>
+                </div>
+                <div class="slide-content">
+                  <div class="slide-icon">📺</div>
+                  <h4>Sessões ao Vivo</h4>
+                  <p>Interaja em tempo real com instrutores e receba feedback personalizado.</p>
+                </div>
+              </div>
+              <div class="carousel-slide-enhanced">
+                <div class="slide-background">
+                  <img src="https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=800&h=600&fit=crop&q=80" 
+                       alt="Novos módulos" 
+                       onerror="this.style.opacity='0.3'">
+                  <div class="slide-overlay"></div>
+                </div>
+                <div class="slide-content">
+                  <div class="slide-icon">🎓</div>
+                  <h4>Novos Módulos</h4>
+                  <p>Confira os últimos conteúdos adicionados por nossa comunidade de instrutores.</p>
+                </div>
+              </div>
+            </div>
+            <div class="carousel-indicators">
+              <span class="indicator active" data-slide="0"></span>
+              <span class="indicator" data-slide="1"></span>
+              <span class="indicator" data-slide="2"></span>
+              <span class="indicator" data-slide="3"></span>
+            </div>
+          </div>
+
+          <!-- Ranking de Usuários -->
+          <div class="card ranking-section" style="margin-top:24px" id="rankingSection">
+            <div class="ranking-header">
+              <h3 class="gold-text">🏆 Ranking dos Melhores</h3>
+              <div class="ranking-tabs">
+                <button class="ranking-tab active" data-type="xp">Por XP</button>
+                <button class="ranking-tab" data-type="streak">Por Streak</button>
+              </div>
+            </div>
+
+            <!-- Card do Usuário Atual -->
+            <div id="currentUserRankingCard"></div>
+
+            <!-- Tabela de Ranking -->
+            <div id="rankingTableContainer">
+              <div class="ranking-loading">
+                <div class="loading-spinner"></div>
+                <p>Carregando ranking...</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Estatísticas com Animação -->
+          <div class="card stats-section" style="margin-top:24px">
+            <h3 class="gold-text">📊 Nossa Comunidade</h3>
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-number" data-target="1247">0</div>
+                <div class="stat-label">Membros Ativos</div>
+                <div class="stat-growth">+12% este mês</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon">📚</div>
+                <div class="stat-number" data-target="342">0</div>
+                <div class="stat-label">Aulas Disponíveis</div>
+                <div class="stat-growth">+8 novas</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon">🎓</div>
+                <div class="stat-number" data-target="87">0</div>
+                <div class="stat-label">Instrutores</div>
+                <div class="stat-growth">Especialistas</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-number" data-target="98">0</div>
+                <div class="stat-label">Satisfação</div>
+                <div class="stat-growth">Média 4.8/5</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Depoimentos Melhorados -->
+          <div class="card testimonials-section" style="margin-top:24px">
+            <h3 class="gold-text">💬 O Que Dizem Nossos Alunos</h3>
+            <div class="testimonials-grid">
+              <div class="testimonial-card">
+                <div class="testimonial-header">
+                  <div class="testimonial-avatar">A</div>
+                  <div>
+                    <div class="testimonial-name">Ana Silva</div>
+                    <div class="testimonial-role">Guitarrista Iniciante</div>
+                  </div>
+                </div>
+                <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                <p class="testimonial-text">"Aprendi meu primeiro solo em apenas 3 semanas! As aulas são incríveis e os instrutores muito atenciosos."</p>
+              </div>
+              <div class="testimonial-card">
+                <div class="testimonial-header">
+                  <div class="testimonial-avatar">L</div>
+                  <div>
+                    <div class="testimonial-name">Lucas Santos</div>
+                    <div class="testimonial-role">Baterista Intermediário</div>
+                  </div>
+                </div>
+                <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                <p class="testimonial-text">"Plataforma muito prática e direta. Consegui evoluir muito rápido com os exercícios propostos."</p>
+              </div>
+              <div class="testimonial-card">
+                <div class="testimonial-header">
+                  <div class="testimonial-avatar">M</div>
+                  <div>
+                    <div class="testimonial-name">Marina Costa</div>
+                    <div class="testimonial-role">Pianista</div>
+                  </div>
+                </div>
+                <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                <p class="testimonial-text">"A comunidade é super acolhedora! Adoro compartilhar meu progresso e aprender com outros músicos."</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Atividade Recente -->
+          <div class="card activity-section" style="margin-top:24px">
+            <h3 class="gold-text">⚡ Atividade Recente</h3>
+            <div class="activity-feed">
+              <div class="activity-item">
+                <div class="activity-icon">🎸</div>
+                <div class="activity-content">
+                  <strong>Pedro Alves</strong> completou <em>"Power Chords Avançados"</em>
+                  <span class="activity-time">há 2 horas</span>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon">🥁</div>
+                <div class="activity-content">
+                  <strong>Carla Dias</strong> iniciou o módulo <em>"Bateria para Rock"</em>
+                  <span class="activity-time">há 5 horas</span>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon">🎹</div>
+                <div class="activity-content">
+                  <strong>Rafael Lima</strong> publicou uma nova aula de <em>"Improvisação no Piano"</em>
+                  <span class="activity-time">há 1 dia</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Newsletter Aprimorada -->
+          <div class="card newsletter-section" style="margin-top:24px">
+            <div class="newsletter-content">
+              <div class="newsletter-icon">📧</div>
+              <div class="newsletter-text">
+                <h3 class="gold-text">Fique por Dentro</h3>
+                <p class="small-muted">Receba novidades, dicas exclusivas e aulas especiais diretamente no seu email.</p>
+              </div>
+            </div>
+            <div class="newsletter-form">
+              <input class="input-newsletter" id="newsletterEmail" type="email" placeholder="seu.email@exemplo.com" aria-label="Email para newsletter">
+              <button class="btn-subscribe" id="subscribeBtn">
+                <span>Assinar Grátis</span>
+                <span class="btn-icon">→</span>
+              </button>
+            </div>
+            <div class="newsletter-note">✨ Junte-se a mais de 1.000 músicos que já assinam</div>
+          </div>
+        </section>
+
+        <section id="lessonsSection" style="display:none">
+          <!-- Lessons Header -->
+          <div class="lessons-header">
+            <div class="lessons-header-content">
+              <h2 class="lessons-title">🎓 Catálogo de Aulas</h2>
+              <p class="lessons-subtitle">Explore nossa biblioteca completa de cursos e módulos de aprendizado musical</p>
+            </div>
+            <div class="lessons-filters">
+              <div class="filter-group">
+                <label class="filter-label">Nível:</label>
+                <select class="filter-select" id="levelFilter">
+                  <option value="all">Todos os níveis</option>
+                  <option value="beginner">Iniciante</option>
+                  <option value="intermediate">Intermediário</option>
+                  <option value="advanced">Avançado</option>
+                </select>
+              </div>
+              <div class="search-box">
+                <input type="text" class="search-input" id="lessonSearch" placeholder="Buscar aulas...">
+                <span class="search-icon">🔍</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Instruments Grid Enhanced -->
+          <div class="instruments-section" style="position:relative">
+            <h3 class="section-title">
+              <span class="title-icon">🎸</span>
+              <span>Escolha seu Instrumento</span>
+            </h3>
+            <div class="instruments-grid-enhanced" id="instrumentsGrid">
+              <!-- instruments rendered by JS -->
+            </div>
+          </div>
+
+          <!-- Modules Area Enhanced -->
+          <div id="modulesArea" class="modules-area-enhanced"></div>
+
+          <!-- Lessons Area Enhanced -->
+          <div id="lessonsArea" class="lessons-area-enhanced"></div>
+
+          <!-- Empty State -->
+          <div id="emptyState" class="empty-state">
+            <div class="empty-state-icon">🎵</div>
+            <h3>Selecione um Instrumento</h3>
+            <p>Escolha um instrumento acima para explorar as aulas disponíveis</p>
+          </div>
+        </section></main>
+    </div>
+  </div>
+
+  <div id="modalBackdrop" class="modal-backdrop" aria-hidden="true">
+    <div class="modal" role="dialog">
+      <div class="title">Aula</div>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="js/shared-menu.js"></script>
+  <script src="js/shared-data.js?v=20251113008"></script>
+  <script src="js/xp-system.js"></script>
+  <script src="js/ranking-system.js"></script>
+  <script src="js/app-main.js?v=20251113008"></script>
+  
+  <!-- Script para Ranking -->
+  <script>
+    (async function initializeRanking() {
+      // Aguardar Supabase e sistemas estarem prontos
+      let retries = 0;
+      const maxRetries = 20;
+      
+      while (retries < maxRetries) {
+        if (typeof supabase !== 'undefined' && 
+            typeof RankingSystem !== 'undefined' && 
+            typeof XPSystem !== 'undefined') {
+          console.log('✅ Sistemas de ranking carregados');
+          break;
+        }
+        await new Promise(resolve => setTimeout(resolve, 200));
+        retries++;
+      }
+
+      if (retries >= maxRetries) {
+        console.error('❌ Sistemas não carregaram a tempo');
+        return;
+      }
+
+      const rankingContainer = document.getElementById('rankingTableContainer');
+      const userCardContainer = document.getElementById('currentUserRankingCard');
+      const rankingTabs = document.querySelectorAll('.ranking-tab');
+      
+      if (!rankingContainer) {
+        console.error('❌ Container do ranking não encontrado');
+        return;
+      }
+
+      let currentRankingType = 'xp';
+
+      async function loadRanking(type = 'xp') {
+        try {
+          console.log('📊 Carregando ranking tipo:', type);
+          
+          rankingContainer.innerHTML = `
+            <div class="ranking-loading">
+              <div class="loading-spinner"></div>
+              <p>Carregando ranking...</p>
+            </div>
+          `;
+
+          let rankings;
+          if (type === 'xp') {
+            rankings = await RankingSystem.getRankingByXP(10);
+          } else {
+            rankings = await RankingSystem.getRankingByStreak(10);
+          }
+
+          console.log('✅ Rankings carregados:', rankings);
+          
+          const html = RankingSystem.renderRankingTable(rankings, type);
+          rankingContainer.innerHTML = html;
+
+          // Carregar card do usuário
+          try {
+            const userXP = await XPSystem.getUserXP();
+            const userRanking = await RankingSystem.getCurrentUserRanking();
+            
+            if (userXP && userRanking && userCardContainer) {
+              userCardContainer.innerHTML = RankingSystem.renderUserCard(userRanking, userXP);
+            }
+          } catch (userError) {
+            console.warn('⚠️ Não foi possível carregar card do usuário:', userError);
+          }
+        } catch (error) {
+          console.error('❌ Erro ao carregar ranking:', error);
+          rankingContainer.innerHTML = '<p class="ranking-error">Erro ao carregar ranking. Tente novamente.</p>';
+        }
+      }
+
+      // Event listeners para tabs
+      if (rankingTabs && rankingTabs.length > 0) {
+        rankingTabs.forEach(tab => {
+          tab.addEventListener('click', () => {
+            rankingTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            currentRankingType = tab.dataset.type;
+            loadRanking(currentRankingType);
+          });
+        });
+      }
+
+      // Carregar ranking inicial
+      await loadRanking('xp');
+    })();
+  </script>
+  
+  <!-- Script para navegação por âncora -->
+  <script>
+    (function() {
+      // Função para mostrar seção de aulas
+      function showLessonsSection() {
+        // Esconder todas as sections que não são lessonsSection
+        const allSections = document.querySelectorAll('main > section');
+        allSections.forEach(section => {
+          if (section.id !== 'lessonsSection') {
+            section.style.display = 'none';
+          }
+        });
+        
+        // Mostrar seção de aulas
+        const lessonsSection = document.getElementById('lessonsSection');
+        if (lessonsSection) {
+          lessonsSection.style.display = 'block';
+          // Scroll suave até a seção
+          setTimeout(() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }, 100);
+        }
+      }
+
+      // Verificar se há âncora na URL ao carregar
+      if (window.location.hash === '#lessonsSection') {
+        showLessonsSection();
+      }
+
+      // Adicionar listener ao botão de Aulas
+      const aulasButton = document.querySelector('[data-page="lessons"]');
+      if (aulasButton) {
+        aulasButton.addEventListener('click', function(e) {
+          e.preventDefault();
+          showLessonsSection();
+          // Fechar menu
+          const menuOverlay = document.querySelector('.menu-overlay');
+          const sidebar = document.querySelector('.sidebar');
+          const hamburgerBtn = document.querySelector('.hamburger-btn');
+          if (menuOverlay) menuOverlay.classList.remove('active');
+          if (sidebar) sidebar.classList.remove('active');
+          if (hamburgerBtn) hamburgerBtn.classList.remove('active');
+        });
+      }
+    })();
+  </script>
+
+  <!-- Supabase Library and Configuration -->
+  <script src="js/supabase.js"></script>
+  <script>
+    // Inicializar Supabase imediatamente
+    (function() {
+      const SUPABASE_URL = 'https://wbzaktlcxgmctocgtifj.supabase.co';
+      const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndiemFrdGxjeGdtY3RvY2d0aWZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU3NjEzNTEsImV4cCI6MjA4MTMzNzM1MX0.i3I01z8CT1l6kBPhNwk8bgRwJP4Jq5MO3Rn2dEsoJSM';
+      
+      console.log('🔍 Inicializando Supabase...');
+      
+      // Verificar se a biblioteca foi carregada
+      if (typeof window.supabase === 'undefined' || window.supabase === null) {
+        console.error('❌ Erro crítico: Biblioteca Supabase não foi carregada!');
+        console.error('Verifique se o arquivo js/supabase.js existe');
+        return;
+      }
+      
+      console.log('📦 Biblioteca Supabase carregada');
+      
+      // Criar o cliente
+      try {
+        if (typeof window.supabase.createClient !== 'function') {
+          console.error('❌ window.supabase.createClient não é uma função!');
+          console.error('Conteúdo de window.supabase:', window.supabase);
+          return;
+        }
+        
+        const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+        // Substituir window.supabase (que é a biblioteca) pelo cliente
+        window.supabase = client;
+        window.supabaseClient = client;
+        
+        console.log('✅ Cliente Supabase criado com sucesso!');
+        console.log('👤 Cliente:', client);
+      } catch (error) {
+        console.error('❌ Erro ao criar cliente Supabase:', error);
+      }
+    })();
+    
+    // API global para compatibilidade
+    window.SupabaseAPI = {
+      getClient: function() {
+        return window.supabase || window.supabaseClient;
+      }
+    };
+  </script>
+</body>
+</html>

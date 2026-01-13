@@ -1,0 +1,1179 @@
+﻿<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>NewSong — Enviar Vídeo</title>
+  <link rel="stylesheet" href="css/theme.css?v=20251210006">
+  <link rel="stylesheet" href="css/styles.css?v=20251210006">
+  <style>
+    /* Fix para Edge - Força centralização */
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      overflow-x: hidden;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
+      box-sizing: border-box;
+      padding: 0px 60px 40px 60px !important;
+    }
+    
+    .container main {
+      width: 100%;
+      max-width: 1800px !important;
+      margin: 0 auto;
+      box-sizing: border-box;
+    }
+    
+    .upload-hero,
+    .upload-grid,
+    .upload-form-card {
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+    
+    .upload-hero {
+      padding: 32px !important;
+      margin-bottom: 28px !important;
+    }
+    
+    .upload-hero-title {
+      font-size: 48px !important;
+      margin-bottom: 12px !important;
+    }
+    
+    .upload-hero-subtitle {
+      font-size: 20px !important;
+    }
+    
+    .upload-grid {
+      grid-template-columns: 1fr 380px !important;
+      gap: 40px !important;
+    }
+    
+    /* Layout principal: Conteúdo centralizado com card de foto */
+    .upload-content-wrapper {
+      display: grid;
+      grid-template-columns: minmax(600px, 1fr) 350px;
+      gap: 50px;
+      width: 100%;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+    
+    .upload-main-content {
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+    
+    /* Card de foto vertical único */
+    .vertical-photos-gallery {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      height: fit-content;
+      position: sticky;
+      top: 80px;
+    }
+    
+    .gallery-title {
+      font-size: 19px;
+      font-weight: 600;
+      margin-bottom: 24px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .photos-grid {
+      position: relative;
+      overflow: hidden;
+      border-radius: 14px;
+    }
+    
+    .photo-item {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      aspect-ratio: 9/16;
+      border-radius: 14px;
+      overflow: hidden;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .photo-item.active {
+      position: relative;
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .photo-item:hover {
+      box-shadow: 0 12px 32px rgba(124, 58, 237, 0.25);
+    }
+    
+    .photo-background {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+    
+    .photo-background img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.4);
+      transition: all 0.5s ease;
+    }
+    
+    .photo-item:hover .photo-background img {
+      filter: brightness(0.5);
+      transform: scale(1.05);
+    }
+    
+    .photo-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%);
+      z-index: 2;
+    }
+    
+    .photo-content {
+      position: relative;
+      z-index: 3;
+      padding: 24px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    
+    .photo-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+      filter: drop-shadow(0 4px 12px rgba(212, 175, 55, 0.5));
+    }
+    
+    .photo-item h4 {
+      margin: 0 0 10px 0;
+      font-size: 20px;
+      font-weight: 800;
+      color: #ffffff;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    }
+    
+    .photo-item p {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 13px;
+      line-height: 1.5;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    }
+    
+    .photo-indicators {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 16px;
+    }
+    
+    .photo-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .photo-indicator.active {
+      background: #d4af37;
+      width: 24px;
+      border-radius: 4px;
+    }
+    
+    /* Card de banner horizontal estilo carrossel */
+    .horizontal-banner-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-top: 24px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .banner-carousel {
+      position: relative;
+      overflow: hidden;
+      height: 220px;
+      border-radius: 14px;
+    }
+    
+    .banner-slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 220px;
+      border-radius: 14px;
+      opacity: 0;
+      transform: translateX(100%);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
+    }
+    
+    .banner-slide.active {
+      position: relative;
+      opacity: 1;
+      transform: translateX(0);
+    }
+    
+    .banner-background {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+    
+    .banner-background img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.4);
+      transition: all 0.5s ease;
+    }
+    
+    .banner-slide:hover .banner-background img {
+      filter: brightness(0.5);
+      transform: scale(1.05);
+    }
+    
+    .banner-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%);
+      z-index: 2;
+    }
+    
+    .banner-content {
+      position: relative;
+      z-index: 3;
+      padding: 28px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    
+    .banner-icon {
+      font-size: 54px;
+      margin-bottom: 12px;
+      filter: drop-shadow(0 4px 12px rgba(212, 175, 55, 0.5));
+    }
+    
+    .banner-slide h4 {
+      margin: 0 0 10px 0;
+      font-size: 22px;
+      font-weight: 800;
+      color: #ffffff;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    }
+    
+    .banner-slide p {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 14px;
+      line-height: 1.5;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    }
+    
+    .banner-indicators {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      padding: 16px;
+    }
+    
+    .banner-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .banner-indicator.active {
+      background: #d4af37;
+      width: 28px;
+      border-radius: 5px;
+    }
+    
+    /* Thumbnail Upload */
+    .thumbnail-upload-area {
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: var(--glass);
+    }
+    
+    .thumbnail-upload-area:hover {
+      border-color: var(--accent);
+      background: rgba(124, 58, 237, 0.05);
+    }
+    
+    .thumbnail-preview {
+      margin-top: 16px;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .thumbnail-preview img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    
+    .thumbnail-remove {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(239, 68, 68, 0.9);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+    
+    .thumbnail-remove:hover {
+      background: rgba(239, 68, 68, 1);
+      transform: scale(1.1);
+    }
+    
+    /* Remove scrollbar duplicada */
+    .upload-sidebar {
+      overflow-y: visible !important;
+      max-height: none !important;
+    }
+    
+    /* Garante visibilidade do botão hambúrguer */
+    .hamburger-btn {
+      display: flex !important;
+      z-index: 1001;
+    }
+    
+    /* Ajusta o formulário */
+    .upload-form-card {
+      padding: 48px !important;
+    }
+    
+    .form-section {
+      margin-bottom: 36px !important;
+    }
+    
+    .section-title {
+      font-size: 22px !important;
+    }
+    
+    .form-input,
+    .form-select,
+    .form-textarea {
+      font-size: 16px !important;
+      padding: 16px 20px !important;
+    }
+    
+    .form-label {
+      font-size: 16px !important;
+      margin-bottom: 10px !important;
+    }
+    
+    .sidebar-card {
+      padding: 28px !important;
+    }
+    
+    .sidebar-title {
+      font-size: 19px !important;
+    }
+    
+    .tip-item {
+      padding: 18px !important;
+      font-size: 15px !important;
+    }
+    
+    /* Mobile */
+    @media (max-width: 1500px) {
+      .upload-content-wrapper {
+        grid-template-columns: 1fr 320px;
+        gap: 40px;
+      }
+    }
+    
+    @media (max-width: 1400px) {
+      .container {
+        padding: 70px 40px 40px 40px !important;
+      }
+      
+      .upload-grid {
+        grid-template-columns: 1fr 380px !important;
+      }
+    }
+    
+    @media (max-width: 1300px) {
+      .upload-content-wrapper {
+        grid-template-columns: 1fr;
+        max-width: 900px;
+      }
+      
+      .vertical-photos-gallery {
+        display: none;
+      }
+    }
+    
+    @media (max-width: 1200px) {
+      .container {
+        padding: 75px 25px 30px 25px !important;
+      }
+      
+      .upload-grid {
+        grid-template-columns: 1fr !important;
+      }
+      
+      .upload-hero {
+        padding: 28px !important;
+      }
+      
+      .upload-form-card {
+        padding: 32px !important;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 70px 15px 25px 15px !important;
+      }
+      
+      .upload-form-card {
+        padding: 24px !important;
+      }
+      
+      .upload-hero-title {
+        font-size: 32px !important;
+      }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+  <!-- Menu Hambúrguer -->
+  <button class="hamburger-btn" id="menuToggle" aria-label="Abrir menu">
+    <span class="hamburger-line"></span>
+    <span class="hamburger-line"></span>
+    <span class="hamburger-line"></span>
+  </button>
+
+  <!-- Overlay do Menu -->
+  <div class="menu-overlay" id="sidebarOverlay"></div>
+
+  <!-- Menu Lateral -->
+  <aside class="side-menu" id="sidebar">
+    <!-- Header do Menu -->
+    <div class="menu-header">
+      <div class="menu-logo">
+        <div class="menu-logo-icon">N</div>
+        <div class="menu-logo-text">
+          <h2>NewSong</h2>
+          <p>Aprenda Música</p>
+        </div>
+      </div>
+
+      <!-- Perfil -->
+      <div class="menu-profile" id="menuProfile">
+        <div class="menu-profile-avatar">👤</div>
+        <div class="menu-profile-info">
+          <p class="menu-profile-name" id="menuUserName">Professor</p>
+          <p class="menu-profile-level" id="menuUserLevel">Professor</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navegação -->
+    <nav class="menu-nav">
+      <a href="app.html" class="menu-item">
+        <span class="menu-item-icon">🏠</span>
+        <span class="menu-item-text">Início</span>
+      </a>
+      <a href="saved.html" class="menu-item">
+        <span class="menu-item-icon">💾</span>
+        <span class="menu-item-text">Salvos</span>
+      </a>
+      <a href="upload.html" class="menu-item active">
+        <span class="menu-item-icon">📤</span>
+        <span class="menu-item-text">Upload</span>
+      </a>
+      <a href="stats.html" class="menu-item">
+        <span class="menu-item-icon">📊</span>
+        <span class="menu-item-text">Estatísticas</span>
+      </a>
+      <a href="profile.html" class="menu-item">
+        <span class="menu-item-icon">👤</span>
+        <span class="menu-item-text">Perfil</span>
+      </a>
+    </nav>
+
+    <!-- Footer do Menu -->
+    <div class="menu-footer">
+      <button class="menu-theme-toggle" id="themeToggle">
+        <span class="theme-icon">🌙</span>
+        <span>Tema</span>
+      </button>
+      <button class="menu-logout" id="logoutBtn">
+        <span>🚪</span>
+        <span>Sair</span>
+      </button>
+    </div>
+
+    <!-- Botão Fechar -->
+    <button class="menu-close" id="closeSidebar" aria-label="Fechar menu">✕</button>
+  </aside>
+
+  <div class="container">
+    <div class="app-grid">
+      <main>
+      <div class="upload-hero">
+        <div class="upload-hero-content">
+          <div class="upload-hero-badge">
+            <span class="badge-icon">🎬</span>
+            <span>Compartilhe Seu Conhecimento</span>
+          </div>
+          <h2 class="upload-hero-title">Enviar Vídeo de Aula</h2>
+          <p class="upload-hero-subtitle">Ajude a comunidade NewSong compartilhando suas aulas e conhecimentos musicais.</p>
+          <div class="upload-info-banner">
+            <span class="info-icon">🔒</span>
+            <div class="info-content">
+              <strong>Apenas professores podem enviar vídeos</strong>
+              <p>Para se tornar professor: <span style="color: #d4af37;">Registro → Selecione "Professor" → Faça login</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Grid: Form + Sidebar -->
+      <div class="upload-content-wrapper">
+        <div class="upload-main-content">
+          <div class="upload-grid">
+            <!-- Main Form Area -->
+            <div class="upload-main">
+          <div class="upload-form-card">
+            <form id="uploadVideoForm" class="upload-form">
+              
+              <!-- Upload Type Selector -->
+              <div class="upload-type-selector">
+                <button type="button" class="upload-type-btn active" id="btnYouTube">
+                  <span>▶️</span>
+                  <span>Link do YouTube</span>
+                </button>
+                <button type="button" class="upload-type-btn" id="btnFileUpload">
+                  <span>📁</span>
+                  <span>Upload de Arquivo</span>
+                </button>
+              </div>
+
+              <!-- YouTube Section -->
+              <div class="upload-section active" id="youtubeSection">
+                <div class="form-section">
+                  <div class="form-section-header">
+                    <div class="section-icon-wrapper">
+                      <span class="section-icon">🔗</span>
+                    </div>
+                    <div>
+                      <h3 class="section-title">Link do YouTube</h3>
+                      <p class="section-desc">Cole a URL do vídeo do YouTube</p>
+                    </div>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label class="form-label">
+                      <span>URL do Vídeo</span>
+                      <span class="required">*</span>
+                    </label>
+                    <input type="url" 
+                           id="videoUrl" 
+                           class="form-input" 
+                           placeholder="https://www.youtube.com/watch?v=..."
+                           autocomplete="off">
+                    <p class="form-hint">
+                      <span class="hint-icon">💡</span>
+                      <span>Exemplo: https://www.youtube.com/watch?v=xxxxx ou https://youtu.be/xxxxx</span>
+                    </p>
+                  </div>
+
+                  <!-- Video Preview -->
+                  <div id="videoPreview" class="video-preview" style="display:none;">
+                    <div class="video-preview-header">
+                      <span class="preview-icon">👁️</span>
+                      <span>Pré-visualização</span>
+                    </div>
+                    <div id="videoPreviewContainer" class="video-preview-container"></div>
+                  </div>
+                  
+                  <p class="form-hint" style="margin-top:12px;font-size:13px;opacity:0.8;">
+                    <span class="hint-icon">ℹ️</span>
+                    <span><strong>Nota:</strong> Alguns vídeos do YouTube podem ter restrições de incorporação e não aparecer na pré-visualização. Isso é normal e não afeta o funcionamento - o vídeo será salvo e exibido corretamente na plataforma.</span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- File Upload Section -->
+              <div class="upload-section" id="fileSection">
+                <div class="form-section">
+                  <div class="form-section-header">
+                    <div class="section-icon-wrapper">
+                      <span class="section-icon">📤</span>
+                    </div>
+                    <div>
+                      <h3 class="section-title">Upload de Arquivo</h3>
+                      <p class="section-desc">Envie um vídeo do seu computador</p>
+                    </div>
+                  </div>
+                  
+                  <div class="file-upload-area" id="fileUploadArea">
+                    <div class="upload-icon">📹</div>
+                    <p class="upload-text">Clique ou arraste o vídeo aqui</p>
+                    <p class="upload-hint">MP4, WebM, MOV (máx. 100MB)</p>
+                    <p class="upload-hint" style="font-size:11px;margin-top:4px;opacity:0.7">✨ Armazenamento avançado ativado</p>
+                    <input type="file" id="videoFile" accept="video/*" hidden>
+                  </div>
+
+                  <div class="file-info" id="fileInfo" style="display:none;">
+                    <span class="file-icon">🎬</span>
+                    <div class="file-details">
+                      <p class="file-name" id="fileName">video.mp4</p>
+                      <p class="file-size" id="fileSize">25.4 MB</p>
+                    </div>
+                    <button type="button" class="remove-file" id="removeFile">✕</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Video Information -->
+              <div class="form-section">
+                <div class="form-section-header">
+                  <div class="section-icon-wrapper">
+                    <span class="section-icon">📝</span>
+                  </div>
+                  <div>
+                    <h3 class="section-title">Informações do Vídeo</h3>
+                    <p class="section-desc">Preencha os detalhes da sua aula</p>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">
+                      <span>Título do Vídeo</span>
+                      <span class="required">*</span>
+                    </label>
+                    <input type="text" 
+                           id="videoTitle" 
+                           class="form-input" 
+                           placeholder="Ex: Técnica de Palhetada Alternada"
+                           required>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">
+                      <span>Duração</span>
+                      <span class="required">*</span>
+                      <span style="margin-left:8px;font-size:12px;color:var(--accent);font-weight:600;">✨ Automático</span>
+                    </label>
+                    <input type="text" 
+                           id="videoDuration" 
+                           class="form-input" 
+                           placeholder="Será detectado automaticamente"
+                           readonly
+                           required>
+                    <p class="form-hint">
+                      <span class="hint-icon">⏱️</span>
+                      <span>A duração é detectada automaticamente do vídeo</span>
+                    </p>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">
+                    <span>Thumbnail (Capa do Vídeo)</span>
+                    <span class="required">*</span>
+                  </label>
+                  <div class="thumbnail-upload-area" id="thumbnailUploadArea">
+                    <div class="upload-icon">🖼️</div>
+                    <p class="upload-text">Clique ou arraste a imagem aqui</p>
+                    <p class="upload-hint">JPG, PNG (recomendado: 1280x720)</p>
+                    <input type="file" id="thumbnailFile" accept="image/*" hidden>
+                  </div>
+                  <div id="thumbnailPreview" class="thumbnail-preview" style="display:none;">
+                    <img id="thumbnailImage" src="" alt="Thumbnail">
+                    <button type="button" class="thumbnail-remove" id="removeThumbnail">✕</button>
+                  </div>
+                  <p class="form-hint" style="margin-top:12px;">
+                    <span class="hint-icon">💡</span>
+                    <span>Use uma imagem atraente que represente o conteúdo da aula</span>
+                  </p>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">
+                    <span>Descrição</span>
+                  </label>
+                  <textarea id="videoDescription" 
+                            class="form-textarea" 
+                            placeholder="Descreva brevemente o conteúdo da aula..."
+                            rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">
+                    <span>Seu Nome (Professor)</span>
+                    <span class="required">*</span>
+                    <span style="margin-left:8px;font-size:12px;color:var(--accent);font-weight:600;">✨ Automático</span>
+                  </label>
+                  <input type="text" 
+                         id="videoAuthor" 
+                         class="form-input" 
+                         placeholder="Seu nome completo"
+                         required>
+                  <p class="form-hint">
+                    <span class="hint-icon">👤</span>
+                    <span>Preenchido automaticamente com seu nome de professor</span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- Categorization -->
+              <div class="form-section">
+                <div class="form-section-header">
+                  <div class="section-icon-wrapper">
+                    <span class="section-icon">🎯</span>
+                  </div>
+                  <div>
+                    <h3 class="section-title">Categorização</h3>
+                    <p class="section-desc">Onde seu vídeo será exibido</p>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">
+                      <span>Instrumento</span>
+                      <span class="required">*</span>
+                    </label>
+                    <select id="videoInstrument" class="form-select" required>
+                      <option value="">Selecione o instrumento</option>
+                      <option value="guitar">🎸 Guitarra</option>
+                      <option value="drums">🥁 Bateria</option>
+                      <option value="keyboard">🎹 Piano</option>
+                      <option value="viola">🪕 Violão</option>
+                      <option value="bass">🎸 Baixo</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">
+                      <span>Nível</span>
+                      <span class="required">*</span>
+                    </label>
+                    <select id="videoModule" class="form-select" required>
+                      <option value="">Selecione o nível</option>
+                      <option value="bronze">🥉 Bronze (Iniciante)</option>
+                      <option value="silver">🥈 Prata (Intermediário)</option>
+                      <option value="gold">🥇 Ouro (Avançado)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">
+                    <span>Aula</span>
+                    <span class="required">*</span>
+                  </label>
+                  <select id="videoLesson" class="form-select" disabled required>
+                    <option value="">Selecione instrumento e nível primeiro</option>
+                  </select>
+                  <p class="form-hint">
+                    <span class="hint-icon">ℹ️</span>
+                    <span>Selecione instrumento e nível para ver as aulas disponíveis</span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- Form Actions -->
+              <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="cancelBtn">
+                  <span>✕</span>
+                  <span>Cancelar</span>
+                </button>
+                <button type="submit" class="btn btn-primary">
+                  <span>✓</span>
+                  <span>Publicar Vídeo</span>
+                </button>
+              </div>
+
+            </form>
+          </div>
+        </div>
+
+        <!-- Sidebar with Tips -->
+        <div class="upload-sidebar">
+          <!-- Tips Card -->
+          <div class="sidebar-card">
+            <h3 class="sidebar-title">
+              <span>💡</span>
+              <span>Dicas para Vídeos de Qualidade</span>
+            </h3>
+            <ul class="tips-list">
+              <li class="tip-item">
+                <span class="tip-icon">🎥</span>
+                <div>
+                  <strong>Boa Iluminação</strong>
+                  <p>Grave em ambiente bem iluminado, de preferência com luz natural</p>
+                </div>
+              </li>
+              <li class="tip-item">
+                <span class="tip-icon">🎤</span>
+                <div>
+                  <strong>Áudio Claro</strong>
+                  <p>Use um microfone de qualidade e grave em local silencioso</p>
+                </div>
+              </li>
+              <li class="tip-item">
+                <span class="tip-icon">📐</span>
+                <div>
+                  <strong>Enquadramento</strong>
+                  <p>Posicione a câmera mostrando suas mãos e o instrumento claramente</p>
+                </div>
+              </li>
+              <li class="tip-item">
+                <span class="tip-icon">⏱️</span>
+                <div>
+                  <strong>Seja Objetivo</strong>
+                  <p>Mantenha vídeos entre 5-15 minutos para melhor engajamento</p>
+                </div>
+              </li>
+              <li class="tip-item">
+                <span class="tip-icon">📚</span>
+                <div>
+                  <strong>Conteúdo Organizado</strong>
+                  <p>Estruture sua aula: introdução, prática e conclusão</p>
+                </div>
+              </li>
+              <li class="tip-item">
+                <span class="tip-icon">🎯</span>
+                <div>
+                  <strong>Foco no Aprendizado</strong>
+                  <p>Explique técnicas passo a passo, demonstre devagar primeiro</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Stats Card -->
+          <div class="sidebar-card">
+            <h3 class="sidebar-title">
+              <span>📊</span>
+              <span>Estatísticas</span>
+            </h3>
+            <div class="stats-grid">
+              <div class="stat-box">
+                <span class="stat-value" id="totalVideos">0</span>
+                <span class="stat-label">Seus Vídeos</span>
+              </div>
+              <div class="stat-box">
+                <span class="stat-value" id="totalViews">0</span>
+                <span class="stat-label">Visualizações</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Guidelines Card -->
+          <div class="sidebar-card">
+            <h3 class="sidebar-title">
+              <span>⚠️</span>
+              <span>Diretrizes</span>
+            </h3>
+            <ul class="guidelines-list">
+              <li>✓ Conteúdo original e educativo</li>
+              <li>✓ Respeito aos direitos autorais</li>
+              <li>✓ Linguagem apropriada</li>
+              <li>✓ Foco em ensinar música</li>
+            </ul>
+          </div>
+        </div>
+          </div>
+        </div>
+        
+        <!-- Vertical Photos Gallery -->
+        <div class="vertical-photos-gallery">
+          <h3 class="gallery-title">
+            <span>📸</span>
+            <span>Inspiração Musical</span>
+          </h3>
+          <div class="photos-grid" id="photoCarousel"><div class="photo-item active"><div class="photo-background"><img src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=400&h=600&fit=crop&q=80" alt="M�sica" onerror="this.style.opacity='0.3'"><div class="photo-overlay"></div></div><div class="photo-content"><div class="photo-icon"></div><h4>Aprenda Guitarra</h4><p>Domine t�cnicas profissionais</p></div></div><div class="photo-item"><div class="photo-background"><img src="https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=400&h=600&fit=crop&q=80" alt="Piano" onerror="this.style.opacity='0.3'"><div class="photo-overlay"></div></div><div class="photo-content"><div class="photo-icon"></div><h4>Explore o Piano</h4><p>De iniciante a avan�ado</p></div></div><div class="photo-item"><div class="photo-background"><img src="https://images.unsplash.com/photo-1571327073757-71d13c24de30?w=400&h=600&fit=crop&q=80" alt="Bateria" onerror="this.style.opacity='0.3'"><div class="photo-overlay"></div></div><div class="photo-content"><div class="photo-icon"></div><h4>Ritmo e Bateria</h4><p>Desenvolva seu timing</p></div></div></div><div class="photo-indicators"><span class="photo-indicator active" data-slide="0"></span><span class="photo-indicator" data-slide="1"></span><span class="photo-indicator" data-slide="2"></span></div>          
+          <!-- Horizontal Banner Carousel -->
+          <div class="horizontal-banner-card">
+            <div class="banner-carousel" id="bannerCarousel">
+              <div class="banner-slide active">
+                <div class="banner-background">
+                  <img src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800&h=400&fit=crop&q=80" 
+                       alt="Música" 
+                       onerror="this.style.opacity='0.3'">
+                  <div class="banner-overlay"></div>
+                </div>
+                <div class="banner-content">
+                  <div class="banner-icon">🔥</div>
+                  <h4>Compartilhe Seu Talento</h4>
+                  <p>Inspire outros músicos</p>
+                </div>
+              </div>
+              <div class="banner-slide">
+                <div class="banner-background">
+                  <img src="https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=800&h=400&fit=crop&q=80" 
+                       alt="Estúdio" 
+                       onerror="this.style.opacity='0.3'">
+                  <div class="banner-overlay"></div>
+                </div>
+                <div class="banner-content">
+                  <div class="banner-icon">🎸</div>
+                  <h4>Ensine Sua Técnica</h4>
+                  <p>Compartilhe seu conhecimento</p>
+                </div>
+              </div>
+              <div class="banner-slide">
+                <div class="banner-background">
+                  <img src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=800&h=400&fit=crop&q=80" 
+                       alt="Performance" 
+                       onerror="this.style.opacity='0.3'">
+                  <div class="banner-overlay"></div>
+                </div>
+                <div class="banner-content">
+                  <div class="banner-icon">⭐</div>
+                  <h4>Seja Reconhecido</h4>
+                  <p>Ganhe visibilidade na comunidade</p>
+                </div>
+              </div>
+            </div>
+            <div class="banner-indicators">
+              <span class="banner-indicator active" data-slide="0"></span>
+              <span class="banner-indicator" data-slide="1"></span>
+              <span class="banner-indicator" data-slide="2"></span>
+            </div>
+          </div>        </div>
+      </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="modalBackdrop" class="modal-backdrop" aria-hidden="true">
+    <div class="modal" role="dialog">
+      <button class="modal-close-btn" onclick="document.getElementById('modalBackdrop').style.display='none'">✕</button>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="js/video-storage.js?v=20251210001"></script>
+  <script src="js/upload.js?v=20251210001"></script>
+  
+  <script>
+    // Carregar informações do usuário no menu
+    const session = JSON.parse(localStorage.getItem('ns-session') || 'null');
+    
+    if (session) {
+      const menuUserName = document.getElementById('menuUserName');
+      const menuUserLevel = document.getElementById('menuUserLevel');
+      
+      if (menuUserName) menuUserName.textContent = session.name || 'Professor';
+      if (menuUserLevel) menuUserLevel.textContent = session.role === 'teacher' ? 'Professor' : 'Aluno';
+    }
+
+    // Sidebar Toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const closeSidebar = document.getElementById('closeSidebar');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    function openSidebarMenu() {
+      if (sidebar) sidebar.classList.add('active');
+      if (sidebarOverlay) sidebarOverlay.classList.add('active');
+      if (menuToggle) menuToggle.classList.add('active');
+    }
+
+    function closeSidebarMenu() {
+      if (sidebar) sidebar.classList.remove('active');
+      if (sidebarOverlay) sidebarOverlay.classList.remove('active');
+      if (menuToggle) menuToggle.classList.remove('active');
+    }
+
+    if (menuToggle) {
+      menuToggle.addEventListener('click', openSidebarMenu);
+    }
+
+    if (closeSidebar) {
+      closeSidebar.addEventListener('click', closeSidebarMenu);
+    }
+
+    if (sidebarOverlay) {
+      sidebarOverlay.addEventListener('click', closeSidebarMenu);
+    }
+
+    // ESC key to close sidebar
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && sidebar.classList.contains('active')) {
+        closeSidebarMenu();
+      }
+    });
+
+    // Logout button
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', () => {
+        if (confirm('Tem certeza que deseja sair?')) {
+          localStorage.removeItem('ns-session');
+          window.location.href = 'login.html';
+        }
+      });
+    }
+
+    // Theme Toggle
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.querySelector('.theme-icon');
+
+    function setTheme(theme) {
+      document.body.setAttribute('data-theme', theme);
+      localStorage.setItem('ns-theme', theme);
+      if (themeIcon) {
+        themeIcon.textContent = theme === 'dark' ? '🌙' : '☀️';
+      }
+    }
+
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        const currentTheme = document.body.getAttribute('data-theme') || 'dark';
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        setTheme(newTheme);
+      });
+    }
+
+    // Load saved theme
+    const savedTheme = localStorage.getItem('ns-theme') || 'dark';
+    setTheme(savedTheme);
+
+    // Check if user is logged in
+    if (!session) {
+      alert('Você precisa fazer login para acessar esta página!');
+      window.location.href = 'login.html';
+    }
+    
+    // Check if user is teacher
+    if (session && session.role !== 'teacher') {
+      alert('⚠️ Apenas professores podem enviar vídeos!\n\nCrie uma nova conta como professor ou entre em contato com o suporte.');
+      window.location.href = 'app.html';
+    }
+
+    // Vertical Photo Carousel
+    let currentPhotoSlide = 0;
+    const photoSlides = document.querySelectorAll('.photo-item');
+    const photoIndicators = document.querySelectorAll('.photo-indicator');
+    
+    function showPhotoSlide(index) {
+      photoSlides.forEach(slide => slide.classList.remove('active'));
+      photoIndicators.forEach(ind => ind.classList.remove('active'));
+      
+      if (photoSlides[index]) {
+        photoSlides[index].classList.add('active');
+        photoIndicators[index].classList.add('active');
+      }
+      currentPhotoSlide = index;
+    }
+    
+    function nextPhotoSlide() {
+      const next = (currentPhotoSlide + 1) % photoSlides.length;
+      showPhotoSlide(next);
+    }
+    
+    // Auto-rotate photo
+    setInterval(nextPhotoSlide, 3500);
+    
+    // Click indicators
+    photoIndicators.forEach((indicator, index) => {
+      indicator.addEventListener('click', () => {
+        showPhotoSlide(index);
+      });
+    });
+
+    // Banner Carousel
+    let currentBannerSlide = 0;
+    const bannerSlides = document.querySelectorAll('.banner-slide');
+    const bannerIndicators = document.querySelectorAll('.banner-indicator');
+    
+    function showBannerSlide(index) {
+      bannerSlides.forEach(slide => slide.classList.remove('active'));
+      bannerIndicators.forEach(ind => ind.classList.remove('active'));
+      
+      if (bannerSlides[index]) {
+        bannerSlides[index].classList.add('active');
+        bannerIndicators[index].classList.add('active');
+      }
+      currentBannerSlide = index;
+    }
+    
+    function nextBannerSlide() {
+      const next = (currentBannerSlide + 1) % bannerSlides.length;
+      showBannerSlide(next);
+    }
+    
+    // Auto-rotate banner
+    setInterval(nextBannerSlide, 4000);
+    
+    // Click indicators
+    bannerIndicators.forEach((indicator, index) => {
+      indicator.addEventListener('click', () => {
+        showBannerSlide(index);
+      });
+    });
+  </script>
+</body>
+</html>
+
+
